@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "436288578840",
+    "project_id": "authflutter-c7e76",
+    "storage_bucket": "authflutter-c7e76.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436288578840:android:9041027a2e576fcb01aa6d",
+        "android_client_info": {
+          "package_name": "com.example.auth_flow_flutter_rxdart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "436288578840-0nj1arqfbpusfv74f9cbelp1sib8abm9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4NvJiEfUzzQ98Ak8FYdqnIR8ymaBGuYU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "436288578840-0nj1arqfbpusfv74f9cbelp1sib8abm9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -29,6 +29,9 @@ android {
     namespace "com.example.auth_flow_flutter_rxdart"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+    dexOptions {
+        javaMaxHeapSize "4G"
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

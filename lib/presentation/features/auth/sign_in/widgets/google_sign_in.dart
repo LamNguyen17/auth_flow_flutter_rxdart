@@ -1,5 +1,5 @@
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/authen/user_info/user_info_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/user_info/user_info_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

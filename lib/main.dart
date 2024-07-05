@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/authen/sign_in/sign_in_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

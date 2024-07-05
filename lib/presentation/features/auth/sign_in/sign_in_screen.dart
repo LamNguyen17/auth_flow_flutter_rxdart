@@ -2,7 +2,7 @@ import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart'
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/authen/sign_in/widgets/google_sign_in.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/widgets/google_sign_in.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});

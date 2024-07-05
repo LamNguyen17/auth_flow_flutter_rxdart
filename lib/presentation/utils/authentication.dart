@@ -1,6 +1,6 @@
 
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/authen/user_info/user_info_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/user_info/user_info_screen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

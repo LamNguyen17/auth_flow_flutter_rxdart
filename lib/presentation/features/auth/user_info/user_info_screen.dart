@@ -1,7 +1,8 @@
-import 'package:auth_flow_flutter_rxdart/presentation/features/authen/sign_in/sign_in_screen.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart';
 
 class UserInfoScreen extends StatefulWidget {
   const UserInfoScreen({Key? key, required User user})

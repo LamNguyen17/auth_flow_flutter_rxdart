@@ -38,6 +38,7 @@ class _GoogleSignInState extends State<GoogleSignIn> {
 
                 // TODO: Add a method call to the Google Sign-In authentication
                 User? user = await Authentication.signInWithGoogle(context: context);
+                print('user: $user');
 
                 setState(() {
                   _isSigningIn = false;

@@ -54,6 +54,7 @@ class _SignInScreenState extends State<SignInScreen> {
           FutureBuilder(
             future: Authentication.initializeFirebase(context: context),
             builder: (context, snapshot) {
+              print('snapshot: $snapshot');
               if (snapshot.hasError) {
                 return const Text('Error initializing Firebase');
               } else if (snapshot.connectionState ==

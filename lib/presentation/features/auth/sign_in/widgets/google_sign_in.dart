@@ -60,13 +60,13 @@ class _GoogleSignInState extends State<GoogleSignIn> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Image.asset(AppImages.ggLogo, height: 35.0),
+                    Image.asset(AppImages.ggLogo, height: 30.0),
                     const Padding(
                       padding: EdgeInsets.only(left: 10),
                       child: Text(
                         'Sign in with Google',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 14,
                           color: Colors.black54,
                           fontWeight: FontWeight.w600,
                         ),

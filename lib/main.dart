@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
+import 'package:flutter_dropdown_alert/dropdown_alert.dart';
 
 class NavigationService {
   static final navigatorKey = GlobalKey<NavigatorState>();
@@ -33,7 +34,10 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: SignInScreen(),
+      builder: (context, child) => Stack(
+        children: [child!, const DropdownAlert()],
+      ),
+      home: const SignInScreen(),
     );
   }
 }

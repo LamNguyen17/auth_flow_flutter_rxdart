@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 import 'package:flutter/material.dart';
 
@@ -18,15 +19,48 @@ class _SignInScreenState extends State<SignInScreen> {
   final _authBloc = injector.get<AuthBloc>();
 
   @override
+  void initState() {
+    super.initState();
+    // _authBloc.isLoading.listen((isLoading) {
+    //   if (isLoading) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text('Loading...'),
+    //       ),
+    //     );
+    //   }
+    // });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _authBloc.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: ClearFocus(
         child: SafeArea(
           child: Center(
-            child: Column(mainAxisSize: MainAxisSize.max, children: [
-              renderInputWidget(),
-            ]),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    AppImages.fbLogo,
+                    height: 100,
+                  ),
+                  renderInputWidget(),
+                  // StreamBuilder(
+                  //     stream: _authBloc.isLoading,
+                  //     builder: (context, snapshot) {
+                  //       print('StreamBuilder_authError: ${snapshot.hasData} - ${snapshot.data}');
+                  //       return const SizedBox.shrink();
+                  //     }),
+                ]),
           ),
         ),
       ),
@@ -84,15 +118,6 @@ class _SignInScreenState extends State<SignInScreen> {
             renderPasswordTextField(),
             const SizedBox(height: 20),
             renderSignInButton(),
-            const SizedBox(height: 50),
-            StreamBuilder(
-                stream: _authBloc.authError$,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text(snapshot.data.toString());
-                  }
-                  return const SizedBox.shrink();
-                }),
             const SizedBox(height: 50),
             renderCustomDivider(),
             const SizedBox(height: 50),

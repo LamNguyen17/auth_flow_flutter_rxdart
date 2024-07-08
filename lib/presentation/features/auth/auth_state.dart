@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class AuthStatus extends Equatable {
   const AuthStatus();
@@ -27,6 +28,13 @@ abstract class AuthCommand {
 
 class LoginCommand extends AuthCommand {
   const LoginCommand({
+    required super.email,
+    required super.password,
+  });
+}
+
+class RegisterCommand extends AuthCommand {
+  const RegisterCommand({
     required super.email,
     required super.password,
   });

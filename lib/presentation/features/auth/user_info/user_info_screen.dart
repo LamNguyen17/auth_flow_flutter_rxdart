@@ -47,7 +47,6 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('displayName: ${_user.displayName}');
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -93,7 +92,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
               ),
               const SizedBox(height: 8.0),
               Text(
-                _user.displayName.toString(),
+                _user.displayName ?? '',
                 style: const TextStyle(
                   fontSize: 26,
                 ),

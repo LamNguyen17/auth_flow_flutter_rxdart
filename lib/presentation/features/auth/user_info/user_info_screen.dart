@@ -5,11 +5,11 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign
 import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart';
 
 class UserInfoScreen extends StatefulWidget {
-  const UserInfoScreen({Key? key, required User user})
-      : _user = user,
-        super(key: key);
+  final User user;
 
-  final User _user;
+  // const UserInfoScreen({User user, super.key});
+
+  const UserInfoScreen({required this.user, super.key});
 
   @override
   _UserInfoScreenState createState() => _UserInfoScreenState();
@@ -19,11 +19,18 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   late User _user;
   bool _isSigningOut = false;
 
+  @override
+  void initState() {
+    _user = widget.user;
+    super.initState();
+  }
+
   Route _routeToSignInScreen() {
     return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => const SignInScreen(),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          const SignInScreen(),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        var begin = Offset(-1.0, 0.0);
+        var begin = const Offset(-1.0, 0.0);
         var end = Offset.zero;
         var curve = Curves.ease;
 
@@ -39,14 +46,8 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
   }
 
   @override
-  void initState() {
-    _user = widget._user;
-
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    print('displayName: ${_user.displayName}');
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -62,7 +63,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Row(),
+              const Row(),
               _user.photoURL != null
                   ? ClipOval(
                       child: Material(
@@ -90,29 +91,29 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                   fontSize: 26,
                 ),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Text(
-                _user.displayName!,
-                style: TextStyle(
+                _user.displayName.toString(),
+                style: const TextStyle(
                   fontSize: 26,
                 ),
               ),
-              SizedBox(height: 8.0),
+              const SizedBox(height: 8.0),
               Text(
-                '( ${_user.email!} )',
-                style: TextStyle(
+                '( ${_user.email ?? ''} )',
+                style: const TextStyle(
                   fontSize: 20,
                   letterSpacing: 0.5,
                 ),
               ),
-              SizedBox(height: 24.0),
-              Text(
+              const SizedBox(height: 24.0),
+              const Text(
                 'You are now signed in using your Google account. To sign out of your account, click the "Sign Out" button below.',
                 style: TextStyle(fontSize: 14, letterSpacing: 0.2),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               _isSigningOut
-                  ? CircularProgressIndicator(
+                  ? const CircularProgressIndicator(
                       valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                     )
                   : ElevatedButton(

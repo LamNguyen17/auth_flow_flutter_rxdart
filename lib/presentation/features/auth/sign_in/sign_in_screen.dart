@@ -1,5 +1,8 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/clear_focus.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/widgets/google_sign_in.dart';
@@ -12,6 +15,8 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
+  final _authBloc = injector.get<AuthBloc>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,35 +26,6 @@ class _SignInScreenState extends State<SignInScreen> {
           child: Center(
             child: Column(mainAxisSize: MainAxisSize.max, children: [
               renderInputWidget(),
-              // const Row(),
-              // Expanded(
-              //   child: Column(
-              //     mainAxisSize: MainAxisSize.min,
-              //     mainAxisAlignment: MainAxisAlignment.center,
-              //     children: [
-              //       Flexible(
-              //           flex: 1,
-              //           child: Image.asset(
-              //             AppImages.fbLogo,
-              //             height: 160,
-              //           )),
-              //       const SizedBox(height: 20),
-              //       const Text(
-              //         'FlutterFire',
-              //         style: TextStyle(
-              //           fontSize: 30,
-              //         ),
-              //       ),
-              //       const Text(
-              //         'Authentication',
-              //         style: TextStyle(
-              //           fontSize: 30,
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-              // const GoogleSignIn(),
             ]),
           ),
         ),
@@ -108,6 +84,15 @@ class _SignInScreenState extends State<SignInScreen> {
             renderPasswordTextField(),
             const SizedBox(height: 20),
             renderSignInButton(),
+            const SizedBox(height: 50),
+            StreamBuilder(
+                stream: _authBloc.authError$,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text(snapshot.data.toString());
+                  }
+                  return const SizedBox.shrink();
+                }),
             const SizedBox(height: 50),
             renderCustomDivider(),
             const SizedBox(height: 50),
@@ -191,7 +176,13 @@ class _SignInScreenState extends State<SignInScreen> {
             splashFactory: NoSplash.splashFactory,
             backgroundColor: Colors.green,
           ),
-          onPressed: () {},
+          onPressed: () {
+            _authBloc.login.add(const LoginCommand(
+                    email: 'devlamnt176@gmail.com',
+                    password:
+                        'azerTyy101794') // Add email and password from text field
+                );
+          },
           child: const Text('Đăng nhập',
               style: TextStyle(
                   fontSize: 14,

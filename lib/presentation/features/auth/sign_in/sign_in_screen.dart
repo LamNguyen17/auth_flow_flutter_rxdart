@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/social_sign_in/social_sign_in_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -54,6 +55,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 100,
                   ),
                   renderInputWidget(),
+                  SocialSignInView(),
                 ]),
           ),
         ),
@@ -115,17 +117,17 @@ class _SignInScreenState extends State<SignInScreen> {
             const SizedBox(height: 50),
             renderCustomDivider(),
             const SizedBox(height: 50),
-            FutureBuilder(
-              future: Authentication.initializeFirebase(context: context),
-              builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  return const Text('Error initializing Firebase');
-                } else if (snapshot.connectionState == ConnectionState.done) {
-                  return const GoogleSignIn();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
+            // FutureBuilder(
+            //   future: Authentication.initializeFirebase(context: context),
+            //   builder: (context, snapshot) {
+            //     if (snapshot.hasError) {
+            //       return const Text('Error initializing Firebase');
+            //     } else if (snapshot.connectionState == ConnectionState.done) {
+            //       return const GoogleSignIn();
+            //     }
+            //     return const SizedBox.shrink();
+            //   },
+            // ),
           ],
         ));
   }
@@ -205,43 +207,44 @@ class _SignInScreenState extends State<SignInScreen> {
       height: 45,
       child: StreamBuilder<bool>(
           stream: _authBloc.isSubmit$,
-          builder: (context, snapshot) {
+          builder: (context, snapshotSubmit) {
             return ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 splashFactory: NoSplash.splashFactory,
-                backgroundColor:
-                    snapshot.data == true ? Colors.green : Colors.grey[50],
+                backgroundColor: snapshotSubmit.data == true
+                    ? Colors.green
+                    : Colors.grey[50],
               ),
-              onPressed: snapshot.data == true ? () {
-                // devlamnt176@gmail.com / azerTyy101794
-                _authBloc.login.add(LoginCommand(
-                        email: _authBloc.emailTextEditing.text,
-                        password: _authBloc.passwordTextEditing
-                            .text) // Add email and password from text field
-                    );
-              } : null,
+              onPressed: snapshotSubmit.data == true
+                  ? () {
+                      _authBloc.login.add(LoginCommand(
+                          email: _authBloc.emailTextEditing.text,
+                          password: _authBloc.passwordTextEditing.text));
+                    }
+                  : null,
               child: StreamBuilder(
                   stream: _authBloc.isLoading$,
                   builder: (context, snapshot) {
-                    print('StreamBuilder_authError: ${snapshot.hasData} - ${snapshot.data}');
+                    print(
+                        'StreamBuilder_authError: ${snapshot.hasData} - ${snapshot.data}');
                     if (snapshot.data == true) {
                       return const Padding(
-                        padding: EdgeInsets.only(right: 8, left: 8, top: 8, bottom: 8),
+                        padding: EdgeInsets.only(top: 12, bottom: 12),
                         child: CircularProgressIndicator(
                           backgroundColor: Colors.white,
                           color: Colors.white,
-                          strokeWidth: 4,
+                          strokeWidth: 3,
                         ),
                       );
                     }
-                    return const Text('Đăng nhập',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white));
+                    return Text('Đăng nhập',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: snapshotSubmit.data == true ? Colors.white : Colors.grey[400]));
                   }),
             );
           }),

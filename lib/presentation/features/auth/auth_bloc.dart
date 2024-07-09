@@ -5,7 +5,9 @@ import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import 'package:auth_flow_flutter_rxdart/main.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
@@ -18,6 +20,8 @@ class AuthBloc {
   final Function1<String, void> email;
   final Function1<String, void> password;
   final Function0<void> dispose;
+  final Sink<dynamic> signInWithGoogle;
+  final Sink<dynamic> signInWithFacebook;
   final Sink<dynamic> login;
   final Sink<dynamic> register;
   final Sink<void> logout;
@@ -36,6 +40,9 @@ class AuthBloc {
   factory AuthBloc() {
     final isLoading = BehaviorSubject<bool>();
     final login = BehaviorSubject<LoginCommand>();
+    final signInWithGoogle = BehaviorSubject<void>();
+    final signInWithFacebook = BehaviorSubject<void>();
+    final signInWithApple = BehaviorSubject<void>();
     final logout = BehaviorSubject<void>();
     final register = BehaviorSubject<RegisterCommand>();
     final deleteAccount = BehaviorSubject<void>();
@@ -73,6 +80,72 @@ class AuthBloc {
         return const AuthStatusLoggedOut();
       }
     });
+
+    /** region initState */
+    /** region initState */
+
+    /** region signInWithFacebook + err message*/
+    final Stream<dynamic> signInWithFacebookError$ = signInWithFacebook
+        .setLoadingTo(true, onSink: isLoading)
+        .asyncMap<dynamic>((_) async {
+      try {
+        final LoginResult loginResult = await FacebookAuth.instance.login();
+        final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
+        final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+        // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+        // final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+        // final credential = GoogleAuthProvider.credential(
+        //   accessToken: googleAuth?.accessToken,
+        //   idToken: googleAuth?.idToken,
+        // );
+        // final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        // print('googleUser_userCredential: $userCredential');
+        if (userCredential.user != null) {
+          Navigator.of(NavigationService.navigatorKey.currentContext!)
+              .pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => UserInfoScreen(
+                user: userCredential.user!,
+              ),
+            ),
+          );
+        }
+        return userCredential.user;
+      } on Exception catch (e) {
+        return e;
+      }
+    });
+    /** region signInWithFacebook + err message*/
+
+    /** region signInWithGoogle + err message */
+    final Stream<dynamic> signInWithGoogleError$ = signInWithGoogle
+        .setLoadingTo(true, onSink: isLoading)
+        .asyncMap<dynamic>((_) async {
+        try {
+          final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+          final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+          final credential = GoogleAuthProvider.credential(
+            accessToken: googleAuth?.accessToken,
+            idToken: googleAuth?.idToken,
+          );
+          final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+          print('googleUser_userCredential: $userCredential');
+          if (userCredential.user != null) {
+            Navigator.of(NavigationService.navigatorKey.currentContext!)
+                .pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => UserInfoScreen(
+                  user: userCredential.user!,
+                ),
+              ),
+            );
+          }
+          return userCredential.user;
+        } on Exception catch (e) {
+          return e;
+        }
+    });
+    /** endregion signInWithGoogle + err message */
 
     /** region Login + err message */
     final Stream<dynamic> loginError$ = login
@@ -163,11 +236,15 @@ class AuthBloc {
       registerError$,
       logoutError$,
       deleteAccountError$,
+      signInWithGoogleError$,
+      signInWithFacebookError$,
     ]).listen((event) {});
 
     return AuthBloc._(
       email: email.add,
       password: password.add,
+      signInWithGoogle: signInWithGoogle,
+      signInWithFacebook: signInWithFacebook,
       login: login,
       register: register,
       logout: logout,
@@ -189,6 +266,8 @@ class AuthBloc {
         deleteAccount.close();
         emailController.dispose();
         passwordController.dispose();
+        signInWithGoogle.close();
+        signInWithFacebook.close();
       },
     );
   }
@@ -199,6 +278,8 @@ class AuthBloc {
     required this.emailTextEditing,
     required this.passwordTextEditing,
     required this.dispose,
+    required this.signInWithGoogle,
+    required this.signInWithFacebook,
     required this.login,
     required this.register,
     required this.logout,

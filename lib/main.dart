@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -37,7 +38,8 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => Stack(
         children: [child!, const DropdownAlert()],
       ),
-      home: const SignInScreen(),
+      // home: const SignInScreen(),
+      home: const SplashScreen(),
     );
   }
 }

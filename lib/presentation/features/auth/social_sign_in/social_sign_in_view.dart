@@ -73,22 +73,23 @@ class SocialSignInView extends StatelessWidget {
                 flex: 1,
                 child: Center(
                   child: AppTouchable(
-                      child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12.0, horizontal: 24.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey[300]!,
-                        width: 1,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 24.0),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Colors.grey[300]!,
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
-                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        AppImages.icApple,
+                        width: 32,
+                        height: 32,
+                      ),
                     ),
-                    child: Image.asset(
-                      AppImages.icApple,
-                      width: 32,
-                      height: 32,
-                    ),
-                  )),
+                  ),
                 ),
               ),
       ],

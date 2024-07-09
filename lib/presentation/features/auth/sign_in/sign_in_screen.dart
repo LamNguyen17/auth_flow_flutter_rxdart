@@ -54,12 +54,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     height: 100,
                   ),
                   renderInputWidget(),
-                  // StreamBuilder(
-                  //     stream: _authBloc.isLoading,
-                  //     builder: (context, snapshot) {
-                  //       print('StreamBuilder_authError: ${snapshot.hasData} - ${snapshot.data}');
-                  //       return const SizedBox.shrink();
-                  //     }),
                 ]),
           ),
         ),
@@ -124,7 +118,6 @@ class _SignInScreenState extends State<SignInScreen> {
             FutureBuilder(
               future: Authentication.initializeFirebase(context: context),
               builder: (context, snapshot) {
-                print('snapshot: $snapshot');
                 if (snapshot.hasError) {
                   return const Text('Error initializing Firebase');
                 } else if (snapshot.connectionState == ConnectionState.done) {
@@ -138,82 +131,108 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Widget renderEmailTextField() {
-    // final node = FocusScope.of(context);
-    return TextFormField(
-      // onEditingComplete: () => node.nextFocus(),
-      maxLength: 50,
-      keyboardType: TextInputType.emailAddress,
-      decoration: const InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
-          counter: SizedBox.shrink(),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.green),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.blueGrey),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.blueGrey),
-          ),
-          hintText: 'Nhập email',
-          hintStyle: TextStyle(fontSize: 12, color: Colors.blueGrey)),
-    );
+    final node = FocusScope.of(context);
+    return StreamBuilder<String?>(
+        stream: _authBloc.email$,
+        builder: (context, snapshot) {
+          return TextFormField(
+            onEditingComplete: () => node.nextFocus(),
+            maxLength: 50,
+            controller: _authBloc.emailTextEditing,
+            onChanged: _authBloc.email,
+            keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(fontSize: 12, color: Colors.black),
+            decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
+                counter: const SizedBox.shrink(),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderSide: BorderSide(color: Colors.blueGrey),
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderSide: BorderSide(color: Colors.blueGrey),
+                ),
+                hintText: 'Nhập email',
+                errorText: snapshot.data,
+                hintStyle:
+                    const TextStyle(fontSize: 12, color: Colors.blueGrey)),
+          );
+        });
   }
 
   Widget renderPasswordTextField() {
-    return TextFormField(
-      maxLength: 20,
-      obscureText: false,
-      decoration: const InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
-          counter: SizedBox.shrink(),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.green),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.blueGrey),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            borderSide: BorderSide(color: Colors.blueGrey),
-          ),
-          hintText: 'Nhập mật khẩu',
-          hintStyle: TextStyle(fontSize: 12, color: Colors.blueGrey)),
-    );
+    return StreamBuilder<String?>(
+        stream: _authBloc.password$,
+        builder: (context, snapshot) {
+          return TextFormField(
+            maxLength: 20,
+            obscureText: true,
+            controller: _authBloc.passwordTextEditing,
+            onChanged: _authBloc.password,
+            style: const TextStyle(fontSize: 12, color: Colors.black),
+            decoration: InputDecoration(
+                contentPadding:
+                    const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
+                counter: const SizedBox.shrink(),
+                focusedBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderSide: BorderSide(color: Colors.green),
+                ),
+                border: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderSide: BorderSide(color: Colors.blueGrey),
+                ),
+                enabledBorder: const OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                  borderSide: BorderSide(color: Colors.blueGrey),
+                ),
+                hintText: 'Nhập mật khẩu',
+                errorText: snapshot.data,
+                hintStyle: TextStyle(fontSize: 12, color: Colors.blueGrey)),
+          );
+        });
   }
 
   Widget renderSignInButton() {
     return SizedBox(
-        width: 300,
-        height: 45,
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            splashFactory: NoSplash.splashFactory,
-            backgroundColor: Colors.green,
-          ),
-          onPressed: () {
-            _authBloc.login.add(const LoginCommand(
-                    email: 'devlamnt176@gmail.com',
-                    password:
-                        'azerTyy101794') // Add email and password from text field
-                );
-          },
-          child: const Text('Đăng nhập',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white)),
-        ));
+      width: 300,
+      height: 45,
+      child: StreamBuilder<bool>(
+          stream: _authBloc.isSubmit$,
+          builder: (context, snapshot) {
+            return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 14.0, vertical: 10.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                splashFactory: NoSplash.splashFactory,
+                backgroundColor:
+                    snapshot.data == true ? Colors.green : Colors.grey[50],
+              ),
+              onPressed: snapshot.data == true ? () {
+                // devlamnt176@gmail.com / azerTyy101794
+                _authBloc.login.add(LoginCommand(
+                        email: _authBloc.emailTextEditing.text,
+                        password: _authBloc.passwordTextEditing
+                            .text) // Add email and password from text field
+                    );
+              } : null,
+              child: const Text('Đăng nhập',
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white)),
+            );
+          }),
+    );
   }
 
   Widget renderCustomDivider() {

@@ -28,7 +28,7 @@ class AuthBloc {
   /// Output
   final Stream<AuthStatus> authStatus$;
   final StreamSubscription<dynamic> authError$;
-  final Stream<bool> isLoading;
+  final Stream<bool> isLoading$;
   final Stream<bool> isSubmit$;
   final Stream<String?> email$;
   final Stream<String?> password$;
@@ -176,7 +176,7 @@ class AuthBloc {
       authStatus$: authStatus$,
       authError$: authError$,
       deleteAccount: deleteAccount,
-      isLoading: isLoading.stream,
+      isLoading$: isLoading.asBroadcastStream(),
       isSubmit$: submit$,
       email$: email.stream.transform(emailValid$).skip(1),
       password$: password.stream.transform(passwordValid$).skip(1),
@@ -203,7 +203,7 @@ class AuthBloc {
     required this.register,
     required this.logout,
     required this.deleteAccount,
-    required this.isLoading,
+    required this.isLoading$,
     required this.authStatus$,
     required this.authError$,
     required this.isSubmit$,

@@ -1,8 +1,8 @@
-import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/clear_focus.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart';
@@ -208,8 +208,6 @@ class _SignInScreenState extends State<SignInScreen> {
           builder: (context, snapshot) {
             return ElevatedButton(
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 14.0, vertical: 10.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -225,11 +223,26 @@ class _SignInScreenState extends State<SignInScreen> {
                             .text) // Add email and password from text field
                     );
               } : null,
-              child: const Text('Đăng nhập',
-                  style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white)),
+              child: StreamBuilder(
+                  stream: _authBloc.isLoading$,
+                  builder: (context, snapshot) {
+                    print('StreamBuilder_authError: ${snapshot.hasData} - ${snapshot.data}');
+                    if (snapshot.data == true) {
+                      return const Padding(
+                        padding: EdgeInsets.only(right: 8, left: 8, top: 8, bottom: 8),
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                          color: Colors.white,
+                          strokeWidth: 4,
+                        ),
+                      );
+                    }
+                    return const Text('Đăng nhập',
+                            style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white));
+                  }),
             );
           }),
     );

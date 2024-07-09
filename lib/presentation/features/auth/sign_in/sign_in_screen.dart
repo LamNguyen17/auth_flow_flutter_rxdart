@@ -22,6 +22,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   void initState() {
     super.initState();
+    _authBloc.initState.add(null);
     // _authBloc.isLoading.listen((isLoading) {
     //   if (isLoading) {
     //     ScaffoldMessenger.of(context).showSnackBar(

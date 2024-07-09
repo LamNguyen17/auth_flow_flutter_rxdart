@@ -26,6 +26,7 @@ class AuthBloc {
   final Sink<dynamic> register;
   final Sink<void> logout;
   final Sink<void> deleteAccount;
+  final Sink<void> initState;
   final TextEditingController emailTextEditing;
   final TextEditingController passwordTextEditing;
 
@@ -43,6 +44,7 @@ class AuthBloc {
     final signInWithGoogle = BehaviorSubject<void>();
     final signInWithFacebook = BehaviorSubject<void>();
     final signInWithApple = BehaviorSubject<void>();
+    final initState = BehaviorSubject<void>();
     final logout = BehaviorSubject<void>();
     final register = BehaviorSubject<RegisterCommand>();
     final deleteAccount = BehaviorSubject<void>();
@@ -82,6 +84,21 @@ class AuthBloc {
     });
 
     /** region initState */
+    final StreamSubscription<void> initState$ = initState
+        .flatMap((_) {
+        User? user = FirebaseAuth.instance.currentUser;
+        print('initState: $user');
+        if (user != null) {
+          Navigator.of(NavigationService.navigatorKey.currentContext!).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => UserInfoScreen(
+                user: user,
+              ),
+            ),
+          );
+        }
+        return user != null ? Stream.value(user) : const Stream.empty();
+      }).listen((event) {});
     /** region initState */
 
     /** region signInWithFacebook + err message*/
@@ -92,14 +109,6 @@ class AuthBloc {
         final LoginResult loginResult = await FacebookAuth.instance.login();
         final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
         final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-        // final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-        // final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-        // final credential = GoogleAuthProvider.credential(
-        //   accessToken: googleAuth?.accessToken,
-        //   idToken: googleAuth?.idToken,
-        // );
-        // final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-        // print('googleUser_userCredential: $userCredential');
         if (userCredential.user != null) {
           Navigator.of(NavigationService.navigatorKey.currentContext!)
               .pushReplacement(
@@ -129,7 +138,6 @@ class AuthBloc {
             idToken: googleAuth?.idToken,
           );
           final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-          print('googleUser_userCredential: $userCredential');
           if (userCredential.user != null) {
             Navigator.of(NavigationService.navigatorKey.currentContext!)
                 .pushReplacement(
@@ -180,6 +188,8 @@ class AuthBloc {
         .setLoadingTo(true, onSink: isLoading)
         .asyncMap<dynamic>((_) async {
       try {
+        final GoogleSignIn googleSignIn = GoogleSignIn();
+        await googleSignIn.signOut();
         await FirebaseAuth.instance.signOut();
         return null;
       } catch (e) {
@@ -248,6 +258,7 @@ class AuthBloc {
       login: login,
       register: register,
       logout: logout,
+      initState: initState,
       emailTextEditing: emailController,
       passwordTextEditing: passwordController,
       authStatus$: authStatus$,
@@ -268,11 +279,13 @@ class AuthBloc {
         passwordController.dispose();
         signInWithGoogle.close();
         signInWithFacebook.close();
+        initState.close();
       },
     );
   }
 
   AuthBloc._({
+    required this.initState,
     required this.email,
     required this.password,
     required this.emailTextEditing,

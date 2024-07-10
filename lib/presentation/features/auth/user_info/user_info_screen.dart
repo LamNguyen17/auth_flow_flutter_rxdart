@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/utils/authentication.dart';
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 
 class UserInfoScreen extends StatefulWidget {
   final User user;
-
-  // const UserInfoScreen({User user, super.key});
 
   const UserInfoScreen({required this.user, super.key});
 
@@ -17,32 +15,12 @@ class UserInfoScreen extends StatefulWidget {
 
 class _UserInfoScreenState extends State<UserInfoScreen> {
   late User _user;
-  bool _isSigningOut = false;
+  final _authBloc = injector.get<AuthBloc>();
 
   @override
   void initState() {
-    _user = widget.user;
     super.initState();
-  }
-
-  Route _routeToSignInScreen() {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) =>
-          const SignInScreen(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        var begin = const Offset(-1.0, 0.0);
-        var end = Offset.zero;
-        var curve = Curves.ease;
-
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
+    _user = widget.user;
   }
 
   @override
@@ -111,45 +89,28 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
                 style: TextStyle(fontSize: 14, letterSpacing: 0.2),
               ),
               const SizedBox(height: 16.0),
-              _isSigningOut
-                  ? const CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
-                  : ElevatedButton(
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(
-                          Colors.redAccent,
-                        ),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      onPressed: () async {
-                        setState(() {
-                          _isSigningOut = true;
-                        });
-                        await Authentication.signOut(context: context);
-                        setState(() {
-                          _isSigningOut = false;
-                        });
-                        Navigator.of(context)
-                            .pushReplacement(_routeToSignInScreen());
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.only(top: 8.0, bottom: 8.0),
-                        child: Text(
-                          'Sign Out',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ),
+              ElevatedButton(
+                onPressed: () {
+                  _authBloc.logout.add(null);
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(
+                    Colors.redAccent,
+                  ),
+                  shape: MaterialStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                  ),
+                ),
+                child: const Text('Đăng xuất',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      letterSpacing: 2,
+                    )),
+              ),
             ],
           ),
         ),

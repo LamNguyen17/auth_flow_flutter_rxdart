@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,13 +18,17 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.d
 
 const Map<String, String> authErrorMapping = {
   'user-not-found': 'The given user was not found on the server!',
-  'weak-password': 'Please choose a stronger password consisting of more characters!',
+  'weak-password':
+      'Please choose a stronger password consisting of more characters!',
   'invalid-email': 'Please double check your email and try again!',
-  'operation-not-allowed': 'You cannot register using this method at this moment',
+  'operation-not-allowed':
+      'You cannot register using this method at this moment',
   'email-already-in-use': 'Please choose another email to register with!',
-  'requires-recent-login': 'You need to log out and log back in again in order to perform this operation',
+  'requires-recent-login':
+      'You need to log out and log back in again in order to perform this operation',
   'no-current-user': 'No current user with this information was found',
-  'invalid-credential': 'The supplied auth credential is incorrect, malformed or has expired.',
+  'invalid-credential':
+      'The supplied auth credential is incorrect, malformed or has expired.',
 };
 
 class AuthBloc {
@@ -133,7 +138,8 @@ class AuthBloc {
         }
         return const SignInError('Unknown error occurred');
       } on FirebaseAuthException catch (e) {
-        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        AlertController.show(
+            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
         return SignInError(authErrorMapping[e.code].toString());
       } on Exception catch (e) {
         return SignInError(e.toString());
@@ -168,7 +174,8 @@ class AuthBloc {
         }
         return const SignInError('Unknown error occurred');
       } on FirebaseAuthException catch (e) {
-        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        AlertController.show(
+            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
         return SignInError(authErrorMapping[e.code].toString());
       } on Exception catch (e) {
         return SignInError(e.toString());
@@ -214,7 +221,8 @@ class AuthBloc {
         }
         return const SignInError('Unknown error occurred');
       } on FirebaseAuthException catch (e) {
-        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        AlertController.show(
+            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
         return SignInError(authErrorMapping[e.code].toString());
       } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);
@@ -231,9 +239,14 @@ class AuthBloc {
         final GoogleSignIn googleSignIn = GoogleSignIn();
         await googleSignIn.signOut();
         await FirebaseAuth.instance.signOut();
+        Navigator.of(NavigationService.navigatorKey.currentContext!)
+            .pushReplacement(
+          MaterialPageRoute(builder: (context) => const SignInScreen()),
+        );
         return null;
       } on FirebaseAuthException catch (e) {
-        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        AlertController.show(
+            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
         return authErrorMapping[e.code].toString();
       } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);
@@ -283,7 +296,8 @@ class AuthBloc {
         }
         return const RegisterError('Unknown error occurred');
       } on FirebaseAuthException catch (e) {
-        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        AlertController.show(
+            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
         return RegisterError(authErrorMapping[e.code].toString());
       } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);
@@ -300,7 +314,8 @@ class AuthBloc {
         await FirebaseAuth.instance.currentUser?.delete();
         return null;
       } on FirebaseAuthException catch (e) {
-        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        AlertController.show(
+            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
         return authErrorMapping[e.code].toString();
       } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);

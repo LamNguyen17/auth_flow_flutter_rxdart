@@ -31,6 +31,19 @@ class Validation {
     return null;
   }
 
+  static String? validateConfirmPass(String? pass, String? confirmPass) {
+    if (pass == null || confirmPass == null) {
+      return 'Mật khẩu không hợp lệ';
+    }
+    if (confirmPass.length < 6) {
+      return 'Mật khẩu yêu cầu tối thiểu 6 ký tự';
+    }
+    if (pass != confirmPass) {
+      return 'Mật khẩu không trùng khớp';
+    }
+    return null;
+  }
+
   static String? validateEmail(String? email) {
     if (email == null) {
       return 'Email không hợp lệ';

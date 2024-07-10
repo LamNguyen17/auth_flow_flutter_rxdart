@@ -21,15 +21,6 @@ class _SignInScreenState extends State<SignInScreen> {
   void initState() {
     super.initState();
     _authBloc.initState.add(null);
-    // _authBloc.isLoading.listen((isLoading) {
-    //   if (isLoading) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         content: Text('Loading...'),
-    //       ),
-    //     );
-    //   }
-    // });
   }
 
   @override
@@ -116,17 +107,6 @@ class _SignInScreenState extends State<SignInScreen> {
             const SizedBox(height: 50),
             renderCustomDivider(),
             const SizedBox(height: 50),
-            // FutureBuilder(
-            //   future: Authentication.initializeFirebase(context: context),
-            //   builder: (context, snapshot) {
-            //     if (snapshot.hasError) {
-            //       return const Text('Error initializing Firebase');
-            //     } else if (snapshot.connectionState == ConnectionState.done) {
-            //       return const GoogleSignIn();
-            //     }
-            //     return const SizedBox.shrink();
-            //   },
-            // ),
           ],
         ));
   }
@@ -195,7 +175,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 hintText: 'Nhập mật khẩu',
                 errorText: snapshot.data,
-                hintStyle: TextStyle(fontSize: 12, color: Colors.blueGrey)),
+                hintStyle: const TextStyle(fontSize: 12, color: Colors.blueGrey)),
           );
         });
   }
@@ -205,7 +185,7 @@ class _SignInScreenState extends State<SignInScreen> {
       width: 300,
       height: 45,
       child: StreamBuilder<bool>(
-          stream: _authBloc.isSubmit$,
+          stream: _authBloc.isSubmitLogin$,
           builder: (context, snapshotSubmit) {
             return ElevatedButton(
               style: ElevatedButton.styleFrom(

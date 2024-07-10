@@ -15,10 +15,18 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/auth/user_info/us
 import 'package:auth_flow_flutter_rxdart/common/extensions/loading.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 
+class ConfirmPass {
+  final String pass;
+  final String confirmPass;
+
+  ConfirmPass(this.pass, this.confirmPass);
+}
+
 class AuthBloc {
   /// Input
   final Function1<String, void> email;
   final Function1<String, void> password;
+  final Function1<String, void> confirmPassword;
   final Function0<void> dispose;
   final Sink<dynamic> signInWithGoogle;
   final Sink<dynamic> signInWithFacebook;
@@ -29,14 +37,17 @@ class AuthBloc {
   final Sink<void> initState;
   final TextEditingController emailTextEditing;
   final TextEditingController passwordTextEditing;
+  final TextEditingController confirmPasswordTextEditing;
 
   /// Output
   final Stream<AuthStatus> authStatus$;
   final StreamSubscription<dynamic> authError$;
   final Stream<bool> isLoading$;
-  final Stream<bool> isSubmit$;
+  final Stream<bool> isSubmitLogin$;
+  final Stream<bool> isSubmitRegister$;
   final Stream<String?> email$;
   final Stream<String?> password$;
+  final Stream<String?> confirmPassword$;
 
   factory AuthBloc() {
     final isLoading = BehaviorSubject<bool>();
@@ -49,30 +60,22 @@ class AuthBloc {
     final register = BehaviorSubject<RegisterCommand>();
     final deleteAccount = BehaviorSubject<void>();
     final loginBtn = BehaviorSubject<bool>.seeded(false);
+    final registerBtn = BehaviorSubject<bool>.seeded(false);
     final email = BehaviorSubject<String>();
     final password = BehaviorSubject<String>();
+    final confirmPassword = BehaviorSubject<String>();
     final emailController = TextEditingController();
     final passwordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
 
     final emailValid$ = StreamTransformer<String, String?>.fromHandlers(
         handleData: (email, sink) => sink.add(Validation.validateEmail(email)));
     final passwordValid$ = StreamTransformer<String, String?>.fromHandlers(
         handleData: (pass, sink) => sink.add(Validation.validatePass(pass)));
-
-    final isValidSubmit$ = Rx.combineLatest2<String, String, bool>(
-      email,
-      password,
-      (e, p) =>
-          Validation.validateEmail(e) == null &&
-          Validation.validatePass(p) == null,
-    ).shareValueSeeded(false);
-    isValidSubmit$.listen((enable) {
-      loginBtn.add(enable);
-    });
-
-    final submit$ = loginBtn
-        .withLatestFrom(isValidSubmit$, (_, bool isValid) => isValid)
-        .share();
+    final confirmPasswordValid$ =
+        StreamTransformer<String, String?>.fromHandlers(
+            handleData: (confirmPassword, sink) =>
+                sink.add(Validation.validateConfirmPass(passwordController.text, confirmPassword)));
 
     final Stream<AuthStatus> authStatus$ =
         FirebaseAuth.instance.authStateChanges().map((user) {
@@ -84,31 +87,34 @@ class AuthBloc {
     });
 
     /** region initState */
-    final StreamSubscription<void> initState$ = initState
-        .flatMap((_) {
-        User? user = FirebaseAuth.instance.currentUser;
-        print('initState: $user');
-        if (user != null) {
-          Navigator.of(NavigationService.navigatorKey.currentContext!).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => UserInfoScreen(
-                user: user,
-              ),
+    final StreamSubscription<void> initState$ = initState.flatMap((_) {
+      User? user = FirebaseAuth.instance.currentUser;
+      print('initState: $user');
+      if (user != null) {
+        Navigator.of(NavigationService.navigatorKey.currentContext!)
+            .pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => UserInfoScreen(
+              user: user,
             ),
-          );
-        }
-        return user != null ? Stream.value(user) : const Stream.empty();
-      }).listen((event) {});
+          ),
+        );
+      }
+      return user != null ? Stream.value(user) : const Stream.empty();
+    }).listen((event) {});
     /** region initState */
 
-    /** region signInWithFacebook + err message*/
+    /** region SignInWithFacebook + err message*/
     final Stream<dynamic> signInWithFacebookError$ = signInWithFacebook
         .setLoadingTo(true, onSink: isLoading)
         .asyncMap<dynamic>((_) async {
       try {
         final LoginResult loginResult = await FacebookAuth.instance.login();
-        final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.tokenString);
-        final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+        final OAuthCredential facebookAuthCredential =
+            FacebookAuthProvider.credential(
+                loginResult.accessToken!.tokenString);
+        final UserCredential userCredential = await FirebaseAuth.instance
+            .signInWithCredential(facebookAuthCredential);
         if (userCredential.user != null) {
           Navigator.of(NavigationService.navigatorKey.currentContext!)
               .pushReplacement(
@@ -124,38 +130,55 @@ class AuthBloc {
         return e;
       }
     });
-    /** region signInWithFacebook + err message*/
+    /** endregion SignInWithFacebook + err message*/
 
-    /** region signInWithGoogle + err message */
+    /** region SignInWithGoogle + err message */
     final Stream<dynamic> signInWithGoogleError$ = signInWithGoogle
         .setLoadingTo(true, onSink: isLoading)
         .asyncMap<dynamic>((_) async {
-        try {
-          final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-          final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-          final credential = GoogleAuthProvider.credential(
-            accessToken: googleAuth?.accessToken,
-            idToken: googleAuth?.idToken,
-          );
-          final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-          if (userCredential.user != null) {
-            Navigator.of(NavigationService.navigatorKey.currentContext!)
-                .pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => UserInfoScreen(
-                  user: userCredential.user!,
-                ),
+      try {
+        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+        final GoogleSignInAuthentication? googleAuth =
+            await googleUser?.authentication;
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken,
+          idToken: googleAuth?.idToken,
+        );
+        final UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        if (userCredential.user != null) {
+          Navigator.of(NavigationService.navigatorKey.currentContext!)
+              .pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => UserInfoScreen(
+                user: userCredential.user!,
               ),
-            );
-          }
-          return userCredential.user;
-        } on Exception catch (e) {
-          return e;
+            ),
+          );
         }
+        return userCredential.user;
+      } on Exception catch (e) {
+        return e;
+      }
     });
-    /** endregion signInWithGoogle + err message */
+    /** endregion SignInWithGoogle + err message */
 
-    /** region Login + err message */
+    /** region SignIn + err message */
+    final isValidSubmitLogin$ = Rx.combineLatest2<String, String, bool>(
+      email,
+      password,
+      (e, p) =>
+          Validation.validateEmail(e) == null &&
+          Validation.validatePass(p) == null,
+    ).shareValueSeeded(false);
+    isValidSubmitLogin$.listen((enable) {
+      loginBtn.add(enable);
+    });
+
+    final submitLogin$ = loginBtn
+        .withLatestFrom(isValidSubmitLogin$, (_, bool isValid) => isValid)
+        .share();
+
     final Stream<dynamic> loginError$ = login
         .setLoadingTo(true, onSink: isLoading)
         .asyncMap<dynamic>((LoginCommand loginCommand) async {
@@ -181,7 +204,7 @@ class AuthBloc {
         return e;
       }
     }).setLoadingTo(false, onSink: isLoading);
-    /** endregion Login */
+    /** endregion SignIn */
 
     /** region Logout + err message */
     final Stream<dynamic> logoutError$ = logout
@@ -200,6 +223,24 @@ class AuthBloc {
     /** endregion Logout */
 
     /** region Register + err message */
+    final isValidSubmitRegister$ =
+        Rx.combineLatest3<String, String, String, bool>(
+      email,
+      password,
+      confirmPassword,
+      (e, p, cp) =>
+          Validation.validateEmail(e) == null &&
+          Validation.validatePass(p) == null &&
+          Validation.validateConfirmPass(p, cp) == null,
+    ).shareValueSeeded(false);
+    isValidSubmitRegister$.listen((enable) {
+      registerBtn.add(enable);
+    });
+
+    final submitRegister$ = registerBtn
+        .withLatestFrom(isValidSubmitRegister$, (_, bool isValid) => isValid)
+        .share();
+
     final Stream<dynamic> registerError$ = register
         .setLoadingTo(true, onSink: isLoading)
         .asyncMap<dynamic>((RegisterCommand registerCommand) async {
@@ -253,6 +294,7 @@ class AuthBloc {
     return AuthBloc._(
       email: email.add,
       password: password.add,
+      confirmPassword: confirmPassword.add,
       signInWithGoogle: signInWithGoogle,
       signInWithFacebook: signInWithFacebook,
       login: login,
@@ -261,22 +303,28 @@ class AuthBloc {
       initState: initState,
       emailTextEditing: emailController,
       passwordTextEditing: passwordController,
+      confirmPasswordTextEditing: confirmPasswordController,
       authStatus$: authStatus$,
       authError$: authError$,
       deleteAccount: deleteAccount,
       isLoading$: isLoading.asBroadcastStream(),
-      isSubmit$: submit$,
+      isSubmitRegister$: submitRegister$,
+      isSubmitLogin$: submitLogin$,
       email$: email.stream.transform(emailValid$).skip(1),
       password$: password.stream.transform(passwordValid$).skip(1),
+      confirmPassword$:
+          confirmPassword.stream.transform(confirmPasswordValid$).skip(1),
       dispose: () {
         email.close();
         password.close();
+        confirmPassword.close();
         login.close();
         register.close();
         logout.close();
         deleteAccount.close();
         emailController.dispose();
         passwordController.dispose();
+        confirmPasswordController.dispose();
         signInWithGoogle.close();
         signInWithFacebook.close();
         initState.close();
@@ -288,8 +336,10 @@ class AuthBloc {
     required this.initState,
     required this.email,
     required this.password,
+    required this.confirmPassword,
     required this.emailTextEditing,
     required this.passwordTextEditing,
+    required this.confirmPasswordTextEditing,
     required this.dispose,
     required this.signInWithGoogle,
     required this.signInWithFacebook,
@@ -300,8 +350,10 @@ class AuthBloc {
     required this.isLoading$,
     required this.authStatus$,
     required this.authError$,
-    required this.isSubmit$,
+    required this.isSubmitLogin$,
+    required this.isSubmitRegister$,
     required this.email$,
     required this.password$,
+    required this.confirmPassword$,
   });
 }

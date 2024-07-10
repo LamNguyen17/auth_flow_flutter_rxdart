@@ -11,6 +11,10 @@ class SplashBloc {
   final Sink<void> onSignIn;
   final Sink<void> onRegister;
 
+  /// Output
+  final StreamSubscription<void> login$;
+  final StreamSubscription<void> register$;
+
   factory SplashBloc() {
     final login = BehaviorSubject<void>();
     final register = BehaviorSubject<void>();
@@ -42,11 +46,15 @@ class SplashBloc {
     return SplashBloc._(
       onSignIn: login,
       onRegister: register,
+      login$: login$,
+      register$: register$,
     );
   }
 
   SplashBloc._({
     required this.onSignIn,
     required this.onRegister,
+    required this.login$,
+    required this.register$,
   });
 }

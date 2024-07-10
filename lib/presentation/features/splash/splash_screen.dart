@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -14,6 +15,13 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   final _splashBloc = injector.get<SplashBloc>();
+  final _authBloc = injector.get<AuthBloc>();
+
+  @override
+  void initState() {
+    super.initState();
+    _authBloc.initState.add(null);
+  }
 
   @override
   Widget build(BuildContext context) {

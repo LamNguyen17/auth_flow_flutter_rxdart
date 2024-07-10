@@ -175,7 +175,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
                 hintText: 'Nhập mật khẩu',
                 errorText: snapshot.data,
-                hintStyle: const TextStyle(fontSize: 12, color: Colors.blueGrey)),
+                hintStyle:
+                    const TextStyle(fontSize: 12, color: Colors.blueGrey)),
           );
         });
   }
@@ -207,23 +208,28 @@ class _SignInScreenState extends State<SignInScreen> {
               child: StreamBuilder(
                   stream: _authBloc.isLoading$,
                   builder: (context, snapshot) {
-                    print(
-                        'StreamBuilder_authError: ${snapshot.hasData} - ${snapshot.data}');
-                    if (snapshot.data == true) {
-                      return const Padding(
-                        padding: EdgeInsets.only(top: 12, bottom: 12),
-                        child: CircularProgressIndicator(
-                          backgroundColor: Colors.white,
-                          color: Colors.white,
-                          strokeWidth: 3,
-                        ),
-                      );
-                    }
-                    return Text('Đăng nhập',
-                        style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: snapshotSubmit.data == true ? Colors.white : Colors.grey[400]));
+                    bool isLoading = snapshot.data ?? false;
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ))
+                            : Text('Đăng nhập',
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: snapshotSubmit.data == true
+                                        ? Colors.white
+                                        : Colors.grey[400])),
+                      ],
+                    );
                   }),
             );
           }),

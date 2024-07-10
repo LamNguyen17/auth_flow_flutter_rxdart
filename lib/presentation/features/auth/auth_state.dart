@@ -16,6 +16,42 @@ class AuthStatusLoggedOut extends AuthStatus {
   const AuthStatusLoggedOut();
 }
 
+class SignInSuccess extends AuthStatus {
+  final User data;
+
+  const SignInSuccess(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class SignInError extends AuthStatus {
+  final String message;
+
+  const SignInError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class RegisterSuccess extends AuthStatus {
+  final User data;
+
+  const RegisterSuccess(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class RegisterError extends AuthStatus {
+  final String message;
+
+  const RegisterError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
 abstract class AuthCommand {
   final String email;
   final String password;

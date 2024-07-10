@@ -15,12 +15,16 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/auth/user_info/us
 import 'package:auth_flow_flutter_rxdart/common/extensions/loading.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 
-class ConfirmPass {
-  final String pass;
-  final String confirmPass;
-
-  ConfirmPass(this.pass, this.confirmPass);
-}
+const Map<String, String> authErrorMapping = {
+  'user-not-found': 'The given user was not found on the server!',
+  'weak-password': 'Please choose a stronger password consisting of more characters!',
+  'invalid-email': 'Please double check your email and try again!',
+  'operation-not-allowed': 'You cannot register using this method at this moment',
+  'email-already-in-use': 'Please choose another email to register with!',
+  'requires-recent-login': 'You need to log out and log back in again in order to perform this operation',
+  'no-current-user': 'No current user with this information was found',
+  'invalid-credential': 'The supplied auth credential is incorrect, malformed or has expired.',
+};
 
 class AuthBloc {
   /// Input
@@ -74,8 +78,9 @@ class AuthBloc {
         handleData: (pass, sink) => sink.add(Validation.validatePass(pass)));
     final confirmPasswordValid$ =
         StreamTransformer<String, String?>.fromHandlers(
-            handleData: (confirmPassword, sink) =>
-                sink.add(Validation.validateConfirmPass(passwordController.text, confirmPassword)));
+            handleData: (confirmPassword, sink) => sink.add(
+                Validation.validateConfirmPass(
+                    passwordController.text, confirmPassword)));
 
     final Stream<AuthStatus> authStatus$ =
         FirebaseAuth.instance.authStateChanges().map((user) {
@@ -105,9 +110,9 @@ class AuthBloc {
     /** region initState */
 
     /** region SignInWithFacebook + err message*/
-    final Stream<dynamic> signInWithFacebookError$ = signInWithFacebook
+    final Stream<AuthStatus> signInWithFacebookError$ = signInWithFacebook
         .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<dynamic>((_) async {
+        .asyncMap<AuthStatus>((_) async {
       try {
         final LoginResult loginResult = await FacebookAuth.instance.login();
         final OAuthCredential facebookAuthCredential =
@@ -124,18 +129,22 @@ class AuthBloc {
               ),
             ),
           );
+          return SignInSuccess(userCredential.user!);
         }
-        return userCredential.user;
+        return const SignInError('Unknown error occurred');
+      } on FirebaseAuthException catch (e) {
+        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        return SignInError(authErrorMapping[e.code].toString());
       } on Exception catch (e) {
-        return e;
+        return SignInError(e.toString());
       }
     });
     /** endregion SignInWithFacebook + err message*/
 
     /** region SignInWithGoogle + err message */
-    final Stream<dynamic> signInWithGoogleError$ = signInWithGoogle
+    final Stream<AuthStatus> signInWithGoogleError$ = signInWithGoogle
         .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<dynamic>((_) async {
+        .asyncMap<AuthStatus>((_) async {
       try {
         final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
         final GoogleSignInAuthentication? googleAuth =
@@ -155,10 +164,14 @@ class AuthBloc {
               ),
             ),
           );
+          return SignInSuccess(userCredential.user!);
         }
-        return userCredential.user;
+        return const SignInError('Unknown error occurred');
+      } on FirebaseAuthException catch (e) {
+        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        return SignInError(authErrorMapping[e.code].toString());
       } on Exception catch (e) {
-        return e;
+        return SignInError(e.toString());
       }
     });
     /** endregion SignInWithGoogle + err message */
@@ -179,9 +192,9 @@ class AuthBloc {
         .withLatestFrom(isValidSubmitLogin$, (_, bool isValid) => isValid)
         .share();
 
-    final Stream<dynamic> loginError$ = login
+    final Stream<AuthStatus> loginError$ = login
         .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<dynamic>((LoginCommand loginCommand) async {
+        .asyncMap<AuthStatus>((LoginCommand loginCommand) async {
       try {
         final UserCredential userCredential =
             await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -197,11 +210,15 @@ class AuthBloc {
               ),
             ),
           );
+          return SignInSuccess(userCredential.user!);
         }
-        return null;
-      } catch (e) {
+        return const SignInError('Unknown error occurred');
+      } on FirebaseAuthException catch (e) {
+        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        return SignInError(authErrorMapping[e.code].toString());
+      } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);
-        return e;
+        return SignInError(e.toString());
       }
     }).setLoadingTo(false, onSink: isLoading);
     /** endregion SignIn */
@@ -215,7 +232,10 @@ class AuthBloc {
         await googleSignIn.signOut();
         await FirebaseAuth.instance.signOut();
         return null;
-      } catch (e) {
+      } on FirebaseAuthException catch (e) {
+        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        return authErrorMapping[e.code].toString();
+      } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);
         return e;
       }
@@ -259,11 +279,15 @@ class AuthBloc {
               ),
             ),
           );
+          return RegisterSuccess(userCredential.user!);
         }
-        return null;
-      } catch (e) {
+        return const RegisterError('Unknown error occurred');
+      } on FirebaseAuthException catch (e) {
+        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        return RegisterError(authErrorMapping[e.code].toString());
+      } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);
-        return e;
+        return RegisterError(e.toString());
       }
     }).setLoadingTo(false, onSink: isLoading);
     /** endregion Register */
@@ -275,7 +299,10 @@ class AuthBloc {
       try {
         await FirebaseAuth.instance.currentUser?.delete();
         return null;
-      } catch (e) {
+      } on FirebaseAuthException catch (e) {
+        AlertController.show("Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+        return authErrorMapping[e.code].toString();
+      } on Exception catch (e) {
         AlertController.show("Thông báo", e.toString(), TypeAlert.error);
         return e;
       }

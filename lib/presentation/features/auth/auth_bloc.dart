@@ -49,7 +49,6 @@ class AuthBloc {
   final TextEditingController confirmPasswordTextEditing;
 
   /// Output
-  final Stream<AuthStatus> authStatus$;
   final StreamSubscription<dynamic> authError$;
   final Stream<bool> isLoading$;
   final Stream<bool> isSubmitLogin$;
@@ -87,29 +86,11 @@ class AuthBloc {
                 Validation.validateConfirmPass(
                     passwordController.text, confirmPassword)));
 
-    final Stream<AuthStatus> authStatus$ =
-        FirebaseAuth.instance.authStateChanges().map((user) {
-      if (user != null) {
-        return const AuthStatusLoggedIn();
-      } else {
-        return const AuthStatusLoggedOut();
-      }
-    });
-
     /** region initState */
     final StreamSubscription<void> initState$ = initState.flatMap((_) {
       User? user = FirebaseAuth.instance.currentUser;
-      print('initState: $user');
       if (user != null) {
         MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-        // Navigator.of(AppNavManager.currentContext.currentContext!)
-        //     .pushReplacement(
-        //   MaterialPageRoute(
-        //     builder: (context) => UserInfoScreen(
-        //       user: user,
-        //     ),
-        //   ),
-        // );
       }
       return user != null ? Stream.value(user) : const Stream.empty();
     }).listen((event) {});
@@ -128,14 +109,6 @@ class AuthBloc {
             .signInWithCredential(facebookAuthCredential);
         if (userCredential.user != null) {
           MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-          // Navigator.of(AppNavManager.currentContext.currentContext!)
-          //     .pushReplacement(
-          //   MaterialPageRoute(
-          //     builder: (context) => UserInfoScreen(
-          //       user: userCredential.user!,
-          //     ),
-          //   ),
-          // );
           return SignInSuccess(userCredential.user!);
         }
         return const SignInError('Unknown error occurred');
@@ -165,14 +138,6 @@ class AuthBloc {
             await FirebaseAuth.instance.signInWithCredential(credential);
         if (userCredential.user != null) {
           MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-          // Navigator.of(AppNavManager.currentContext.currentContext!)
-          //     .pushReplacement(
-          //   MaterialPageRoute(
-          //     builder: (context) => UserInfoScreen(
-          //       user: userCredential.user!,
-          //     ),
-          //   ),
-          // );
           return SignInSuccess(userCredential.user!);
         }
         return const SignInError('Unknown error occurred');
@@ -213,15 +178,6 @@ class AuthBloc {
         );
         if (userCredential.user != null) {
           MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-
-          // Navigator.of(AppNavManager.currentContext.currentContext!)
-          //     .pushReplacement(
-          //   MaterialPageRoute(
-          //     builder: (context) => UserInfoScreen(
-          //       user: userCredential.user!,
-          //     ),
-          //   ),
-          // );
           return SignInSuccess(userCredential.user!);
         }
         return const SignInError('Unknown error occurred');
@@ -245,11 +201,6 @@ class AuthBloc {
         await googleSignIn.signOut();
         await FirebaseAuth.instance.signOut();
         AuthNavigator.openSignIn(AppNavManager.currentContext.currentContext!);
-
-        // Navigator.of(AppNavManager.currentContext.currentContext!)
-        //     .pushReplacement(
-        //   MaterialPageRoute(builder: (context) => const SignInScreen()),
-        // );
         return null;
       } on FirebaseAuthException catch (e) {
         AlertController.show(
@@ -292,14 +243,6 @@ class AuthBloc {
         );
         if (userCredential.user != null) {
           MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-          // Navigator.of(AppNavManager.currentContext.currentContext!)
-          //     .pushReplacement(
-          //   MaterialPageRoute(
-          //     builder: (context) => UserInfoScreen(
-          //       user: userCredential.user!,
-          //     ),
-          //   ),
-          // );
           return RegisterSuccess(userCredential.user!);
         }
         return const RegisterError('Unknown error occurred');
@@ -354,7 +297,6 @@ class AuthBloc {
       emailTextEditing: emailController,
       passwordTextEditing: passwordController,
       confirmPasswordTextEditing: confirmPasswordController,
-      authStatus$: authStatus$,
       authError$: authError$,
       deleteAccount: deleteAccount,
       isLoading$: isLoading.asBroadcastStream(),
@@ -398,7 +340,6 @@ class AuthBloc {
     required this.logout,
     required this.deleteAccount,
     required this.isLoading$,
-    required this.authStatus$,
     required this.authError$,
     required this.isSubmitLogin$,
     required this.isSubmitRegister$,

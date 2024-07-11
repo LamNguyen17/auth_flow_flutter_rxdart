@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -10,9 +9,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
-import 'package:auth_flow_flutter_rxdart/main.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/auth_navigator.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/main_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/user_info/user_info_screen.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/loading.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 
@@ -101,14 +101,15 @@ class AuthBloc {
       User? user = FirebaseAuth.instance.currentUser;
       print('initState: $user');
       if (user != null) {
-        Navigator.of(NavigationService.navigatorKey.currentContext!)
-            .pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => UserInfoScreen(
-              user: user,
-            ),
-          ),
-        );
+        MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+        // Navigator.of(AppNavManager.currentContext.currentContext!)
+        //     .pushReplacement(
+        //   MaterialPageRoute(
+        //     builder: (context) => UserInfoScreen(
+        //       user: user,
+        //     ),
+        //   ),
+        // );
       }
       return user != null ? Stream.value(user) : const Stream.empty();
     }).listen((event) {});
@@ -126,14 +127,15 @@ class AuthBloc {
         final UserCredential userCredential = await FirebaseAuth.instance
             .signInWithCredential(facebookAuthCredential);
         if (userCredential.user != null) {
-          Navigator.of(NavigationService.navigatorKey.currentContext!)
-              .pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => UserInfoScreen(
-                user: userCredential.user!,
-              ),
-            ),
-          );
+          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+          // Navigator.of(AppNavManager.currentContext.currentContext!)
+          //     .pushReplacement(
+          //   MaterialPageRoute(
+          //     builder: (context) => UserInfoScreen(
+          //       user: userCredential.user!,
+          //     ),
+          //   ),
+          // );
           return SignInSuccess(userCredential.user!);
         }
         return const SignInError('Unknown error occurred');
@@ -162,14 +164,15 @@ class AuthBloc {
         final UserCredential userCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
         if (userCredential.user != null) {
-          Navigator.of(NavigationService.navigatorKey.currentContext!)
-              .pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => UserInfoScreen(
-                user: userCredential.user!,
-              ),
-            ),
-          );
+          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+          // Navigator.of(AppNavManager.currentContext.currentContext!)
+          //     .pushReplacement(
+          //   MaterialPageRoute(
+          //     builder: (context) => UserInfoScreen(
+          //       user: userCredential.user!,
+          //     ),
+          //   ),
+          // );
           return SignInSuccess(userCredential.user!);
         }
         return const SignInError('Unknown error occurred');
@@ -209,14 +212,16 @@ class AuthBloc {
           password: loginCommand.password,
         );
         if (userCredential.user != null) {
-          Navigator.of(NavigationService.navigatorKey.currentContext!)
-              .pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => UserInfoScreen(
-                user: userCredential.user!,
-              ),
-            ),
-          );
+          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+
+          // Navigator.of(AppNavManager.currentContext.currentContext!)
+          //     .pushReplacement(
+          //   MaterialPageRoute(
+          //     builder: (context) => UserInfoScreen(
+          //       user: userCredential.user!,
+          //     ),
+          //   ),
+          // );
           return SignInSuccess(userCredential.user!);
         }
         return const SignInError('Unknown error occurred');
@@ -239,10 +244,12 @@ class AuthBloc {
         final GoogleSignIn googleSignIn = GoogleSignIn();
         await googleSignIn.signOut();
         await FirebaseAuth.instance.signOut();
-        Navigator.of(NavigationService.navigatorKey.currentContext!)
-            .pushReplacement(
-          MaterialPageRoute(builder: (context) => const SignInScreen()),
-        );
+        AuthNavigator.openSignIn(AppNavManager.currentContext.currentContext!);
+
+        // Navigator.of(AppNavManager.currentContext.currentContext!)
+        //     .pushReplacement(
+        //   MaterialPageRoute(builder: (context) => const SignInScreen()),
+        // );
         return null;
       } on FirebaseAuthException catch (e) {
         AlertController.show(
@@ -284,14 +291,15 @@ class AuthBloc {
           password: registerCommand.password,
         );
         if (userCredential.user != null) {
-          Navigator.of(NavigationService.navigatorKey.currentContext!)
-              .pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => UserInfoScreen(
-                user: userCredential.user!,
-              ),
-            ),
-          );
+          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+          // Navigator.of(AppNavManager.currentContext.currentContext!)
+          //     .pushReplacement(
+          //   MaterialPageRoute(
+          //     builder: (context) => UserInfoScreen(
+          //       user: userCredential.user!,
+          //     ),
+          //   ),
+          // );
           return RegisterSuccess(userCredential.user!);
         }
         return const RegisterError('Unknown error occurred');

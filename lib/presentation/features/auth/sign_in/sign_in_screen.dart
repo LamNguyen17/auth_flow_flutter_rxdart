@@ -18,12 +18,6 @@ class _SignInScreenState extends State<SignInScreen> {
   final _authBloc = injector.get<AuthBloc>();
 
   @override
-  void initState() {
-    super.initState();
-    _authBloc.initState.add(null);
-  }
-
-  @override
   void dispose() {
     super.dispose();
     _authBloc.dispose();

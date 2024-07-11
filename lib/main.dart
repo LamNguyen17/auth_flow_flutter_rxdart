@@ -1,4 +1,5 @@
 import 'package:auth_flow_flutter_rxdart/presentation/features/splash/splash_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -6,10 +7,6 @@ import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
 import 'package:flutter_dropdown_alert/dropdown_alert.dart';
-
-class NavigationService {
-  static final navigatorKey = GlobalKey<NavigatorState>();
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,11 +23,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: NavigationService.navigatorKey,
+    return MaterialApp.router(
+      routerConfig: AppNavManager.router,
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -39,7 +39,6 @@ class MyApp extends StatelessWidget {
         children: [child!, const DropdownAlert()],
       ),
       // home: const SignInScreen(),
-      home: const SplashScreen(),
     );
   }
 }

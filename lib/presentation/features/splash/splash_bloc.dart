@@ -1,10 +1,8 @@
 import 'dart:async';
-
-import 'package:auth_flow_flutter_rxdart/main.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/register/register_screen.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/auth_navigator.dart';
 
 class SplashBloc {
   /// Input
@@ -21,24 +19,14 @@ class SplashBloc {
 
     /** region login */
     final StreamSubscription<void> login$ = login.flatMap((_) {
-      Navigator.of(NavigationService.navigatorKey.currentContext!)
-          .push(
-        MaterialPageRoute(
-          builder: (context) => const SignInScreen(),
-        ),
-      );
+      AuthNavigator.openSignIn(AppNavManager.currentContext.currentContext!);
       return const Stream.empty();
     }).listen((event) {});
     /** region login */
 
     /** region register */
     final StreamSubscription<void> register$ = register.flatMap((_) {
-      Navigator.of(NavigationService.navigatorKey.currentContext!)
-          .push(
-        MaterialPageRoute(
-          builder: (context) => const RegisterScreen(),
-        ),
-      );
+      AuthNavigator.openRegister(AppNavManager.currentContext.currentContext!);
       return const Stream.empty();
     }).listen((event) {});
     /** region register */

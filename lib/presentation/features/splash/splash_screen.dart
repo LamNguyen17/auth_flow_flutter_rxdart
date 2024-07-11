@@ -85,25 +85,6 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ],
         ),
-        // child: Column(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   crossAxisAlignment: CrossAxisAlignment.center,
-        //   children: [
-        //     Image.asset(
-        //       AppImages.fbLogo,
-        //       height: 100,
-        //     ),
-        //     const Expanded(
-        //       child: SizedBox(
-        //         height: 20,
-        //         width: 200,
-        //         child: AppTouchable(
-        //           child: Text('123'),
-        //         ),
-        //       ),
-        //     )
-        //   ],
-        // ),
       ),
     );
   }

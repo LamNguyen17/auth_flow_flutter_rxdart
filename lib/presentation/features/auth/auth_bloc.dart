@@ -200,7 +200,7 @@ class AuthBloc {
         final GoogleSignIn googleSignIn = GoogleSignIn();
         await googleSignIn.signOut();
         await FirebaseAuth.instance.signOut();
-        AuthNavigator.openSignIn(AppNavManager.currentContext.currentContext!);
+        AuthNavigator.openReplaceSignIn(AppNavManager.currentContext.currentContext!);
         return null;
       } on FirebaseAuthException catch (e) {
         AlertController.show(

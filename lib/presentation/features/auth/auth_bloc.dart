@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -57,7 +59,7 @@ class AuthBloc {
   final Stream<String?> password$;
   final Stream<String?> confirmPassword$;
 
-  factory AuthBloc() {
+  factory AuthBloc(SignInWithGoogleUseCase signInWithGoogleUseCase) {
     final isLoading = BehaviorSubject<bool>();
     final login = BehaviorSubject<LoginCommand>();
     final signInWithGoogle = BehaviorSubject<void>();
@@ -102,14 +104,20 @@ class AuthBloc {
         .asyncMap<AuthStatus>((_) async {
       try {
         final LoginResult loginResult = await FacebookAuth.instance.login();
-        final OAuthCredential facebookAuthCredential =
-            FacebookAuthProvider.credential(
-                loginResult.accessToken!.tokenString);
-        final UserCredential userCredential = await FirebaseAuth.instance
-            .signInWithCredential(facebookAuthCredential);
-        if (userCredential.user != null) {
-          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-          return SignInSuccess(userCredential.user!);
+        if (loginResult.status == LoginStatus.success) {
+          final OAuthCredential credential = FacebookAuthProvider.credential(
+              loginResult.accessToken!.tokenString);
+          print('userCredential: $credential');
+
+          final userData = await FacebookAuth.instance.getUserData();
+          print('userData: $userData');
+          // final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+          // print('userCredential_1: $userCredential');
+          // if (userCredential.user != null) {
+          //   MainNavigator.openHome(
+          //       AppNavManager.currentContext.currentContext!);
+          //   return SignInSuccess(userCredential.user!);
+          // }
         }
         return const SignInError('Unknown error occurred');
       } on FirebaseAuthException catch (e) {
@@ -124,31 +132,46 @@ class AuthBloc {
 
     /** region SignInWithGoogle + err message */
     final Stream<AuthStatus> signInWithGoogleError$ = signInWithGoogle
-        .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<AuthStatus>((_) async {
-      try {
-        final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-        final GoogleSignInAuthentication? googleAuth =
-            await googleUser?.authentication;
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth?.accessToken,
-          idToken: googleAuth?.idToken,
-        );
-        final UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithCredential(credential);
-        if (userCredential.user != null) {
-          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-          return SignInSuccess(userCredential.user!);
-        }
-        return const SignInError('Unknown error occurred');
-      } on FirebaseAuthException catch (e) {
-        AlertController.show(
-            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-        return SignInError(authErrorMapping[e.code].toString());
-      } on Exception catch (e) {
-        return SignInError(e.toString());
-      }
+        .debounceTime(const Duration(milliseconds: 350))
+        .exhaustMap((_) {
+      return Stream.fromFuture(signInWithGoogleUseCase.execute(NoParams()))
+          .flatMap((either) => either.fold((error) {
+                return Stream.value(SignInError(error.toString()));
+              }, (data) {
+                print('AuthStatus: $data');
+                MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+                return Stream.value(SignInSuccess(data));
+              }))
+          .onErrorReturnWith(
+              (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
+    // final Stream<AuthStatus> signInWithGoogleError$ = signInWithGoogle
+    //     .setLoadingTo(true, onSink: isLoading)
+    //     .asyncMap<AuthStatus>((_) async {
+    //   try {
+    //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    //     final GoogleSignInAuthentication? googleAuth =
+    //         await googleUser?.authentication;
+    //     print('googleAuth: $googleAuth');
+    //     final credential = GoogleAuthProvider.credential(
+    //       accessToken: googleAuth?.accessToken,
+    //       idToken: googleAuth?.idToken,
+    //     );
+    //     final UserCredential userCredential =
+    //         await FirebaseAuth.instance.signInWithCredential(credential);
+    //     if (userCredential.user != null) {
+    //       MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+    //       return SignInSuccess(userCredential.user!);
+    //     }
+    //     return const SignInError('Unknown error occurred');
+    //   } on FirebaseAuthException catch (e) {
+    //     AlertController.show(
+    //         "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+    //     return SignInError(authErrorMapping[e.code].toString());
+    //   } on Exception catch (e) {
+    //     return SignInError(e.toString());
+    //   }
+    // });
     /** endregion SignInWithGoogle + err message */
 
     /** region SignIn + err message */
@@ -200,7 +223,8 @@ class AuthBloc {
         final GoogleSignIn googleSignIn = GoogleSignIn();
         await googleSignIn.signOut();
         await FirebaseAuth.instance.signOut();
-        AuthNavigator.openReplaceSignIn(AppNavManager.currentContext.currentContext!);
+        AuthNavigator.openReplaceSignIn(
+            AppNavManager.currentContext.currentContext!);
         return null;
       } on FirebaseAuthException catch (e) {
         AlertController.show(

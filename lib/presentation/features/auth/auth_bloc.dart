@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -65,6 +66,7 @@ class AuthBloc extends Cubit<AuthStatus> {
     SignInWithGoogleUseCase signInWithGoogleUseCase,
     SignInWithFacebookUseCase signInWithFacebookUseCase,
     SignInUseCase signInUseCase,
+    RegisterUseCase registerUseCase,
     LogoutUseCase logoutUseCase,
   ) {
     final isLoading = BehaviorSubject<bool>();
@@ -146,7 +148,8 @@ class AuthBloc extends Cubit<AuthStatus> {
     final Stream<AuthStatus> loginError$ = login
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap<AuthStatus>((LoginCommand loginCommand) {
-      return Stream.fromFuture(signInUseCase.execute(ReqLoginCommand(loginCommand.email, loginCommand.password)))
+      return Stream.fromFuture(signInUseCase.execute(
+              ReqLoginCommand(loginCommand.email, loginCommand.password)))
           .flatMap((either) => _responseSignIn(either))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));

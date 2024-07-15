@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -12,6 +13,8 @@ abstract class AuthRemoteDataSource {
   Future<CustomerResponse> signInWithFacebook();
 
   Future<CustomerResponse> signIn(ReqLoginCommand command);
+
+  Future<CustomerResponse> register(ReqRegisterCommand command);
 
   Future<void> logout();
 
@@ -95,6 +98,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return CustomerResponse.fromJson(userMap);
     } else {
       throw Exception('Sign in with Facebook failed');
+    }
+  }
+
+  @override
+  Future<CustomerResponse> register(ReqRegisterCommand command) async {
+    final UserCredential userCredential =
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      email: command.email,
+      password: command.password,
+    );
+    User? user = userCredential.user;
+    if (user != null) {
+      CustomerResponse transform = CustomerResponse(
+          displayName: user.displayName,
+          email: user.email,
+          isEmailVerified: user.emailVerified,
+          isAnonymous: user.isAnonymous,
+          phoneNumber: user.phoneNumber,
+          photoURL: user.photoURL);
+      Map<String, dynamic> userMap = transform.toMap();
+      return CustomerResponse.fromJson(userMap);
+    } else {
+      throw Exception('Register with email and password failed');
     }
   }
 

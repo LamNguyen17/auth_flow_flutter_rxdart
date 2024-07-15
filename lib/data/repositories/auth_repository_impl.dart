@@ -1,4 +1,5 @@
 import 'package:auth_flow_flutter_rxdart/common/mapping/auth_error_mapping.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -72,7 +73,6 @@ class AuthRepositoryImpl implements AuthRepository {
     if (isConnected) {
       try {
         var response = await _remoteDataSource.signIn(params);
-        print('signIn: ${response.toEntity()}');
         return Right(response.toEntity());
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
@@ -91,6 +91,23 @@ class AuthRepositoryImpl implements AuthRepository {
       try {
         var response = await _remoteDataSource.logout();
         return Right(response);
+      } on FirebaseAuthException catch (e) {
+        return Left(ServerFailure(authErrorMapping[e.code].toString()));
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Customer>> register(ReqRegisterCommand params) async {
+    var isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        var response = await _remoteDataSource.register(params);
+        return Right(response.toEntity());
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {

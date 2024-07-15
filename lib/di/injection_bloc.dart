@@ -2,6 +2,7 @@ import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecase.dart';
 
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/logout_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
@@ -14,6 +15,7 @@ Future<void> injectionBloc() async {
     injector.get<SignInWithGoogleUseCase>(),
     injector.get<SignInWithFacebookUseCase>(),
     injector.get<SignInUseCase>(),
+    injector.get<RegisterUseCase>(),
     injector.get<LogoutUseCase>(),
   ));
   injector.registerFactory(() => SplashBloc());

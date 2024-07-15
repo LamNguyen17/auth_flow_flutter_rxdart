@@ -41,8 +41,8 @@ class AuthBloc extends Cubit<AuthStatus> {
   final Function1<String, void> password;
   final Function1<String, void> confirmPassword;
   final Function0<void> dispose;
-  final Sink<dynamic> signInWithGoogle;
-  final Sink<dynamic> signInWithFacebook;
+  final Sink<void> signInWithGoogle;
+  final Sink<void> signInWithFacebook;
   final Sink<dynamic> login;
   final Sink<dynamic> register;
   final Sink<void> logout;
@@ -110,13 +110,7 @@ class AuthBloc extends Cubit<AuthStatus> {
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
       return Stream.fromFuture(signInWithFacebookUseCase.execute(NoParams()))
-          .flatMap((either) => either.fold((error) {
-                return Stream.value(SignInError(error.toString()));
-              }, (data) {
-                MainNavigator.openHome(
-                    AppNavManager.currentContext.currentContext!);
-                return Stream.value(SignInSuccess(data));
-              }))
+          .flatMap((either) => _responseSignIn(either))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
@@ -127,14 +121,7 @@ class AuthBloc extends Cubit<AuthStatus> {
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
       return Stream.fromFuture(signInWithGoogleUseCase.execute(NoParams()))
-          .flatMap((either) => either.fold((error) {
-                return Stream.value(SignInError(error.toString()));
-              }, (data) {
-                print('AuthStatus: $data');
-                MainNavigator.openHome(
-                    AppNavManager.currentContext.currentContext!);
-                return Stream.value(SignInSuccess(data));
-              }))
+          .flatMap((either) => _responseSignIn(either))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
@@ -159,17 +146,8 @@ class AuthBloc extends Cubit<AuthStatus> {
     final Stream<AuthStatus> loginError$ = login
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap<AuthStatus>((LoginCommand loginCommand) {
-      return Stream.fromFuture(signInUseCase.execute(
-              ReqLoginCommand(loginCommand.email, loginCommand.password)))
-          .flatMap((either) => either.fold((error) {
-                AlertController.show(
-                    "Thông báo", error.toString(), TypeAlert.error);
-                return Stream.value(SignInError(error.toString()));
-              }, (data) {
-                MainNavigator.openHome(
-                    AppNavManager.currentContext.currentContext!);
-                return Stream.value(SignInSuccess(data));
-              }))
+      return Stream.fromFuture(signInUseCase.execute(ReqLoginCommand(loginCommand.email, loginCommand.password)))
+          .flatMap((either) => _responseSignIn(either))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
@@ -189,25 +167,6 @@ class AuthBloc extends Cubit<AuthStatus> {
                 return Stream.value(const LogoutSuccess(null));
               }));
     });
-    // final Stream<dynamic> logoutError$ = logout
-    //     .setLoadingTo(true, onSink: isLoading)
-    //     .asyncMap<dynamic>((_) async {
-    //   try {
-    //     final GoogleSignIn googleSignIn = GoogleSignIn();
-    //     await googleSignIn.signOut();
-    //     await FirebaseAuth.instance.signOut();
-    //     AuthNavigator.openReplaceSignIn(
-    //         AppNavManager.currentContext.currentContext!);
-    //     return null;
-    //   } on FirebaseAuthException catch (e) {
-    //     AlertController.show(
-    //         "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-    //     return authErrorMapping[e.code].toString();
-    //   } on Exception catch (e) {
-    //     AlertController.show("Thông báo", e.toString(), TypeAlert.error);
-    //     return e;
-    //   }
-    // }).setLoadingTo(false, onSink: isLoading);
     /** endregion Logout */
 
     /** region Register + err message */
@@ -344,4 +303,14 @@ class AuthBloc extends Cubit<AuthStatus> {
     required this.password$,
     required this.confirmPassword$,
   }) : super(const AuthStatusInitial());
+
+  static Stream<AuthStatus> _responseSignIn(dynamic result) {
+    return result.fold((error) {
+      AlertController.show("Thông báo", error.toString(), TypeAlert.error);
+      return SignInError(error.toString());
+    }, (data) {
+      MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+      return SignInSuccess(data);
+    });
+  }
 }

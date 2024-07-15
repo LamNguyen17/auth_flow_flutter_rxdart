@@ -6,6 +6,7 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.da
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SocialSignInView extends StatelessWidget {
   SocialSignInView({super.key});
@@ -22,7 +23,8 @@ class SocialSignInView extends StatelessWidget {
             child: AppTouchable(
                 onPress: () {
                   // signInWithGoogle();
-                  _authBloc.signInWithFacebook.add(null);
+                  // _authBloc.signInWithFacebook.add(null);
+                  context.read<AuthBloc>().signInWithFacebook.add(null);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -47,7 +49,8 @@ class SocialSignInView extends StatelessWidget {
           child: Center(
             child: AppTouchable(
                 onPress: () {
-                  _authBloc.signInWithGoogle.add(null);
+                  // _authBloc.signInWithGoogle.add(null);
+                  context.read<AuthBloc>().signInWithGoogle.add(null);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(

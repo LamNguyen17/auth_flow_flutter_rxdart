@@ -13,7 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await configureDI();
-  // Bloc.observer = const AppBlocObserver();
+  Bloc.observer = const AppBlocObserver();
   runApp(const MyApp());
 }
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:flutter/material.dart';
@@ -59,7 +60,10 @@ class AuthBloc {
   final Stream<String?> password$;
   final Stream<String?> confirmPassword$;
 
-  factory AuthBloc(SignInWithGoogleUseCase signInWithGoogleUseCase) {
+  factory AuthBloc(
+    SignInWithGoogleUseCase signInWithGoogleUseCase,
+    SignInUseCase signInUseCase,
+  ) {
     final isLoading = BehaviorSubject<bool>();
     final login = BehaviorSubject<LoginCommand>();
     final signInWithGoogle = BehaviorSubject<void>();
@@ -139,39 +143,13 @@ class AuthBloc {
                 return Stream.value(SignInError(error.toString()));
               }, (data) {
                 print('AuthStatus: $data');
-                MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+                MainNavigator.openHome(
+                    AppNavManager.currentContext.currentContext!);
                 return Stream.value(SignInSuccess(data));
               }))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
-    // final Stream<AuthStatus> signInWithGoogleError$ = signInWithGoogle
-    //     .setLoadingTo(true, onSink: isLoading)
-    //     .asyncMap<AuthStatus>((_) async {
-    //   try {
-    //     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    //     final GoogleSignInAuthentication? googleAuth =
-    //         await googleUser?.authentication;
-    //     print('googleAuth: $googleAuth');
-    //     final credential = GoogleAuthProvider.credential(
-    //       accessToken: googleAuth?.accessToken,
-    //       idToken: googleAuth?.idToken,
-    //     );
-    //     final UserCredential userCredential =
-    //         await FirebaseAuth.instance.signInWithCredential(credential);
-    //     if (userCredential.user != null) {
-    //       MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-    //       return SignInSuccess(userCredential.user!);
-    //     }
-    //     return const SignInError('Unknown error occurred');
-    //   } on FirebaseAuthException catch (e) {
-    //     AlertController.show(
-    //         "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-    //     return SignInError(authErrorMapping[e.code].toString());
-    //   } on Exception catch (e) {
-    //     return SignInError(e.toString());
-    //   }
-    // });
     /** endregion SignInWithGoogle + err message */
 
     /** region SignIn + err message */
@@ -191,28 +169,22 @@ class AuthBloc {
         .share();
 
     final Stream<AuthStatus> loginError$ = login
-        .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<AuthStatus>((LoginCommand loginCommand) async {
-      try {
-        final UserCredential userCredential =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: loginCommand.email,
-          password: loginCommand.password,
-        );
-        if (userCredential.user != null) {
-          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-          return SignInSuccess(userCredential.user!);
-        }
-        return const SignInError('Unknown error occurred');
-      } on FirebaseAuthException catch (e) {
-        AlertController.show(
-            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-        return SignInError(authErrorMapping[e.code].toString());
-      } on Exception catch (e) {
-        AlertController.show("Thông báo", e.toString(), TypeAlert.error);
-        return SignInError(e.toString());
-      }
-    }).setLoadingTo(false, onSink: isLoading);
+        .debounceTime(const Duration(milliseconds: 300))
+        .exhaustMap<AuthStatus>((LoginCommand loginCommand) {
+      return Stream.fromFuture(signInUseCase.execute(
+              ReqLoginCommand(loginCommand.email, loginCommand.password)))
+          .flatMap((either) => either.fold((error) {
+                AlertController.show(
+                    "Thông báo", error.toString(), TypeAlert.error);
+                return Stream.value(SignInError(error.toString()));
+              }, (data) {
+                MainNavigator.openHome(
+                    AppNavManager.currentContext.currentContext!);
+                return Stream.value(SignInSuccess(data));
+              }))
+          .onErrorReturnWith(
+              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+    });
     /** endregion SignIn */
 
     /** region Logout + err message */

@@ -1,12 +1,11 @@
-import 'package:auth_flow_flutter_rxdart/presentation/features/splash/splash_screen.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropdown_alert/dropdown_alert.dart';
+
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,6 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await configureDI();
+  // Bloc.observer = const AppBlocObserver();
   runApp(const MyApp());
 }
 
@@ -38,7 +38,6 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => Stack(
         children: [child!, const DropdownAlert()],
       ),
-      // home: const SignInScreen(),
     );
   }
 }
@@ -87,5 +86,25 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+
+class AppBlocObserver extends BlocObserver {
+  const AppBlocObserver();
+
+  @override
+  void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
+    super.onChange(bloc, change);
+    if (bloc is Cubit) print(change);
+  }
+
+  @override
+  void onTransition(
+      Bloc<dynamic, dynamic> bloc,
+      Transition<dynamic, dynamic> transition,
+      ) {
+    super.onTransition(bloc, transition);
+    print(transition);
   }
 }

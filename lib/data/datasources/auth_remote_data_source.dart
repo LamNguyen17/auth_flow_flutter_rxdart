@@ -8,6 +8,7 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.da
 abstract class AuthRemoteDataSource {
   Future<CustomerResponse> signInWithGoogle();
   Future<CustomerResponse> signIn(ReqLoginCommand command);
+  Future<void> logout();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -63,6 +64,16 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return CustomerResponse.fromJson(userMap);
     } else {
       throw Exception('Sign in with email and password failed');
+    }
+  }
+
+  @override
+  Future<void> logout() async {
+    try {
+      await _googleSignIn.signOut();
+      await _firebaseAuth.signOut();
+    } catch (e) {
+      throw Exception('Logout failed');
     }
   }
 }

@@ -1,13 +1,15 @@
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'package:auth_flow_flutter_rxdart/domain/entities/auth/customer.dart';
-
 abstract class AuthStatus extends Equatable {
   const AuthStatus();
 
   @override
   List<Object> get props => [];
+}
+
+class AuthStatusInitial extends AuthStatus {
+  const AuthStatusInitial();
 }
 
 class AuthStatusLoggedIn extends AuthStatus {
@@ -16,6 +18,23 @@ class AuthStatusLoggedIn extends AuthStatus {
 
 class AuthStatusLoggedOut extends AuthStatus {
   const AuthStatusLoggedOut();
+}
+
+class LogoutSuccess extends AuthStatus {
+  final dynamic data;
+  const LogoutSuccess(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class LogoutError extends AuthStatus {
+  final String message;
+
+  const LogoutError(this.message);
+
+  @override
+  List<Object> get props => [message];
 }
 
 class SignInSuccess extends AuthStatus {

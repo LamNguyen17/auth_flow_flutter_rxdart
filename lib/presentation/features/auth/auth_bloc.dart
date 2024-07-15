@@ -1,8 +1,5 @@
 import 'dart:async';
 
-import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
-import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
-import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,8 +13,12 @@ import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manage
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/auth_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/main_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
-import 'package:auth_flow_flutter_rxdart/common/extensions/loading.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/loading.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/logout_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 
 const Map<String, String> authErrorMapping = {
   'user-not-found': 'The given user was not found on the server!',
@@ -63,6 +64,7 @@ class AuthBloc {
   factory AuthBloc(
     SignInWithGoogleUseCase signInWithGoogleUseCase,
     SignInUseCase signInUseCase,
+    LogoutUseCase logoutUseCase,
   ) {
     final isLoading = BehaviorSubject<bool>();
     final login = BehaviorSubject<LoginCommand>();
@@ -189,24 +191,38 @@ class AuthBloc {
 
     /** region Logout + err message */
     final Stream<dynamic> logoutError$ = logout
-        .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<dynamic>((_) async {
-      try {
-        final GoogleSignIn googleSignIn = GoogleSignIn();
-        await googleSignIn.signOut();
-        await FirebaseAuth.instance.signOut();
-        AuthNavigator.openReplaceSignIn(
-            AppNavManager.currentContext.currentContext!);
-        return null;
-      } on FirebaseAuthException catch (e) {
+        .debounceTime(const Duration(milliseconds: 300))
+        .exhaustMap((_) {
+      return Stream.fromFuture(logoutUseCase.execute(NoParams()))
+          .flatMap((either) => either.fold((error) {
         AlertController.show(
-            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-        return authErrorMapping[e.code].toString();
-      } on Exception catch (e) {
-        AlertController.show("Thông báo", e.toString(), TypeAlert.error);
-        return e;
-      }
-    }).setLoadingTo(false, onSink: isLoading);
+            "Thông báo", error.toString(), TypeAlert.error);
+        return Stream.value(LogoutError(error.toString()));
+      }, (data) {
+            AuthNavigator.openReplaceSignIn(
+                AppNavManager.currentContext.currentContext!);
+        return Stream.value(const LogoutSuccess(null));
+      }));
+    });
+    // final Stream<dynamic> logoutError$ = logout
+    //     .setLoadingTo(true, onSink: isLoading)
+    //     .asyncMap<dynamic>((_) async {
+    //   try {
+    //     final GoogleSignIn googleSignIn = GoogleSignIn();
+    //     await googleSignIn.signOut();
+    //     await FirebaseAuth.instance.signOut();
+    //     AuthNavigator.openReplaceSignIn(
+    //         AppNavManager.currentContext.currentContext!);
+    //     return null;
+    //   } on FirebaseAuthException catch (e) {
+    //     AlertController.show(
+    //         "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
+    //     return authErrorMapping[e.code].toString();
+    //   } on Exception catch (e) {
+    //     AlertController.show("Thông báo", e.toString(), TypeAlert.error);
+    //     return e;
+    //   }
+    // }).setLoadingTo(false, onSink: isLoading);
     /** endregion Logout */
 
     /** region Register + err message */

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/social_sign_in/social_sign_in_view.dart';
@@ -26,25 +27,25 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: ClearFocus(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    AppImages.fbLogo,
-                    height: 100,
-                  ),
-                  renderInputWidget(),
-                  SocialSignInView(),
-                ]),
+          resizeToAvoidBottomInset: false,
+          body: ClearFocus(
+            child: SafeArea(
+              child: Center(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        AppImages.fbLogo,
+                        height: 100,
+                      ),
+                      renderInputWidget(),
+                      SocialSignInView(),
+                    ]),
+              ),
+            ),
           ),
-        ),
-      ),
-    );
+        );
   }
 
   Widget renderInputWidget() {
@@ -194,9 +195,12 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               onPressed: snapshotSubmit.data == true
                   ? () {
-                      _authBloc.login.add(LoginCommand(
+                      context.read<AuthBloc>().login.add(LoginCommand(
                           email: _authBloc.emailTextEditing.text,
                           password: _authBloc.passwordTextEditing.text));
+                      // _authBloc.login.add(LoginCommand(
+                      //     email: _authBloc.emailTextEditing.text,
+                      //     password: _authBloc.passwordTextEditing.text));
                     }
                   : null,
               child: StreamBuilder(

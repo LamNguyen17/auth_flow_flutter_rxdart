@@ -13,8 +13,10 @@ class ProfileLoading extends ProfileState {
 }
 
 class ProfileSuccess extends ProfileState {
-  final User data;
+  final dynamic data;
+
   const ProfileSuccess({required this.data});
+
   @override
   List<Object> get props => [data];
 }

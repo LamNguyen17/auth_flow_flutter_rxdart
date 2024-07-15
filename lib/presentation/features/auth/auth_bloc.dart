@@ -3,22 +3,22 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
-import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/auth_navigator.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/main_navigator.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/loading.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/logout_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/auth_navigator.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/main_navigator.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 
 const Map<String, String> authErrorMapping = {
   'user-not-found': 'The given user was not found on the server!',
@@ -35,7 +35,7 @@ const Map<String, String> authErrorMapping = {
       'The supplied auth credential is incorrect, malformed or has expired.',
 };
 
-class AuthBloc {
+class AuthBloc extends Cubit<AuthStatus> {
   /// Input
   final Function1<String, void> email;
   final Function1<String, void> password;
@@ -63,6 +63,7 @@ class AuthBloc {
 
   factory AuthBloc(
     SignInWithGoogleUseCase signInWithGoogleUseCase,
+    SignInWithFacebookUseCase signInWithFacebookUseCase,
     SignInUseCase signInUseCase,
     LogoutUseCase logoutUseCase,
   ) {
@@ -106,33 +107,18 @@ class AuthBloc {
 
     /** region SignInWithFacebook + err message*/
     final Stream<AuthStatus> signInWithFacebookError$ = signInWithFacebook
-        .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<AuthStatus>((_) async {
-      try {
-        final LoginResult loginResult = await FacebookAuth.instance.login();
-        if (loginResult.status == LoginStatus.success) {
-          final OAuthCredential credential = FacebookAuthProvider.credential(
-              loginResult.accessToken!.tokenString);
-          print('userCredential: $credential');
-
-          final userData = await FacebookAuth.instance.getUserData();
-          print('userData: $userData');
-          // final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-          // print('userCredential_1: $userCredential');
-          // if (userCredential.user != null) {
-          //   MainNavigator.openHome(
-          //       AppNavManager.currentContext.currentContext!);
-          //   return SignInSuccess(userCredential.user!);
-          // }
-        }
-        return const SignInError('Unknown error occurred');
-      } on FirebaseAuthException catch (e) {
-        AlertController.show(
-            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-        return SignInError(authErrorMapping[e.code].toString());
-      } on Exception catch (e) {
-        return SignInError(e.toString());
-      }
+        .debounceTime(const Duration(milliseconds: 350))
+        .exhaustMap((_) {
+      return Stream.fromFuture(signInWithFacebookUseCase.execute(NoParams()))
+          .flatMap((either) => either.fold((error) {
+                return Stream.value(SignInError(error.toString()));
+              }, (data) {
+                MainNavigator.openHome(
+                    AppNavManager.currentContext.currentContext!);
+                return Stream.value(SignInSuccess(data));
+              }))
+          .onErrorReturnWith(
+              (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
     /** endregion SignInWithFacebook + err message*/
 
@@ -190,19 +176,18 @@ class AuthBloc {
     /** endregion SignIn */
 
     /** region Logout + err message */
-    final Stream<dynamic> logoutError$ = logout
-        .debounceTime(const Duration(milliseconds: 300))
-        .exhaustMap((_) {
+    final Stream<dynamic> logoutError$ =
+        logout.debounceTime(const Duration(milliseconds: 300)).exhaustMap((_) {
       return Stream.fromFuture(logoutUseCase.execute(NoParams()))
           .flatMap((either) => either.fold((error) {
-        AlertController.show(
-            "Thông báo", error.toString(), TypeAlert.error);
-        return Stream.value(LogoutError(error.toString()));
-      }, (data) {
-            AuthNavigator.openReplaceSignIn(
-                AppNavManager.currentContext.currentContext!);
-        return Stream.value(const LogoutSuccess(null));
-      }));
+                AlertController.show(
+                    "Thông báo", error.toString(), TypeAlert.error);
+                return Stream.value(LogoutError(error.toString()));
+              }, (data) {
+                AuthNavigator.openReplaceSignIn(
+                    AppNavManager.currentContext.currentContext!);
+                return Stream.value(const LogoutSuccess(null));
+              }));
     });
     // final Stream<dynamic> logoutError$ = logout
     //     .setLoadingTo(true, onSink: isLoading)
@@ -358,5 +343,5 @@ class AuthBloc {
     required this.email$,
     required this.password$,
     required this.confirmPassword$,
-  });
+  }) : super(const AuthStatusInitial());
 }

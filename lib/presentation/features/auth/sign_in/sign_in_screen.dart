@@ -26,7 +26,11 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(create: (_) => _authBloc),
+        ],
+        child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: ClearFocus(
             child: SafeArea(
@@ -45,7 +49,7 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
             ),
           ),
-        );
+        ));
   }
 
   Widget renderInputWidget() {

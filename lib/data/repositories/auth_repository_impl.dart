@@ -16,12 +16,45 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl(this._remoteDataSource, this._networkService);
 
   @override
+  Future<Either<Failure, Customer>> getProfile() async {
+    var isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        var response = await _remoteDataSource.getProfile();
+        return Right(response.toEntity());
+      } on FirebaseAuthException catch (e) {
+        return Left(ServerFailure(authErrorMapping[e.code].toString()));
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
+
+  @override
   Future<Either<Failure, Customer>> signInWithGoogle() async {
     var isConnected = await _networkService.isConnected;
     if (isConnected) {
       try {
         var response = await _remoteDataSource.signInWithGoogle();
-        print('signInWithGoogle: ${response.toEntity()}');
+        return Right(response.toEntity());
+      } on FirebaseAuthException catch (e) {
+        return Left(ServerFailure(authErrorMapping[e.code].toString()));
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Customer>> signInWithFacebook() async {
+    var isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        var response = await _remoteDataSource.signInWithFacebook();
         return Right(response.toEntity());
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));

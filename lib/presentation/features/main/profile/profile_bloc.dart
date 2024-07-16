@@ -1,8 +1,7 @@
-import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:dartz/dartz.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 

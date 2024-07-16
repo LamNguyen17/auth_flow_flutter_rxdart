@@ -1,17 +1,16 @@
 import 'dart:async';
-
-import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
-import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:flutter/material.dart';
+
 import 'package:dartz/dartz.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
-import 'package:rxdart/rxdart.dart';
 
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
-import 'package:auth_flow_flutter_rxdart/common/extensions/loading.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/logout_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
@@ -21,21 +20,6 @@ import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/auth
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/main_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
-
-const Map<String, String> authErrorMapping = {
-  'user-not-found': 'The given user was not found on the server!',
-  'weak-password':
-      'Please choose a stronger password consisting of more characters!',
-  'invalid-email': 'Please double check your email and try again!',
-  'operation-not-allowed':
-      'You cannot register using this method at this moment',
-  'email-already-in-use': 'Please choose another email to register with!',
-  'requires-recent-login':
-      'You need to log out and log back in again in order to perform this operation',
-  'no-current-user': 'No current user with this information was found',
-  'invalid-credential':
-      'The supplied auth credential is incorrect, malformed or has expired.',
-};
 
 class AuthBloc extends Cubit<AuthStatus> {
   /// Input
@@ -113,8 +97,11 @@ class AuthBloc extends Cubit<AuthStatus> {
     final Stream<AuthStatus> signInWithFacebookError$ = signInWithFacebook
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
+      isLoading.add(true);
       return Stream.fromFuture(signInWithFacebookUseCase.execute(NoParams()))
           .flatMap((either) => _responseSignIn(either))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
@@ -126,6 +113,8 @@ class AuthBloc extends Cubit<AuthStatus> {
         .exhaustMap((_) {
       return Stream.fromFuture(signInWithGoogleUseCase.execute(NoParams()))
           .flatMap((either) => _responseSignIn(either))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
@@ -153,6 +142,8 @@ class AuthBloc extends Cubit<AuthStatus> {
       return Stream.fromFuture(signInUseCase.execute(
               ReqLoginCommand(loginCommand.email, loginCommand.password)))
           .flatMap((either) => _responseSignIn(either))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
@@ -170,7 +161,9 @@ class AuthBloc extends Cubit<AuthStatus> {
                 AuthNavigator.openReplaceSignIn(
                     AppNavManager.currentContext.currentContext!);
                 return Stream.value(const LogoutSuccess(null));
-              }));
+              }))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false));
     });
     /** endregion Logout */
 
@@ -196,9 +189,11 @@ class AuthBloc extends Cubit<AuthStatus> {
     final Stream<AuthStatus> registerError$ = register
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap<AuthStatus>((RegisterCommand registerCommand) {
-      return Stream.fromFuture(registerUseCase.execute(
-          ReqRegisterCommand(registerCommand.email, registerCommand.password)))
+      return Stream.fromFuture(registerUseCase.execute(ReqRegisterCommand(
+              registerCommand.email, registerCommand.password)))
           .flatMap((either) => _responseRegister(either))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false))
           .onErrorReturnWith(
               (error, _) => const SignInError("Đã có lỗi xảy ra"));
     });
@@ -217,7 +212,11 @@ class AuthBloc extends Cubit<AuthStatus> {
                 AuthNavigator.openReplaceSignIn(
                     AppNavManager.currentContext.currentContext!);
                 return Stream.value(const LogoutSuccess(null));
-              }));
+              }))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false))
+          .onErrorReturnWith(
+              (error, _) => const LogoutError("Đã có lỗi xảy ra"));
     });
     /** endregion Delete Account */
 
@@ -266,6 +265,7 @@ class AuthBloc extends Cubit<AuthStatus> {
         signInWithGoogle.close();
         signInWithFacebook.close();
         initState.close();
+        isLoading.close();
       },
     );
   }
@@ -297,20 +297,20 @@ class AuthBloc extends Cubit<AuthStatus> {
   static Stream<AuthStatus> _responseSignIn(dynamic result) {
     return result.fold((error) {
       AlertController.show("Thông báo", error.toString(), TypeAlert.error);
-      return SignInError(error.toString());
+      return Stream.value(SignInError(error.toString()));
     }, (data) {
       MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-      return SignInSuccess(data);
+      return Stream.value(SignInSuccess(data));
     });
   }
 
   static Stream<AuthStatus> _responseRegister(dynamic result) {
     return result.fold((error) {
       AlertController.show("Thông báo", error.toString(), TypeAlert.error);
-      return RegisterError(error.toString());
+      return Stream.value(RegisterError(error.toString()));
     }, (data) {
       MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-      return RegisterSuccess(data);
+      return Stream.value(RegisterSuccess(data));
     });
   }
 }

@@ -1,4 +1,5 @@
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecase.dart';
 
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/logout_usecase.dart';
@@ -17,6 +18,7 @@ Future<void> injectionBloc() async {
     injector.get<SignInUseCase>(),
     injector.get<RegisterUseCase>(),
     injector.get<LogoutUseCase>(),
+    injector.get<DeleteAccountUseCase>(),
   ));
   injector.registerFactory(() => SplashBloc());
   injector.registerFactory(() => ProfileBloc(

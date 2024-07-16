@@ -19,6 +19,8 @@ abstract class AuthRemoteDataSource {
   Future<void> logout();
 
   Future<CustomerResponse> getProfile();
+
+  Future<void> deleteAccount();
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -154,6 +156,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await _firebaseAuth.signOut();
     } catch (e) {
       throw Exception('Logout failed');
+    }
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await FirebaseAuth.instance.currentUser?.delete();
+    } catch (e) {
+      throw Exception('Delete Account failed');
     }
   }
 }

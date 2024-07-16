@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:dartz/dartz.dart';
@@ -68,6 +69,7 @@ class AuthBloc extends Cubit<AuthStatus> {
     SignInUseCase signInUseCase,
     RegisterUseCase registerUseCase,
     LogoutUseCase logoutUseCase,
+    DeleteAccountUseCase deleteAccountUseCase,
   ) {
     final isLoading = BehaviorSubject<bool>();
     final login = BehaviorSubject<LoginCommand>();
@@ -191,47 +193,32 @@ class AuthBloc extends Cubit<AuthStatus> {
         .withLatestFrom(isValidSubmitRegister$, (_, bool isValid) => isValid)
         .share();
 
-    final Stream<dynamic> registerError$ = register
-        .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<dynamic>((RegisterCommand registerCommand) async {
-      try {
-        final UserCredential userCredential =
-            await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: registerCommand.email,
-          password: registerCommand.password,
-        );
-        if (userCredential.user != null) {
-          MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
-          return RegisterSuccess(userCredential.user!);
-        }
-        return const RegisterError('Unknown error occurred');
-      } on FirebaseAuthException catch (e) {
-        AlertController.show(
-            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-        return RegisterError(authErrorMapping[e.code].toString());
-      } on Exception catch (e) {
-        AlertController.show("Thông báo", e.toString(), TypeAlert.error);
-        return RegisterError(e.toString());
-      }
-    }).setLoadingTo(false, onSink: isLoading);
+    final Stream<AuthStatus> registerError$ = register
+        .debounceTime(const Duration(milliseconds: 300))
+        .exhaustMap<AuthStatus>((RegisterCommand registerCommand) {
+      return Stream.fromFuture(registerUseCase.execute(
+          ReqRegisterCommand(registerCommand.email, registerCommand.password)))
+          .flatMap((either) => _responseRegister(either))
+          .onErrorReturnWith(
+              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+    });
     /** endregion Register */
 
     /** region Delete Account + err message */
     final Stream<dynamic> deleteAccountError$ = deleteAccount
-        .setLoadingTo(true, onSink: isLoading)
-        .asyncMap<dynamic>((_) async {
-      try {
-        await FirebaseAuth.instance.currentUser?.delete();
-        return null;
-      } on FirebaseAuthException catch (e) {
-        AlertController.show(
-            "Thông báo", authErrorMapping[e.code].toString(), TypeAlert.error);
-        return authErrorMapping[e.code].toString();
-      } on Exception catch (e) {
-        AlertController.show("Thông báo", e.toString(), TypeAlert.error);
-        return e;
-      }
-    }).setLoadingTo(false, onSink: isLoading);
+        .debounceTime(const Duration(milliseconds: 300))
+        .exhaustMap((_) {
+      return Stream.fromFuture(deleteAccountUseCase.execute(NoParams()))
+          .flatMap((either) => either.fold((error) {
+                AlertController.show(
+                    "Thông báo", error.toString(), TypeAlert.error);
+                return Stream.value(LogoutError(error.toString()));
+              }, (data) {
+                AuthNavigator.openReplaceSignIn(
+                    AppNavManager.currentContext.currentContext!);
+                return Stream.value(const LogoutSuccess(null));
+              }));
+    });
     /** endregion Delete Account */
 
     final StreamSubscription<dynamic> authError$ = Rx.merge([
@@ -314,6 +301,16 @@ class AuthBloc extends Cubit<AuthStatus> {
     }, (data) {
       MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
       return SignInSuccess(data);
+    });
+  }
+
+  static Stream<AuthStatus> _responseRegister(dynamic result) {
+    return result.fold((error) {
+      AlertController.show("Thông báo", error.toString(), TypeAlert.error);
+      return RegisterError(error.toString());
+    }, (data) {
+      MainNavigator.openHome(AppNavManager.currentContext.currentContext!);
+      return RegisterSuccess(data);
     });
   }
 }

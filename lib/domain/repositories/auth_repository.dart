@@ -12,4 +12,5 @@ abstract class AuthRepository {
   Future<Either<Failure, Customer>> register(ReqRegisterCommand params);
   Future<Either<Failure, void>> logout();
   Future<Either<Failure, Customer>> getProfile();
+  Future<Either<Failure, void>> deleteAccount();
 }

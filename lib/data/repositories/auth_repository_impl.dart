@@ -117,4 +117,21 @@ class AuthRepositoryImpl implements AuthRepository {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
     }
   }
+
+  @override
+  Future<Either<Failure, dynamic>> deleteAccount() async {
+    var isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        var response = await _remoteDataSource.deleteAccount();
+        return const Right(null);
+      } on FirebaseAuthException catch (e) {
+        return Left(ServerFailure(authErrorMapping[e.code].toString()));
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/common/blocs/bloc_provider.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -5,13 +6,18 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 
-class ProfileBloc {
+class ProfileBloc implements BlocBase {
   /// Input
   final Sink<void> initState;
-  final Function0<void> dispose;
+  final Function0<void> close;
 
   /// Output
   final Stream<ProfileState?> authStatus$;
+
+  @override
+  void dispose() {
+    close();
+  }
 
   factory ProfileBloc(GetProfileUseCase getProfileUseCase) {
     final initState = BehaviorSubject<void>();
@@ -32,7 +38,7 @@ class ProfileBloc {
     return ProfileBloc._(
       initState: initState,
       authStatus$: authStatus$,
-      dispose: () {
+      close: () {
         initState.close();
       },
     );
@@ -40,7 +46,7 @@ class ProfileBloc {
 
   ProfileBloc._({
     required this.initState,
-    required this.dispose,
+    required this.close,
     required this.authStatus$,
   });
 }

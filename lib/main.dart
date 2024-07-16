@@ -1,8 +1,9 @@
+import 'package:auth_flow_flutter_rxdart/common/blocs/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropdown_alert/dropdown_alert.dart';
 
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
@@ -13,8 +14,13 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await configureDI();
-  Bloc.observer = const AppBlocObserver();
-  runApp(const MyApp());
+  // Bloc.observer = const AppBlocObserver();
+  // runApp(const MyApp());
+
+  runApp(BlocProvider<ProfileBloc>(
+    bloc: injector.get<ProfileBloc>(),
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,6 +50,7 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
+
   final String title;
 
   @override
@@ -89,22 +96,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
-class AppBlocObserver extends BlocObserver {
-  const AppBlocObserver();
-
-  @override
-  void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
-    super.onChange(bloc, change);
-    if (bloc is Cubit) print(change);
-  }
-
-  @override
-  void onTransition(
-      Bloc<dynamic, dynamic> bloc,
-      Transition<dynamic, dynamic> transition,
-      ) {
-    super.onTransition(bloc, transition);
-    print(transition);
-  }
-}
+// class AppBlocObserver extends BlocObserver {
+//   const AppBlocObserver();
+//
+//   @override
+//   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
+//     super.onChange(bloc, change);
+//     if (bloc is Cubit) print(change);
+//   }
+//
+//   @override
+//   void onTransition(
+//       Bloc<dynamic, dynamic> bloc,
+//       Transition<dynamic, dynamic> transition,
+//       ) {
+//     super.onTransition(bloc, transition);
+//     print(transition);
+//   }
+// }

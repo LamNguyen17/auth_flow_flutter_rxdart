@@ -1,3 +1,5 @@
+import 'package:auth_flow_flutter_rxdart/common/blocs/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -5,26 +7,22 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.da
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_bloc.dart';
 
-class ProfileScreen extends StatefulWidget {
+// class ProfileScreen extends StatefulWidget {
+//   const ProfileScreen({super.key});
+//
+//   @override
+//   _ProfileScreenState createState() => _ProfileScreenState();
+// }
+
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  final _profileBloc = injector.get<ProfileBloc>();
-  final _authBloc = injector.get<AuthBloc>();
-
-  @override
-  void initState() {
-    super.initState();
-    print('initState_ProfileScreen:');
-    _profileBloc.initState.add(null);
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final authBloc = injector.get<AuthBloc>();
+    final profileBloc = BlocProvider.of<ProfileBloc>(
+        AppNavManager.currentContext.currentContext!)!;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -38,36 +36,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
             bottom: 20.0,
           ),
           child: StreamBuilder<ProfileState?>(
-            stream: _profileBloc.authStatus$,
+            stream: profileBloc.authStatus$,
             builder: (context, snapshot) {
+              print('StreamBuilder: ${snapshot.hasData} - ${snapshot.data}');
               if (snapshot.hasData) {
                 final state = snapshot.data;
                 if (state is ProfileSuccess) {
                   final user = state.data;
-                  return Center(child:Column(
+                  return Center(
+                      child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       user.photoURL != null
                           ? ClipOval(
-                        child: Material(
-                          child: Image.network(
-                            user.photoURL!,
-                            fit: BoxFit.fitHeight,
-                          ),
-                        ),
-                      )
+                              child: Material(
+                                child: Image.network(
+                                  user.photoURL!,
+                                  fit: BoxFit.fitHeight,
+                                ),
+                              ),
+                            )
                           : const ClipOval(
-                        child: Material(
-                          child: Padding(
-                            padding: EdgeInsets.all(16.0),
-                            child: Icon(
-                              Icons.person,
-                              size: 60,
+                              child: Material(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Icon(
+                                    Icons.person,
+                                    size: 60,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
                       const SizedBox(height: 16.0),
                       const Text(
                         'Hello',
@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 16.0),
                       ElevatedButton(
                         onPressed: () {
-                          _authBloc.logout.add(null);
+                          authBloc.logout.add(null);
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all(

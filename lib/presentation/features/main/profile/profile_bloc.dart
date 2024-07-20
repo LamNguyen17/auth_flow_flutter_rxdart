@@ -34,7 +34,6 @@ class ProfileBloc extends Cubit<ProfileState> {
   }
 
   void initialize() {
-    print('initialize');
     _profileSubscription = getUserProfile().listen((event) {
       emit(event);
     });

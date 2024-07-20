@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,6 +13,15 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _profileBloc = injector.get<ProfileBloc>();
+
+  @override
+  void dispose() {
+    // Dispose of the ProfileBloc here
+    _profileBloc.close();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,20 +29,22 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         title: const Text('Home Screen'),
       ),
-      body: BlocBuilder<ProfileBloc, ProfileState>(builder: (context, state) {
-        if (state is ProfileSuccess) {
-          final user = state.data;
-          return Text(
-            user.displayName ?? '',
-            style: const TextStyle(
-              fontSize: 26,
-            ),
-          );
-        } else if (state is ProfileError) {
-          return Text('Profile Error: ${state.message}');
-        }
-        return const SizedBox.shrink();
-      }),
+      body: BlocBuilder<ProfileBloc, ProfileState>(
+        builder: (context, state) {
+          if (state is ProfileSuccess) {
+            final user = state.data;
+            return Text(
+              user.displayName ?? '',
+              style: const TextStyle(
+                fontSize: 26,
+              ),
+            );
+          } else if (state is ProfileError) {
+            return Text('Profile Error: ${state.message}');
+          }
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 }

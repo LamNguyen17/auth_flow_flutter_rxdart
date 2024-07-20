@@ -252,6 +252,7 @@ class AuthBloc extends Cubit<AuthStatus> {
       confirmPassword$:
           confirmPassword.stream.transform(confirmPasswordValid$).skip(1),
       dispose: () {
+        initState$.cancel();
         authError$.cancel();
         email.close();
         password.close();

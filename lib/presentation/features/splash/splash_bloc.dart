@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
@@ -8,6 +9,7 @@ class SplashBloc {
   /// Input
   final Sink<void> onSignIn;
   final Sink<void> onRegister;
+  final Function0<void> dispose;
 
   /// Output
   final StreamSubscription<void> login$;
@@ -36,6 +38,12 @@ class SplashBloc {
       onRegister: register,
       login$: login$,
       register$: register$,
+      dispose: () {
+        login.close();
+        register.close();
+        login$.cancel();
+        register$.cancel();
+      },
     );
   }
 
@@ -44,5 +52,6 @@ class SplashBloc {
     required this.onRegister,
     required this.login$,
     required this.register$,
+    required this.dispose,
   });
 }

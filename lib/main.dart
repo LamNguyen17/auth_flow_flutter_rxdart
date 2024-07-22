@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/common/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -14,6 +15,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await configureDI();
+  await NotificationService().init();
   Bloc.observer = const AppBlocObserver();
   runApp(const MyApp());
 }

@@ -199,12 +199,9 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               onPressed: snapshotSubmit.data == true
                   ? () {
-                      context.read<AuthBloc>().login.add(LoginCommand(
+                      _authBloc.login.add(LoginCommand(
                           email: _authBloc.emailTextEditing.text,
                           password: _authBloc.passwordTextEditing.text));
-                      // _authBloc.login.add(LoginCommand(
-                      //     email: _authBloc.emailTextEditing.text,
-                      //     password: _authBloc.passwordTextEditing.text));
                     }
                   : null,
               child: StreamBuilder(

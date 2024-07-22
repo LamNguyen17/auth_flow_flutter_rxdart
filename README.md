@@ -1,7 +1,7 @@
 # auth_flow_flutter_rxdart
 
-A new Flutter project.
-
+❄️ Functionalities: `Signin with Email`, `Signin with Social(facbook, email)`, `Register`, `Get Profile`, `Signout`, `Delete Account`.
+❄️ TODO Notifications.
 ## Getting Started
 
 This project is a starting point for a Flutter application.

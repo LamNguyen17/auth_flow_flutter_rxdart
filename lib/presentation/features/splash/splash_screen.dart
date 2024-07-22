@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/common/services/notification_service.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 
@@ -57,7 +58,8 @@ class _SplashScreenState extends State<SplashScreen> {
                         child: const Center(child: Text('Đăng nhập')),
                       ),
                       onPress: () {
-                        _splashBloc.onSignIn.add(null);
+                        // _splashBloc.onSignIn.add(null);
+                        NotificationService().showNotification('Hello', 'Hello world');
                       },
                     ),
                     const SizedBox(height: 20),

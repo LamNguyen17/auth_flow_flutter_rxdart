@@ -6,6 +6,7 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecas
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/logout_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
 
@@ -13,6 +14,8 @@ Future<void> injectionDomain() async {
   /** Authen*/
   injector.registerLazySingleton(
           () => SignInWithGoogleUseCase(injector.get<AuthRepositoryImpl>()));
+  injector.registerLazySingleton(
+          () => SignInWithAppleUseCase(injector.get<AuthRepositoryImpl>()));
   injector.registerLazySingleton(
           () => SignInUseCase(injector.get<AuthRepositoryImpl>()));
   injector.registerLazySingleton(

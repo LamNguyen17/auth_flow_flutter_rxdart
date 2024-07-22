@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dartz/dartz.dart';
@@ -29,6 +30,7 @@ class AuthBloc extends Cubit<AuthStatus> {
   final Function0<void> dispose;
   final Sink<void> signInWithGoogle;
   final Sink<void> signInWithFacebook;
+  final Sink<void> signInWithApple;
   final Sink<dynamic> login;
   final Sink<dynamic> register;
   final Sink<void> logout;
@@ -50,6 +52,7 @@ class AuthBloc extends Cubit<AuthStatus> {
   factory AuthBloc(
     SignInWithGoogleUseCase signInWithGoogleUseCase,
     SignInWithFacebookUseCase signInWithFacebookUseCase,
+    SignInWithAppleUseCase signInWithAppleUseCase,
     SignInUseCase signInUseCase,
     RegisterUseCase registerUseCase,
     LogoutUseCase logoutUseCase,
@@ -92,6 +95,20 @@ class AuthBloc extends Cubit<AuthStatus> {
       return user != null ? Stream.value(user) : const Stream.empty();
     }).listen((event) {});
     /** region initState */
+
+    /** region SignInWithApple + err message*/
+    final Stream<AuthStatus> signInWithAppleError$ = signInWithApple
+        .debounceTime(const Duration(milliseconds: 350))
+        .exhaustMap((_) {
+      isLoading.add(true);
+      return Stream.fromFuture(signInWithAppleUseCase.execute(NoParams()))
+          .flatMap((either) => _responseSignIn(either))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false))
+          .onErrorReturnWith(
+              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+    });
+    /** endregion SignInWithApple + err message*/
 
     /** region SignInWithFacebook + err message*/
     final Stream<AuthStatus> signInWithFacebookError$ = signInWithFacebook
@@ -227,6 +244,7 @@ class AuthBloc extends Cubit<AuthStatus> {
       deleteAccountError$,
       signInWithGoogleError$,
       signInWithFacebookError$,
+      signInWithAppleError$,
     ]).listen((event) {});
 
     return AuthBloc._(
@@ -235,6 +253,7 @@ class AuthBloc extends Cubit<AuthStatus> {
       confirmPassword: confirmPassword.add,
       signInWithGoogle: signInWithGoogle,
       signInWithFacebook: signInWithFacebook,
+      signInWithApple: signInWithApple,
       login: login,
       register: register,
       logout: logout,
@@ -266,6 +285,7 @@ class AuthBloc extends Cubit<AuthStatus> {
         confirmPasswordController.dispose();
         signInWithGoogle.close();
         signInWithFacebook.close();
+        signInWithApple.close();
         initState.close();
         isLoading.close();
       },
@@ -283,6 +303,7 @@ class AuthBloc extends Cubit<AuthStatus> {
     required this.dispose,
     required this.signInWithGoogle,
     required this.signInWithFacebook,
+    required this.signInWithApple,
     required this.login,
     required this.register,
     required this.logout,

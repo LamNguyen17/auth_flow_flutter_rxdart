@@ -1,8 +1,29 @@
+import 'package:dartz/dartz.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {
+  /// Input
+  final Function0<void> dispose;
+  final Sink<NotificationResponse> notificationS;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  NotificationService._({
+    required this.dispose,
+    required this.notificationS,
+  });
+
+  factory NotificationService() {
+    final notification = BehaviorSubject<NotificationResponse>();
+
+    return NotificationService._(
+      notificationS: notification,
+      dispose: () {
+        notification.close();
+      },
+    );
+  }
 
   Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -20,41 +41,19 @@ class NotificationService {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) {
-      switch (notificationResponse.notificationResponseType) {
-        case NotificationResponseType.selectedNotification:
-          break;
-        case NotificationResponseType.selectedNotificationAction:
-          break;
-      }
+      notificationS.add(notificationResponse);
     });
   }
 
   Future<void> showNotification(String? title, String? body) async {
-    const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('channel_id', 'Channel Name',
-            channelDescription: 'Channel Description',
-            importance: Importance.max,
-            priority: Priority.high,
-            ticker: 'ticker');
-
-    int notificationId = 1;
-    const NotificationDetails notificationDetails =
-        NotificationDetails(android: androidNotificationDetails);
-
-    await flutterLocalNotificationsPlugin.show(
-        notificationId, title, body, notificationDetails,
-        payload: 'Not present');
-  }
-
-  void showNotificationIos(String title, String value) async {
-    const DarwinNotificationDetails iOSPlatformChannelSpecifics =
-    DarwinNotificationDetails(
-        categoryIdentifier: 'channel_id',
+    const androidNotificationDetail =
+        AndroidNotificationDetails('0', 'general');
+    const iosNotificatonDetail = DarwinNotificationDetails();
+    const notificationDetails = NotificationDetails(
+      iOS: iosNotificatonDetail,
+      android: androidNotificationDetail,
     );
-    int notificationId = 1;
-    const NotificationDetails notificationDetails =
-    NotificationDetails(iOS: iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin
-        .show(notificationId, title, value, notificationDetails, payload: 'Not present');
+    await flutterLocalNotificationsPlugin.show(
+        0, title, body, notificationDetails);
   }
 }

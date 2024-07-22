@@ -17,6 +17,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final _splashBloc = injector.get<SplashBloc>();
   final _authBloc = injector.get<AuthBloc>();
+  final _notificationService = injector.get<NotificationService>();
 
   @override
   void initState() {
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                       onPress: () {
                         _splashBloc.onSignIn.add(null);
-                        // NotificationService().showNotification('Hello', 'Hello world');
+                        // _notificationService.showNotification('Hello', 'Hello world');
                       },
                     ),
                     const SizedBox(height: 20),

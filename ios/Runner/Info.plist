@@ -4,15 +4,12 @@
     <dict>
         <key>CFBundleURLTypes</key>
         <array>
-            <dict>
-                <key>CFBundleTypeRole</key>
-                <string>Editor</string>
-                <key>CFBundleURLSchemes</key>
-                <array>
-                    <string>fb2212639675736989</string>
-                    <string>com.googleusercontent.apps.436288578840-kkjpkof7lnk226uhte5hoiovge12vnou</string>
-                </array>
-            </dict>
+          <dict>
+          <key>CFBundleURLSchemes</key>
+          <array>
+            <string>fb2212639675736989</string>
+          </array>
+          </dict>
         </array>
         <key>FacebookAppID</key>
         <string>2212639675736989</string>
@@ -22,8 +19,8 @@
         <string>Auth</string>
         <key>LSApplicationQueriesSchemes</key>
         <array>
-            <string>fbapi</string>
-            <string>fb-messenger-share-api</string>
+          <string>fbapi</string>
+          <string>fb-messenger-api</string>
         </array>
         <key>CADisableMinimumFrameDurationOnPhone</key>
         <true/>
@@ -53,6 +50,7 @@
                 <key>CFBundleURLSchemes</key>
                 <array>
                     <string>com.googleusercontent.apps.436288578840-kkjpkof7lnk226uhte5hoiovge12vnou</string>
+                    <string>fb2212639675736989</string>
                 </array>
             </dict>
         </array>

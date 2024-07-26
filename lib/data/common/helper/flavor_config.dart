@@ -1,8 +1,4 @@
-import 'package:flutter/material.dart';
-
-enum Flavor {
-  dev, prod
-}
+enum Flavor { dev, prod }
 
 class FlavorValues {
   final String baseUrl;
@@ -13,42 +9,26 @@ class FlavorValues {
 class FlavorConfig {
   final Flavor flavor;
   final String name;
-  final Color colorPrimary;
-  final Color colorPrimaryDark;
-  final Color colorPrimaryLight;
-  final Color colorAccent;
   final FlavorValues values;
   static dynamic _instance;
 
   factory FlavorConfig({
     required Flavor flavor,
-    Color colorPrimary = Colors.blue,
-    Color colorPrimaryDark = Colors.blue,
-    Color colorPrimaryLight = Colors.blue,
-    Color colorAccent = Colors.blueAccent,
     required FlavorValues values,
   }) {
-    _instance ??= FlavorConfig._internal(
+    _instance ??= FlavorConfig._(
       flavor,
       enumName(flavor.toString()),
-      colorPrimary,
-      colorPrimaryDark,
-      colorPrimaryLight,
-      colorAccent,
       values,
     );
     return _instance;
   }
 
-  FlavorConfig._internal(
-      this.flavor,
-      this.name,
-      this.colorPrimary,
-      this.colorPrimaryDark,
-      this.colorPrimaryLight,
-      this.colorAccent,
-      this.values,
-      );
+  FlavorConfig._(
+    this.flavor,
+    this.name,
+    this.values,
+  );
 
   static FlavorConfig get instance {
     return _instance;

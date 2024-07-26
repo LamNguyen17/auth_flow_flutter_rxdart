@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -15,6 +16,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final authBloc = injector.get<AuthBloc>();
+  final _movieBloc = injector.get<MovieBloc>();
 
   @override
   Widget build(BuildContext context) {

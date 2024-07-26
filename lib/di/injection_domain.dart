@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/data/repositories/movie_repository_impl.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 
 import 'package:auth_flow_flutter_rxdart/data/repositories/auth_repository_impl.dart';
@@ -9,6 +10,8 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.da
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_genre_movie_list_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_list_usecase.dart';
 
 Future<void> injectionDomain() async {
   /** Authen*/
@@ -28,4 +31,9 @@ Future<void> injectionDomain() async {
           () => RegisterUseCase(injector.get<AuthRepositoryImpl>()));
   injector.registerLazySingleton(
           () => DeleteAccountUseCase(injector.get<AuthRepositoryImpl>()));
+  /** Movie*/
+  injector.registerLazySingleton(
+          () => GetMovieListUseCase(injector.get<MovieRepositoryImpl>()));
+  injector.registerLazySingleton(
+          () => GetGenreMovieListUseCase(injector.get<MovieRepositoryImpl>()));
 }

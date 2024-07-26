@@ -1,4 +1,6 @@
 import 'package:auth_flow_flutter_rxdart/common/services/notification_service.dart';
+import 'package:auth_flow_flutter_rxdart/data/common/helper/flavor_config.dart';
+import 'package:auth_flow_flutter_rxdart/data/config/app_config.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -15,6 +17,10 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await configureDI();
+  FlavorConfig(
+    flavor: Flavor.prod,
+    values: FlavorValues(baseUrl: AppConfig.baseUrl),
+  );
   await NotificationService().init();
   Bloc.observer = const AppBlocObserver();
   runApp(const MyApp());

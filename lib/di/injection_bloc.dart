@@ -8,7 +8,10 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.da
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_genre_movie_list_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_list_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/splash/splash_bloc.dart';
 
@@ -25,5 +28,9 @@ Future<void> injectionBloc() async {
   injector.registerFactory(() => SplashBloc());
   injector.registerFactory(() => ProfileBloc(
       injector.get<GetProfileUseCase>(),
+  ));
+  injector.registerFactory(() => MovieBloc(
+    injector.get<GetGenreMovieListUseCase>(),
+    injector.get<GetMovieListUseCase>(),
   ));
 }

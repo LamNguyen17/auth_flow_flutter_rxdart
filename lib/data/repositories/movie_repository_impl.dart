@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_movie_list.dart';
 import 'package:dartz/dartz.dart';
 
 import 'package:auth_flow_flutter_rxdart/data/datasources/movie_remote_data_source.dart';
@@ -30,11 +31,11 @@ class MovieRepositoryImpl implements MovieRepository {
   }
 
   @override
-  Stream<Either<Failure, MovieList>> getMovieList(String type) async* {
+  Stream<Either<Failure, MovieList>> getMovieList(RequestMovieList request) async* {
     final isConnected = await _networkService.isConnected;
     if (isConnected) {
       try {
-        await for (final response in _remoteDataSource.getMovieList(type)) {
+        await for (final response in _remoteDataSource.getMovieList(request)) {
           yield Right(response.toEntity());
         }
       } on Exception catch (e) {

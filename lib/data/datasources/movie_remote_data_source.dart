@@ -3,10 +3,12 @@ import 'package:auth_flow_flutter_rxdart/data/config/app_config.dart';
 import 'package:auth_flow_flutter_rxdart/data/gateway/api_gateway.dart';
 import 'package:auth_flow_flutter_rxdart/data/models/movie/genre_movie_list_model.dart';
 import 'package:auth_flow_flutter_rxdart/data/models/movie/movie_list_model.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_movie_list.dart';
+import 'package:dio/dio.dart';
 
 abstract class MovieRemoteDataSource {
   Stream<GenreMovieListResponse> genreMovieList(String type);
-  Stream<MovieListResponse> getMovieList(String type);
+  Stream<MovieListResponse> getMovieList(RequestMovieList request);
 }
 
 class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
@@ -27,14 +29,12 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   }
 
   @override
-  Stream<MovieListResponse> getMovieList(String type) async* {
-    final response = await _apiGateway.dio.get("/movie/$type?api_key=${AppConfig.apiKey}");
+  Stream<MovieListResponse> getMovieList(RequestMovieList request) async* {
+    final response = await _apiGateway.dio.get("/movie/${request.type}?page=${request.page}&api_key=${AppConfig.apiKey}");
     if (response.statusCode == 200) {
       yield MovieListResponse.fromJson(response.data);
     } else {
       throw const ServerFailure('');
     }
   }
-
-
 }

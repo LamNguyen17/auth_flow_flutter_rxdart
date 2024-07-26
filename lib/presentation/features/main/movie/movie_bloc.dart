@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_movie_list.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -19,13 +20,14 @@ class MovieBloc {
     GetMovieListUseCase getMovieListUseCase,
   ) {
     final isLoading = BehaviorSubject<bool>.seeded(false);
+    final currentPage = BehaviorSubject<int>.seeded(1);
     final getPopular = BehaviorSubject<void>();
 
     final Stream<MovieStatus> getPopularError$ = getPopular
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
       return getMovieListUseCase
-          .execute("popular")
+          .execute(RequestMovieList("popular", currentPage.value))
           .flatMap((either) => either.fold(
               (error) => Stream.value(MovieError(error.toString())),
               (data) => Stream.value(MovieSuccess(data))))

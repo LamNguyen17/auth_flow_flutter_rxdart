@@ -23,7 +23,7 @@ class MovieRepositoryImpl implements MovieRepository {
           yield Right(response.toEntity());
         }
       } on Exception catch (e) {
-        yield Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        yield Left(ServerFailure(e.toString()));
       }
     } else {
       yield const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -39,7 +39,7 @@ class MovieRepositoryImpl implements MovieRepository {
           yield Right(response.toEntity());
         }
       } on Exception catch (e) {
-        yield Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        yield Left(ServerFailure(e.toString()));
       }
     } else {
       yield const Left(ConnectionFailure('Lỗi kết nối mạng'));

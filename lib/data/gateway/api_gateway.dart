@@ -1,13 +1,9 @@
 import 'package:dio/dio.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/data/mocks/api_mock.dart';
 import 'package:auth_flow_flutter_rxdart/data/common/helper/flavor_config.dart';
 
 class ApiGateway {
-  // final apiMock = injector.get<ApiMock>();
-
-  var dio = Dio();
+  final dio = Dio();
   static String baseUrl = FlavorConfig.instance.values.baseUrl;
 
   ApiGateway() {

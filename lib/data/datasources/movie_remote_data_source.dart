@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 
 abstract class MovieRemoteDataSource {
   Stream<GenreMovieListResponse> genreMovieList(String type);
+
   Stream<MovieListResponse> getMovieList(RequestMovieList request);
 }
 
@@ -28,6 +29,8 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
     }
   }
 
+  /// Get movie list
+  /// type = popular, top_rated, now_playing, upcoming
   @override
   Stream<MovieListResponse> getMovieList(RequestMovieList request) async* {
     final response = await _apiGateway.dio.get("/movie/${request.type}?page=${request.page}&api_key=${AppConfig.apiKey}");

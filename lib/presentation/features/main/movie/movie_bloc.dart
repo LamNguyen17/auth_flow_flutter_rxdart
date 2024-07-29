@@ -30,8 +30,7 @@ class MovieBloc {
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
       isLoading.add(true);
-      return getGenreMovieListUseCase
-          .execute("movie")
+      return Stream.fromFuture(getGenreMovieListUseCase.execute("movie"))
           .flatMap((either) => either.fold(
               (error) => Stream.value(GenreMovieListError(error.toString())),
               (data) => Stream.value(GenreMovieListSuccess(data))))

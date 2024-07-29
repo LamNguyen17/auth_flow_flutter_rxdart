@@ -7,7 +7,7 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_m
 import 'package:dio/dio.dart';
 
 abstract class MovieRemoteDataSource {
-  Stream<GenreMovieListResponse> genreMovieList(String type);
+  Future<List<GenreMovieListResponse>> genreMovieList(String type);
 
   Stream<MovieListResponse> getMovieList(RequestMovieList request);
 }
@@ -20,10 +20,11 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   /// Get genre movie list
   /// type = movie or tv
   @override
-  Stream<GenreMovieListResponse> genreMovieList(String type) async* {
-    final response = await _apiGateway.dio.get("/genre/$type/list");
+  Future<List<GenreMovieListResponse>> genreMovieList(String type) async {
+    final response = await _apiGateway.dio.get("/genre/$type/list?api_key=${AppConfig.apiKey}");
     if (response.statusCode == 200) {
-      yield GenreMovieListResponse.fromJson(response.data);
+      final result = response.data?['genres'] as List<dynamic>;
+      return result.map((e) => GenreMovieListResponse.fromJson(e)).toList();
     } else {
       throw const ServerFailure('');
     }

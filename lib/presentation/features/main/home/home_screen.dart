@@ -34,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _movieBloc.getPopular.add(null);
+    _movieBloc.getGenreMovie.add(null);
   }
 
   @override
@@ -108,28 +109,36 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _renderCategoryWidget() {
-    return StreamBuilder(
-      stream: _movieBloc.getGenreMovieMessage$,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final state = snapshot.data;
-          print('CategoryWidget: $state');
-          if (state is GenreMovieListSuccess) {
-            final movies = state.data.results;
-            return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: movies?.length ?? 0,
-                itemBuilder: (BuildContext context, int index) {
-                  return Text(movies[index].title);
-                });
-          } else if (state is GenreMovieListError) {
-            return Text('Genre Movie List Error: ${state.message}');
-          }
-        }
-        return const SizedBox.shrink();
-      },
-    );
+    return SizedBox(
+        height: 50,
+        child: StreamBuilder(
+          stream: _movieBloc.getGenreMovieMessage$,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final state = snapshot.data;
+              print('CategoryWidget: ${snapshot.hasData} - $state');
+              if (state is GenreMovieListSuccess) {
+                final genres = state.data;
+                return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    physics: AlwaysScrollableScrollPhysics(
+                        parent: Platform.isIOS
+                            ? const BouncingScrollPhysics()
+                            : const ClampingScrollPhysics()),
+                    shrinkWrap: true,
+                    itemCount: genres?.length ?? 0,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Text(genres[index].name));
+                    });
+              } else if (state is GenreMovieListError) {
+                return Text('Genre Movie List Error: ${state.message}');
+              }
+            }
+            return const SizedBox.shrink();
+          },
+        ));
   }
 
   Widget _renderSearchWidget(ProfileState state) {

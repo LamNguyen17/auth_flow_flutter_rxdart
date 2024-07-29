@@ -5,12 +5,12 @@ import 'package:auth_flow_flutter_rxdart/domain/repositories/movie_repository.da
 import 'package:auth_flow_flutter_rxdart/common/extensions/failure.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 
-class GetGenreMovieListUseCase implements StreamBaseUseCase<GenreMovieList, String> {
+class GetGenreMovieListUseCase implements BaseUseCase<List<GenreMovieList>, String> {
   final MovieRepository repository;
   GetGenreMovieListUseCase(this.repository);
 
   @override
-  Stream<Either<Failure, GenreMovieList>> execute(String type) {
+  Future<Either<Failure, List<GenreMovieList>>> execute(String type) {
     return repository.genreMovieList(type);
   }
 }

@@ -15,18 +15,17 @@ class MovieRepositoryImpl implements MovieRepository {
   MovieRepositoryImpl(this._remoteDataSource, this._networkService);
 
   @override
-  Stream<Either<Failure, GenreMovieList>> genreMovieList(String type) async* {
+  Future<Either<Failure, List<GenreMovieList>>> genreMovieList(String type) async {
     final isConnected = await _networkService.isConnected;
     if (isConnected) {
       try {
-        await for (final response in _remoteDataSource.genreMovieList(type)) {
-          yield Right(response.toEntity());
-        }
+        final response = await _remoteDataSource.genreMovieList(type);
+        return Right(response.map((e) => e.toEntity()).toList());
       } on Exception catch (e) {
-        yield Left(ServerFailure(e.toString()));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
-      yield const Left(ConnectionFailure('Lỗi kết nối mạng'));
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
     }
   }
 

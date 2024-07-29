@@ -11,22 +11,39 @@ class MovieInitial extends MovieStatus {
   const MovieInitial();
 }
 
-class MovieLoding extends MovieStatus {
-  const MovieLoding();
+class MovieLoading extends MovieStatus {
+  const MovieLoading();
 }
 
-class MovieSuccess extends MovieStatus {
+class GenreMovieListSuccess extends MovieStatus {
   final dynamic data;
-  const MovieSuccess(this.data);
+  const GenreMovieListSuccess(this.data);
 
   @override
   List<Object> get props => [data];
 }
 
-class MovieError extends MovieStatus {
+class GenreMovieListError extends MovieStatus {
   final String message;
 
-  const MovieError(this.message);
+  const GenreMovieListError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class MovieListSuccess extends MovieStatus {
+  final dynamic data;
+  const MovieListSuccess(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class MovieListError extends MovieStatus {
+  final String message;
+
+  const MovieListError(this.message);
 
   @override
   List<Object> get props => [message];

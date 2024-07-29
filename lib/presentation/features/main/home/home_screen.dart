@@ -98,12 +98,38 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 children: <Widget>[
                   _renderSearchWidget(state),
+                  _renderCategoryWidget(),
                   _renderMovieWidget(),
                 ],
               ),
             )),
       );
     });
+  }
+
+  Widget _renderCategoryWidget() {
+    return StreamBuilder(
+      stream: _movieBloc.getGenreMovieMessage$,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final state = snapshot.data;
+          print('CategoryWidget: $state');
+          if (state is GenreMovieListSuccess) {
+            final movies = state.data.results;
+            return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: movies?.length ?? 0,
+                itemBuilder: (BuildContext context, int index) {
+                  return Text(movies[index].title);
+                });
+          } else if (state is GenreMovieListError) {
+            return Text('Genre Movie List Error: ${state.message}');
+          }
+        }
+        return const SizedBox.shrink();
+      },
+    );
   }
 
   Widget _renderSearchWidget(ProfileState state) {
@@ -117,18 +143,18 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   state is ProfileSuccess
-                      ? "Hello, ${state.data.displayName}!"
+                      ? "Welcome, ${state.data.displayName} 🤟"
                       : '',
                   style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
                   ),
                 ),
                 Text(
-                  'Book your favourite movie',
+                  "Let's relax and watch a movie!",
                   style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
                       color: HexColor.fromHex('7F7D83')),
                 ),
               ],
@@ -147,13 +173,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _renderMovieWidget() {
     return StreamBuilder(
-      stream: _movieBloc.getPopularError$,
+      stream: _movieBloc.getPopularMessage$,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final state = snapshot.data;
-          if (state is MovieSuccess) {
+          if (state is MovieListSuccess) {
             final movies = state.data.results;
-            print('renderMovieWidget: $movies');
             return CarouselSlider.builder(
               itemCount: movies.length,
               options: CarouselOptions(
@@ -177,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             );
-          } else if (state is MovieError) {
+          } else if (state is MovieListError) {
             return Text('Movie Error: ${state.message}');
           }
         }

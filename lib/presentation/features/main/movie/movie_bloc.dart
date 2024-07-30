@@ -43,6 +43,7 @@ class MovieBloc {
     final Stream<MovieStatus> getPopularMessage$ = getPopular
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
+      print('getPopular');
       isLoading.add(true);
       return getMovieListUseCase
           .execute(RequestMovieList("popular", currentPage.value))

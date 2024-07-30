@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +21,7 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/prof
 
 const String icNotification = AppImages.icNotification;
 const String icSearch = AppImages.icSearch;
-const outerList = ['search', 'category', 'movie', 'movie', 'movie'];
+const outerList = ['search', 'category', 'movie'];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,21 +31,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _profileBloc = injector.get<ProfileBloc>();
   final _movieBloc = injector.get<MovieBloc>();
+  final _homeBloc = injector.get<HomeBloc>();
 
   @override
   void initState() {
     super.initState();
     _movieBloc.getPopular.add(null);
-    _movieBloc.getGenreMovie.add(null);
   }
 
   @override
   void dispose() {
     // Dispose of the ProfileBloc here
-    _profileBloc.close();
     _movieBloc.dispose();
+    _homeBloc.close();
     super.dispose();
   }
 
@@ -153,16 +154,21 @@ class _HomeScreenState extends State<HomeScreen> {
               return AppCarousel(
                 itemCount: movies,
                 itemBuilder: (BuildContext context, int index) {
-                  final movie = movies[index];
-                  return Container(
-                      margin: const EdgeInsets.all(2),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(36),
-                          child: Image.network(
-                            'https://image.tmdb.org/t/p/w300${movie.posterPath}',
-                            fit: BoxFit.cover,
-                            width: 1000,
-                          )));
+                  final ResultItem movie = movies[index];
+                  return AppTouchable(
+                    onPress: () {
+                      print('AppTouchable_getPopular: $movie');
+                    },
+                    child: Container(
+                        margin: const EdgeInsets.all(2),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(36),
+                            child: Image.network(
+                              'https://image.tmdb.org/t/p/w300${movie.posterPath}',
+                              fit: BoxFit.cover,
+                              width: 1000,
+                            ))),
+                  );
                 },
               );
             } else if (state is MovieListError) {

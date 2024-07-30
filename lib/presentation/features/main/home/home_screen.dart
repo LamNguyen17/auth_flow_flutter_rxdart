@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:auth_flow_flutter_rxdart/common/extensions/dark_mode_extensions.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/widgets/category_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +21,7 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/prof
 
 const String icNotification = AppImages.icNotification;
 const String icSearch = AppImages.icSearch;
-const outerList = ['search', 'category', 'movie'];
+const outerList = ['search', 'category', 'movie', 'movie', 'movie'];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -32,11 +33,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final _profileBloc = injector.get<ProfileBloc>();
   final _movieBloc = injector.get<MovieBloc>();
-
-  // final List<String> horizontalItems =
-  //     List.generate(1000, (index) => 'Horizontal Item $index');
-  // final List<String> verticalItems =
-  //     List.generate(20000, (index) => 'Vertical Item $index');
 
   @override
   void initState() {
@@ -111,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   case 'search':
                     return _renderSearchWidget(state);
                   case 'category':
-                    return _renderCategoryWidget();
+                    return const CategoryWidget();
                   case 'movie':
                     return _renderMovieWidget();
                   default:
@@ -121,70 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     });
-  }
-
-  Widget _renderCategoryWidget() {
-    return Column(
-      children: <Widget>[
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              const Text(
-                'Categories',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              AppTouchable(
-                onPress: () {
-                  // Open the category screen
-                },
-                child: const Text(
-                  'See all',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.blue),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          height: 40,
-          margin: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 24.0),
-          child: StreamBuilder(
-            stream: _movieBloc.getGenreMovieMessage$,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final state = snapshot.data;
-                if (state is GenreMovieListSuccess) {
-                  final genres = state.data;
-                  return ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      physics: AlwaysScrollableScrollPhysics(
-                          parent: Platform.isIOS
-                              ? const BouncingScrollPhysics()
-                              : const ClampingScrollPhysics()),
-                      shrinkWrap: true,
-                      itemCount: genres?.length ?? 0,
-                      itemBuilder: (BuildContext context, int index) {
-                        return BoxWapper(
-                            title: genres[index].name,
-                            borderRadius: 8.0,
-                            borderColor: context.isDarkMode == true ? Colors.transparent : HexColor.fromHex('7F7D83'),
-                            color: context.isDarkMode == true ? HexColor.fromHex('7F7D83') : Colors.transparent);
-                      });
-                } else if (state is GenreMovieListError) {
-                  return Text('Genre Movie List Error: ${state.message}');
-                }
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ),
-      ],
-    );
   }
 
   Widget _renderSearchWidget(ProfileState state) {

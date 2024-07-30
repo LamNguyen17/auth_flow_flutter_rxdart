@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/common/extensions/dark_mode_extensions.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -171,7 +172,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         return BoxWapper(
                             title: genres[index].name,
                             borderRadius: 8.0,
-                            color: HexColor.fromHex('7F7D83'));
+                            borderColor: context.isDarkMode == true ? Colors.transparent : HexColor.fromHex('7F7D83'),
+                            color: context.isDarkMode == true ? HexColor.fromHex('7F7D83') : Colors.transparent);
                       });
                 } else if (state is GenreMovieListError) {
                   return Text('Genre Movie List Error: ${state.message}');

@@ -40,6 +40,10 @@ class MyApp extends StatelessWidget {
           routerConfig: AppNavManager.router,
           title: 'Flutter Demo',
           debugShowCheckedModeBanner: false,
+          // darkTheme: ThemeData(
+          //   brightness: Brightness.dark,
+          // ),
+          // themeMode: ThemeMode.dark,
           theme: ThemeData(
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,

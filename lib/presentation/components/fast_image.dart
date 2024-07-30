@@ -7,7 +7,7 @@ class FastImage extends StatelessWidget {
   final double height;
   final BorderRadiusGeometry? borderRadius;
   final double? borderDefaultImg;
-  final dynamic? fit;
+  final dynamic fit;
 
   const FastImage(
       {super.key,

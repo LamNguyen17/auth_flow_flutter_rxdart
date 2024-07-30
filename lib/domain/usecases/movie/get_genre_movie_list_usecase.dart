@@ -11,6 +11,6 @@ class GetGenreMovieListUseCase implements BaseUseCase<List<GenreMovieList>, Stri
 
   @override
   Future<Either<Failure, List<GenreMovieList>>> execute(String type) {
-    return repository.genreMovieList(type);
+    return repository.getGenreMovieList(type);
   }
 }

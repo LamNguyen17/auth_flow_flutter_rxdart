@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
 import 'package:dartz/dartz.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/failure.dart';
@@ -15,11 +16,11 @@ class MovieRepositoryImpl implements MovieRepository {
   MovieRepositoryImpl(this._remoteDataSource, this._networkService);
 
   @override
-  Future<Either<Failure, List<GenreMovieList>>> genreMovieList(String type) async {
+  Future<Either<Failure, List<GenreMovieList>>> getGenreMovieList(String type) async {
     final isConnected = await _networkService.isConnected;
     if (isConnected) {
       try {
-        final response = await _remoteDataSource.genreMovieList(type);
+        final response = await _remoteDataSource.getGenreMovieList(type);
         return Right(response.map((e) => e.toEntity()).toList());
       } on Exception catch (e) {
         return Left(ServerFailure(e.toString()));
@@ -42,6 +43,21 @@ class MovieRepositoryImpl implements MovieRepository {
       }
     } else {
       yield const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MovieDetail>> getMovieDetails(int id) async {
+    final isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        final response = await _remoteDataSource.getMovieDetail(id);
+        return Right(response.toEntity());
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
     }
   }
 }

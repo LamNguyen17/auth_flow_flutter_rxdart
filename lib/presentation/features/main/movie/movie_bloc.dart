@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_detail_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_movie_list.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
@@ -11,20 +12,38 @@ class MovieBloc {
   final Function0<void> dispose;
   final Sink<void> getPopular;
   final Sink<void> getGenreMovie;
+  final Sink<int> getMovieDetail;
 
   /// Output
   final Stream<bool> isLoading$;
   final Stream<MovieStatus> getPopularMessage$;
   final Stream<MovieStatus> getGenreMovieMessage$;
+  final Stream<MovieStatus> getMovieDetailMessage$;
 
   factory MovieBloc(
     GetGenreMovieListUseCase getGenreMovieListUseCase,
     GetMovieListUseCase getMovieListUseCase,
+    GetMovieDetailUseCase getMovieDetailUseCase,
   ) {
     final isLoading = BehaviorSubject<bool>.seeded(false);
     final currentPage = BehaviorSubject<int>.seeded(1);
     final getPopular = BehaviorSubject<void>();
     final getGenreMovie = BehaviorSubject<void>();
+    final getMovieDetail = BehaviorSubject<int>();
+
+    final Stream<MovieStatus> getMovieDetailMessage$ = getMovieDetail
+        .debounceTime(const Duration(milliseconds: 350))
+        .exhaustMap((int id) {
+      isLoading.add(true);
+      return Stream.fromFuture(getMovieDetailUseCase.execute(id))
+          .flatMap((either) => either.fold(
+              (error) => Stream.value(MovieDetailError(error.toString())),
+              (data) => Stream.value(MovieDetailSuccess(data))))
+          .doOnDone(() => isLoading.add(false))
+          .doOnError((error, _) => isLoading.add(false))
+          .onErrorReturnWith(
+              (error, _) => const MovieDetailError("Đã có lỗi xảy ra"));
+    });
 
     final Stream<MovieStatus> getGenreMovieMessage$ = getGenreMovie
         .debounceTime(const Duration(milliseconds: 350))
@@ -49,7 +68,7 @@ class MovieBloc {
           .execute(RequestMovieList("popular", currentPage.value))
           .flatMap((either) => either.fold(
               (error) => Stream.value(MovieListError(error.toString())),
-              (data) => Stream.value(MovieListSuccess(data))))
+              (data) => Stream.value(MovieListSuccess(data, "popular"))))
           .doOnDone(() => isLoading.add(false))
           .doOnError((error, _) => isLoading.add(false))
           .onErrorReturnWith(
@@ -59,12 +78,15 @@ class MovieBloc {
       isLoading$: isLoading.asBroadcastStream(),
       getPopular: getPopular,
       getGenreMovie: getGenreMovie,
+      getMovieDetail: getMovieDetail,
       getPopularMessage$: getPopularMessage$,
       getGenreMovieMessage$: getGenreMovieMessage$,
+      getMovieDetailMessage$: getMovieDetailMessage$,
       dispose: () {
         isLoading.close();
         getPopular.close();
         getGenreMovie.close();
+        getMovieDetail.close();
       },
     );
   }
@@ -72,9 +94,11 @@ class MovieBloc {
   MovieBloc._({
     required this.getPopular,
     required this.getGenreMovie,
+    required this.getMovieDetail,
     required this.dispose,
     required this.isLoading$,
     required this.getPopularMessage$,
     required this.getGenreMovieMessage$,
+    required this.getMovieDetailMessage$,
   });
 }

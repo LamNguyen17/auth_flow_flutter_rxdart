@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/home_navigator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -158,6 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return AppTouchable(
                     onPress: () {
                       print('AppTouchable_getPopular: $movie');
+                      HomeNavigator.openMovieDetail(context, movie.id);
                     },
                     child: Container(
                         margin: const EdgeInsets.all(2),

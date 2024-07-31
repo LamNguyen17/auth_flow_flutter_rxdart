@@ -31,7 +31,7 @@ ResultItemResponse _$ResultItemResponseFromJson(Map<String, dynamic> json) =>
       genreIds: (json['genre_ids'] as List<dynamic>?)
           ?.map((e) => (e as num).toInt())
           .toList(),
-      id: (json['id'] as num?)?.toInt(),
+      id: (json['id'] as num).toInt(),
       originalLanguage: json['original_language'] as String?,
       originalTitle: json['original_title'] as String?,
       overview: json['overview'] as String?,

@@ -9,6 +9,7 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_genre_movie_list_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_detail_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_list_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_bloc.dart';
@@ -34,5 +35,6 @@ Future<void> injectionBloc() async {
   injector.registerFactory(() => MovieBloc(
     injector.get<GetGenreMovieListUseCase>(),
     injector.get<GetMovieListUseCase>(),
+    injector.get<GetMovieDetailUseCase>(),
   ));
 }

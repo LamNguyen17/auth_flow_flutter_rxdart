@@ -1,3 +1,6 @@
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/movie_detail_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_list/movie_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -54,10 +57,30 @@ class AppNavManager {
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                  path: '/home',
-                  name: Routes.main[Main.home]!,
-                  builder: (BuildContext context, GoRouterState state) =>
-                      const HomeScreen())
+                path: '/home',
+                name: Routes.main[Main.home]!,
+                builder: (BuildContext context, GoRouterState state) {
+                  return const HomeScreen();
+                },
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    path: Routes.home[Home.movieList]!,
+                    name: Routes.home[Home.movieList]!,
+                    builder: (context, state) => const MovieListScreen(),
+                  ),
+                  GoRoute(
+                    // parentNavigatorKey: _rootNavigatorKey,
+                    path: Routes.home[Home.movieDetail]!,
+                    name: Routes.home[Home.movieDetail]!,
+                    // builder: (context, state) => const MovieDetailScreen(),
+                    builder: (context, state) {
+                      int id = state.extra as int;
+                      return MovieDetailScreen(id: id);
+                    },
+                  ),
+                ],
+              )
             ],
           ),
           StatefulShellBranch(
@@ -121,35 +144,29 @@ class ScaffoldWithNavBar extends StatelessWidget {
               BottomNavigationBarItem(
                 label: 'Home',
                 icon: SvgPicture.asset(tabHome,
-                    colorFilter: ColorFilter.mode(
-                        Colors.grey[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.grey[500]!, BlendMode.srcIn)),
                 activeIcon: SvgPicture.asset(tabHome,
-                    colorFilter: ColorFilter.mode(
-                        Colors.green[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.green[500]!, BlendMode.srcIn)),
               ),
               BottomNavigationBarItem(
                 label: 'News',
                 icon: SvgPicture.asset(tabList,
-                    colorFilter: ColorFilter.mode(
-                        Colors.grey[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.grey[500]!, BlendMode.srcIn)),
                 activeIcon: SvgPicture.asset(tabList,
-                    colorFilter: ColorFilter.mode(
-                        Colors.green[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.green[500]!, BlendMode.srcIn)),
               ),
               BottomNavigationBarItem(
                 label: 'Profile',
                 icon: SvgPicture.asset(tabProfile,
-                    colorFilter: ColorFilter.mode(
-                        Colors.grey[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.grey[500]!, BlendMode.srcIn)),
                 activeIcon: SvgPicture.asset(tabProfile,
-                    colorFilter: ColorFilter.mode(
-                        Colors.green[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.green[500]!, BlendMode.srcIn)),
               )
             ],
             currentIndex: navigationShell.currentIndex,
@@ -157,9 +174,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
             unselectedItemColor: HexColor.fromHex('7F7D83'),
             selectedItemColor: HexColor.fromHex('67A346'),
             selectedLabelStyle:
-            const TextStyle(fontSize: 10, fontFamily: 'Inter'),
+                const TextStyle(fontSize: 10, fontFamily: 'Inter'),
             unselectedLabelStyle:
-            const TextStyle(fontSize: 9, fontFamily: 'Inter'),
+                const TextStyle(fontSize: 9, fontFamily: 'Inter'),
             type: BottomNavigationBarType.fixed,
           ),
         ),

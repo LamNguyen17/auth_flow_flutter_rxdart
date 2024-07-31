@@ -36,7 +36,7 @@ class ResultItemResponse {
   final String? backdropPath;
   @JsonKey(name: 'genre_ids')
   final List<int>? genreIds;
-  final int? id;
+  final int id;
   @JsonKey(name: 'original_language')
   final String? originalLanguage;
   @JsonKey(name: 'original_title')
@@ -58,7 +58,7 @@ class ResultItemResponse {
       {this.adult,
       this.backdropPath,
       this.genreIds,
-      this.id,
+      required this.id,
       this.originalLanguage,
       this.originalTitle,
       this.overview,

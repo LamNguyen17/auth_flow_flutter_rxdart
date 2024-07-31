@@ -17,6 +17,7 @@ class MovieLoading extends MovieStatus {
 
 class GenreMovieListSuccess extends MovieStatus {
   final dynamic data;
+
   const GenreMovieListSuccess(this.data);
 
   @override
@@ -34,16 +35,36 @@ class GenreMovieListError extends MovieStatus {
 
 class MovieListSuccess extends MovieStatus {
   final dynamic data;
-  const MovieListSuccess(this.data);
+  final String type;
+
+  const MovieListSuccess(this.data, this.type);
 
   @override
-  List<Object> get props => [data];
+  List<Object> get props => [data, type];
 }
 
 class MovieListError extends MovieStatus {
   final String message;
 
   const MovieListError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class MovieDetailSuccess extends MovieStatus {
+  final dynamic data;
+
+  const MovieDetailSuccess(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class MovieDetailError extends MovieStatus {
+  final String message;
+
+  const MovieDetailError(this.message);
 
   @override
   List<Object> get props => [message];

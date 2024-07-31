@@ -21,7 +21,7 @@ class ResultItem extends Equatable {
   bool? adult;
   String? backdropPath;
   List<int>? genreIds;
-  int? id;
+  int id;
   String? originalLanguage;
   String? originalTitle;
   String? overview;
@@ -37,7 +37,7 @@ class ResultItem extends Equatable {
     this.adult,
     this.backdropPath,
     this.genreIds,
-    this.id,
+    required this.id,
     this.originalLanguage,
     this.originalTitle,
     this.overview,

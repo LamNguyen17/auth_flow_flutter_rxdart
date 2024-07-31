@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart';
@@ -39,93 +40,99 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           final state = snapshot.data;
           if (state is MovieDetailSuccess) {
             final movie = state.data;
-            return CustomScrollView(slivers: <Widget>[
-              SliverAppBar(
-                pinned: true,
-                expandedHeight: 350.0,
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(
-                    '${movie.originalTitle}',
-                    style: const TextStyle(
-                        fontSize: 14.0,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  titlePadding: const EdgeInsetsDirectional.only(
-                      start: 16.0, bottom: 16.0),
-                  centerTitle: true,
-                  background: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(20.0),
-                        bottomRight: Radius.circular(20.0),
+            return CustomScrollView(
+                physics: AlwaysScrollableScrollPhysics(
+                    parent: Platform.isIOS
+                        ? const BouncingScrollPhysics()
+                        : const ClampingScrollPhysics()),
+                slivers: <Widget>[
+                  SliverAppBar(
+                    pinned: true,
+                    expandedHeight: 350.0,
+                    flexibleSpace: FlexibleSpaceBar(
+                      title: Text(
+                        '${movie.originalTitle}',
+                        style: const TextStyle(
+                            fontSize: 14.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold),
                       ),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: <Widget>[
-                          Image(
-                              image: CachedNetworkImageProvider(
-                                  'https://image.tmdb.org/t/p/w300${movie.posterPath}'),
-                              fit: BoxFit.cover),
-                          ClipRRect(
-                            // Clip it cleanly.
-                            child: BackdropFilter(
-                              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                              child: Container(
-                                color: Colors.grey.withOpacity(0.1),
-                                alignment: Alignment.center,
-                                child: const SizedBox.shrink(),
-                              ),
-                            ),
+                      titlePadding: const EdgeInsetsDirectional.only(
+                          start: 16.0, bottom: 16.0),
+                      centerTitle: true,
+                      background: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(20.0),
+                            bottomRight: Radius.circular(20.0),
                           ),
-                        ],
-                      )),
-                ),
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16.0, vertical: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('Release date : ${movie.releaseDate}'),
-                        Text('Status : ${movie.status}'),
-                        Text('${movie.tagline}',
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 16.0),
-                        _renderContentMovie(movie.genres),
-                        const SizedBox(height: 16.0),
-                        _renderUserScore(movie),
-                        const SizedBox(height: 16.0),
-                        Text('Budget : ${movie.budget}'),
-                        Text('Revenue : ${movie.revenue}'),
-                        const SizedBox(height: 16.0),
-                        const Text('Keywords',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600)),
-                        const SizedBox(height: 8.0),
-                        _renderContentMovie(movie.genres),
-                        const SizedBox(height: 16.0),
-                        const Text('Overview',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600)),
-                        Text('${movie.overview}'),
-                        const Text('Recommendations',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600)),
-                        Text('${movie.overview}'),
-                        const Text('Similar',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w600)),
-                        Text('${movie.overview}'),
-                      ],
+                          child: Stack(
+                            fit: StackFit.expand,
+                            children: <Widget>[
+                              Image(
+                                  image: CachedNetworkImageProvider(
+                                      'https://image.tmdb.org/t/p/w300${movie.posterPath}'),
+                                  fit: BoxFit.cover),
+                              ClipRRect(
+                                // Clip it cleanly.
+                                child: BackdropFilter(
+                                  filter:
+                                      ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                  child: Container(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    alignment: Alignment.center,
+                                    child: const SizedBox.shrink(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
                     ),
                   ),
-                ]),
-              ),
-            ]);
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('Release date : ${movie.releaseDate}'),
+                            Text('Status : ${movie.status}'),
+                            Text('${movie.tagline}',
+                                style: const TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w500)),
+                            const SizedBox(height: 16.0),
+                            _renderContentMovie(movie.genres),
+                            const SizedBox(height: 16.0),
+                            _renderUserScore(movie),
+                            const SizedBox(height: 16.0),
+                            Text('Budget : ${movie.budget}'),
+                            Text('Revenue : ${movie.revenue}'),
+                            const SizedBox(height: 16.0),
+                            const Text('Keywords',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600)),
+                            const SizedBox(height: 8.0),
+                            _renderContentMovie(movie.genres),
+                            const SizedBox(height: 16.0),
+                            const Text('Overview',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600)),
+                            Text('${movie.overview}'),
+                            const Text('Recommendations',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600)),
+                            Text('${movie.overview}'),
+                            const Text('Similar',
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w600)),
+                            Text('${movie.overview}'),
+                          ],
+                        ),
+                      ),
+                    ]),
+                  ),
+                ]);
           }
         } else if (snapshot.hasError) {
           return Center(

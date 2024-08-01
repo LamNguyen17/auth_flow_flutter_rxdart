@@ -1,5 +1,8 @@
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 
@@ -11,31 +14,63 @@ class RecommendationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: _movieBloc.getMovieRecommendationMessage$,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data is MovieRecommendationSuccess) {
-            final movie = snapshot.data.data?.results;
-            return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: movie?.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                      leading: const Icon(Icons.list),
-                      title: Text("${movie![index].title}"));
-                });
-          }
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+    return SizedBox(
+        height: 250,
+        child: StreamBuilder(
+          stream: _movieBloc.getMovieRecommendationMessage$,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.hasData) {
+              if (snapshot.data is MovieRecommendationSuccess) {
+                final movie = snapshot.data.data?.results;
+                return ListView.builder(
+                  // physics: const NeverScrollableScrollPhysics(),
+                  physics: AlwaysScrollableScrollPhysics(
+                      parent: Platform.isIOS
+                          ? const BouncingScrollPhysics()
+                          : const ClampingScrollPhysics()),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.horizontal,
+                  // children: movie
+                  //     .map<Widget>((item) => Container(
+                  //         margin: const EdgeInsets.all(8.0),
+                  //         child: FastImage(
+                  //           key: PageStorageKey<int>(item.id),
+                  //           url:
+                  //               'https://image.tmdb.org/t/p/original${item.posterPath}',
+                  //           width: 200,
+                  //           height: 250,
+                  //           fit: BoxFit.cover,
+                  //           borderRadius:
+                  //               const BorderRadius.all(Radius.circular(16)),
+                  //         )))
+                  //     .toList()
+
+                  itemCount: movie?.length ?? 0,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Container(
+                        key: ValueKey(movie[index].id), // Use a unique key
+                        margin: const EdgeInsets.only(right: 16.0, top: 8.0),
+                        child: FastImage(
+                          url:
+                              'https://image.tmdb.org/t/p/original${movie![index].posterPath}',
+                          width: 200,
+                          height: 250,
+                          fit: BoxFit.cover,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(16)),
+                        ));
+                  },
+                );
+              }
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text(snapshot.error.toString()),
+              );
+            }
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ));
   }
 }

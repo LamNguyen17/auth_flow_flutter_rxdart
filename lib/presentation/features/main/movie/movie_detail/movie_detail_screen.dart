@@ -56,44 +56,54 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                   SliverAppBar(
                     pinned: true,
                     expandedHeight: 350.0,
-                    flexibleSpace: FlexibleSpaceBar(
-                      title: Text(
-                        '${movie.originalTitle}',
-                        style: const TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      titlePadding: const EdgeInsetsDirectional.only(
-                          start: 16.0, bottom: 16.0),
-                      centerTitle: true,
-                      background: ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(20.0),
-                            bottomRight: Radius.circular(20.0),
-                          ),
-                          child: Stack(
-                            fit: StackFit.expand,
-                            children: <Widget>[
-                              Image(
-                                  image: CachedNetworkImageProvider(
-                                      'https://image.tmdb.org/t/p/w300${movie.posterPath}'),
-                                  fit: BoxFit.cover),
-                              ClipRRect(
-                                // Clip it cleanly.
-                                child: BackdropFilter(
-                                  filter:
-                                      ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                  child: Container(
-                                    color: Colors.grey.withOpacity(0.1),
-                                    alignment: Alignment.center,
-                                    child: const SizedBox.shrink(),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )),
-                    ),
+                    flexibleSpace: LayoutBuilder(builder:
+                        (BuildContext context, BoxConstraints constraints) {
+                      double scrollPosition = constraints.biggest.height;
+                      Color backgroundColor = Colors.transparent;
+                      if (scrollPosition > 100) {
+                        backgroundColor = Colors.transparent;
+                      } else if (scrollPosition > 50) {
+                        backgroundColor = Colors.black;
+                      }
+                      return FlexibleSpaceBar(
+                        title: Text(
+                          '${movie.originalTitle}',
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              color: backgroundColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        titlePadding: const EdgeInsetsDirectional.only(
+                            start: 16.0, bottom: 16.0),
+                        centerTitle: true,
+                        background: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(20.0),
+                              bottomRight: Radius.circular(20.0),
+                            ),
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: <Widget>[
+                                Image(
+                                    image: CachedNetworkImageProvider(
+                                        'https://image.tmdb.org/t/p/original${movie.posterPath}'),
+                                    fit: BoxFit.cover),
+                                // ClipRRect(
+                                //   // Clip it cleanly.
+                                //   child: BackdropFilter(
+                                //     filter:
+                                //         ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                                //     child: Container(
+                                //       color: Colors.grey.withOpacity(0.1),
+                                //       alignment: Alignment.center,
+                                //       child: const SizedBox.shrink(),
+                                //     ),
+                                //   ),
+                                // ),
+                              ],
+                            )),
+                      );
+                    }),
                   ),
                   SliverList(
                     delegate: SliverChildListDelegate([
@@ -103,6 +113,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
+                            Text(
+                              '${movie.originalTitle}',
+                              style: const TextStyle(
+                                  fontSize: 26.0,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            ),
                             Text('Release date : ${movie.releaseDate}'),
                             Text('Status : ${movie.status}'),
                             Text('${movie.tagline}',
@@ -166,8 +183,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           center: Text(
             "${(movie.voteAverage! * 10).toFixed(1)}%",
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 20.0),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
           ),
           circularStrokeCap: CircularStrokeCap.round,
           progressColor: Colors.purple,

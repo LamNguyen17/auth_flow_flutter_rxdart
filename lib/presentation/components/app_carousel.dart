@@ -4,7 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 
 class AppCarousel extends StatelessWidget {
   final Widget Function(BuildContext, int) itemBuilder;
-  final List<dynamic> itemCount;
+  final List<dynamic>? itemCount;
   final bool? autoPlay;
   final double? height;
   final double? viewportFraction;
@@ -21,7 +21,7 @@ class AppCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CarouselSlider.builder(
-      itemCount: itemCount.length,
+      itemCount: itemCount?.length,
       options: CarouselOptions(
         autoPlay: autoPlay ?? true,
         enlargeCenterPage: true,

@@ -10,7 +10,10 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_faceb
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_genre_movie_list_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_detail_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_keyword_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_list_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_recommendation_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_similar_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
@@ -36,5 +39,8 @@ Future<void> injectionBloc() async {
     injector.get<GetGenreMovieListUseCase>(),
     injector.get<GetMovieListUseCase>(),
     injector.get<GetMovieDetailUseCase>(),
+    injector.get<GetMovieKeywordUseCase>(),
+    injector.get<GetMovieSimilarUseCase>(),
+    injector.get<GetMovieRecommendationUseCase>(),
   ));
 }

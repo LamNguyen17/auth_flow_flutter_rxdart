@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart';
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 class MovieDetailScreen extends StatefulWidget {
   final int id;
@@ -28,6 +28,9 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   void initState() {
     super.initState();
     _movieBloc.getMovieDetail.add(widget.id);
+    _movieBloc.getMovieKeyword.add(widget.id);
+    _movieBloc.getMovieSimilar.add(widget.id);
+    _movieBloc.getMovieRecommendation.add(widget.id);
   }
 
   @override
@@ -113,20 +116,22 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
                             const SizedBox(height: 8.0),
-                            _renderContentMovie(movie.genres),
+                            _renderKeywordsMovie(),
                             const SizedBox(height: 16.0),
                             const Text('Overview',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
                             Text('${movie.overview}'),
+                            const SizedBox(height: 16.0),
                             const Text('Recommendations',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
-                            Text('${movie.overview}'),
+                            _renderRecommendationsMovie(),
+                            const SizedBox(height: 16.0),
                             const Text('Similar',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
-                            Text('${movie.overview}'),
+                            _renderSimilarMovie(),
                           ],
                         ),
                       ),
@@ -164,6 +169,94 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         const SizedBox(width: 16.0),
         const Text('User score'),
       ],
+    );
+  }
+
+  Widget _renderSimilarMovie() {
+    return StreamBuilder(
+      stream: _movieBloc.getMovieSimilarMessage$,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data is MovieSimilarSuccess) {
+            final movie = snapshot.data.data?.results;
+            return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: movie?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                      leading: const Icon(Icons.list),
+                      title: Text("${movie![index].title}"));
+                });
+          }
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
+  Widget _renderRecommendationsMovie() {
+    return StreamBuilder(
+      stream: _movieBloc.getMovieRecommendationMessage$,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data is MovieRecommendationSuccess) {
+            final movie = snapshot.data.data?.results;
+            return ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: movie?.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                      leading: const Icon(Icons.list),
+                      title: Text("${movie![index].title}"));
+                });
+          }
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
+  }
+
+  Widget _renderKeywordsMovie() {
+    return StreamBuilder(
+      stream: _movieBloc.getMovieKeywordMessage$,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data is MovieKeywordSuccess) {
+            final keywords = snapshot.data.data?.keywords;
+            return Wrap(
+              direction: Axis.horizontal,
+              runSpacing: 12.0, // <-- Spacing between down the line
+              children: keywords
+                  .map<Widget>((item) => BoxWapper(
+                      borderRadius: 16.0,
+                      title: '${item.name}',
+                      color: HexColor.fromHex('7F7D83')))
+                  .toList(),
+            );
+          }
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 

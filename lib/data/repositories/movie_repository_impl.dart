@@ -1,4 +1,5 @@
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_keyword.dart';
 import 'package:dartz/dartz.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/failure.dart';
@@ -52,6 +53,51 @@ class MovieRepositoryImpl implements MovieRepository {
     if (isConnected) {
       try {
         final response = await _remoteDataSource.getMovieDetail(id);
+        return Right(response.toEntity());
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MovieKeyword>> getMovieKeywords(int id) async {
+    final isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        final response = await _remoteDataSource.getMovieKeywords(id);
+        return Right(response.toEntity());
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MovieList>> getMovieRecommendation(int id) async {
+    final isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        final response = await _remoteDataSource.getMovieRecommendation(id);
+        return Right(response.toEntity());
+      } on Exception catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
+    } else {
+      return const Left(ConnectionFailure('Lỗi kết nối mạng'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, MovieList>> getMovieSimilar(int id) async {
+    final isConnected = await _networkService.isConnected;
+    if (isConnected) {
+      try {
+        final response = await _remoteDataSource.getMovieSimilar(id);
         return Right(response.toEntity());
       } on Exception catch (e) {
         return Left(ServerFailure(e.toString()));

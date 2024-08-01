@@ -133,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
             AppTouchable(
               onPress: () {
                 // Open the category screen
+                HomeNavigator.openMovieList(context);
               },
               child: const Text(
                 'See all',
@@ -151,22 +152,22 @@ class _HomeScreenState extends State<HomeScreen> {
           if (snapshot.hasData) {
             final state = snapshot.data;
             if (state is MovieListSuccess) {
-              final movies = state.data.results;
+              final movies = state.data?.results;
               return AppCarousel(
                 itemCount: movies,
                 itemBuilder: (BuildContext context, int index) {
-                  final ResultItem movie = movies[index];
+                  final ResultItem? movie = movies?[index];
                   return AppTouchable(
                     onPress: () {
                       print('AppTouchable_getPopular: $movie');
-                      HomeNavigator.openMovieDetail(context, movie.id);
+                      HomeNavigator.openMovieDetail(context, movie!.id);
                     },
                     child: Container(
                         margin: const EdgeInsets.all(2),
                         child: ClipRRect(
                             borderRadius: BorderRadius.circular(36),
                             child: Image.network(
-                              'https://image.tmdb.org/t/p/w300${movie.posterPath}',
+                              'https://image.tmdb.org/t/p/w300${movie?.posterPath}',
                               fit: BoxFit.cover,
                               width: 1000,
                             ))),

@@ -70,10 +70,9 @@ class AppNavManager {
                     builder: (context, state) => const MovieListScreen(),
                   ),
                   GoRoute(
-                    // parentNavigatorKey: _rootNavigatorKey,
+                    parentNavigatorKey: _rootNavigatorKey,
                     path: Routes.home[Home.movieDetail]!,
                     name: Routes.home[Home.movieDetail]!,
-                    // builder: (context, state) => const MovieDetailScreen(),
                     builder: (context, state) {
                       int id = state.extra as int;
                       return MovieDetailScreen(id: id);

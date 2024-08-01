@@ -12,7 +12,10 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_faceb
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_google_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_genre_movie_list_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_detail_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_keyword_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_list_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_recommendation_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_similar_usecase.dart';
 
 Future<void> injectionDomain() async {
   /** Authen*/
@@ -39,4 +42,10 @@ Future<void> injectionDomain() async {
           () => GetMovieDetailUseCase(injector.get<MovieRepositoryImpl>()));
   injector.registerLazySingleton(
           () => GetGenreMovieListUseCase(injector.get<MovieRepositoryImpl>()));
+  injector.registerLazySingleton(
+          () => GetMovieKeywordUseCase(injector.get<MovieRepositoryImpl>()));
+  injector.registerLazySingleton(
+          () => GetMovieSimilarUseCase(injector.get<MovieRepositoryImpl>()));
+  injector.registerLazySingleton(
+          () => GetMovieRecommendationUseCase(injector.get<MovieRepositoryImpl>()));
 }

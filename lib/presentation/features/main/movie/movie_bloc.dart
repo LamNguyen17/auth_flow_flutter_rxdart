@@ -53,12 +53,17 @@ class MovieBloc {
         .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieDetailUseCase.execute(id))
-          .flatMap((either) => either.fold(
-              (error) => Stream.value(MovieDetailError(error.toString())),
-              (data) => Stream.value(MovieDetailSuccess(data))))
+          .flatMap((either) {
+            isLoading.add(false);
+            return either.fold(
+                (error) => Stream.value(MovieDetailError(error.toString())),
+                (data) => Stream.value(MovieDetailSuccess(data)));
+          })
           .debug()
-          .onErrorReturnWith(
-              (error, _) => const MovieDetailError("Đã có lỗi xảy ra"));
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const MovieDetailError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Get detail movie */
 
@@ -68,15 +73,17 @@ class MovieBloc {
         .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieKeywordUseCase.execute(id))
-          .flatMap((either) => either.fold(
-              (error) => Stream.value(MovieKeywordError(error.toString())),
-              (data) {
-                isLoading.add(false);
-                return Stream.value(MovieKeywordSuccess(data));
-              }))
+          .flatMap((either) {
+            isLoading.add(false);
+            return either.fold(
+                (error) => Stream.value(MovieKeywordError(error.toString())),
+                (data) => Stream.value(MovieKeywordSuccess(data)));
+          })
           .debug()
-          .onErrorReturnWith(
-              (error, _) => const MovieKeywordError("Đã có lỗi xảy ra"));
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const MovieKeywordError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Get keyword movie */
 
@@ -86,12 +93,17 @@ class MovieBloc {
         .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieSimilarUseCase.execute(id))
-          .flatMap((either) => either.fold(
-              (error) => Stream.value(MovieSimilarError(error.toString())),
-              (data) => Stream.value(MovieSimilarSuccess(data))))
+          .flatMap((either) {
+            isLoading.add(false);
+            return either.fold(
+                (error) => Stream.value(MovieSimilarError(error.toString())),
+                (data) => Stream.value(MovieSimilarSuccess(data)));
+          })
           .debug()
-          .onErrorReturnWith(
-              (error, _) => const MovieSimilarError("Đã có lỗi xảy ra"));
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const MovieSimilarError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Get similar movie */
 
@@ -102,13 +114,18 @@ class MovieBloc {
             .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieRecommendationUseCase.execute(id))
-          .flatMap((either) => either.fold(
-              (error) =>
-                  Stream.value(MovieRecommendationError(error.toString())),
-              (data) => Stream.value(MovieRecommendationSuccess(data))))
+          .flatMap((either) {
+            isLoading.add(false);
+            return either.fold(
+                (error) =>
+                    Stream.value(MovieRecommendationError(error.toString())),
+                (data) => Stream.value(MovieRecommendationSuccess(data)));
+          })
           .debug()
-          .onErrorReturnWith(
-              (error, _) => const MovieRecommendationError("Đã có lỗi xảy ra"));
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const MovieRecommendationError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Get recommendation movie */
 
@@ -118,12 +135,17 @@ class MovieBloc {
         .exhaustMap((_) {
       isLoading.add(true);
       return Stream.fromFuture(getGenreMovieListUseCase.execute("movie"))
-          .flatMap((either) => either.fold(
-              (error) => Stream.value(GenreMovieListError(error.toString())),
-              (data) => Stream.value(GenreMovieListSuccess(data))))
+          .flatMap((either) {
+            isLoading.add(false);
+            return either.fold(
+                (error) => Stream.value(GenreMovieListError(error.toString())),
+                (data) => Stream.value(GenreMovieListSuccess(data)));
+          })
           .debug()
-          .onErrorReturnWith(
-              (error, _) => const GenreMovieListError("Đã có lỗi xảy ra"));
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const GenreMovieListError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Get genre movie */
 
@@ -131,16 +153,20 @@ class MovieBloc {
     final Stream<MovieStatus> getPopularMessage$ = getPopular
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
-      print('getPopular');
       isLoading.add(true);
       return getMovieListUseCase
           .execute(RequestMovieList("popular", currentPage.value))
-          .flatMap((either) => either.fold(
-              (error) => Stream.value(MovieListError(error.toString())),
-              (data) => Stream.value(MovieListSuccess(data, "popular"))))
+          .flatMap((either) {
+            isLoading.add(false);
+            return either.fold(
+                (error) => Stream.value(MovieListError(error.toString())),
+                (data) => Stream.value(MovieListSuccess(data, "popular")));
+          })
           .debug()
-          .onErrorReturnWith(
-              (error, _) => const MovieListError("Đã có lỗi xảy ra"));
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const MovieListError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Get popular movie */
 

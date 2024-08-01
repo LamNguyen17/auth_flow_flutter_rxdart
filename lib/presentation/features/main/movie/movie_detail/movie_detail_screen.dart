@@ -6,8 +6,12 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/double_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/keyword_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/recommendation_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/similar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
@@ -116,7 +120,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
                             const SizedBox(height: 8.0),
-                            _renderKeywordsMovie(),
+                            _renderKeywordsMovie(_movieBloc),
                             const SizedBox(height: 16.0),
                             const Text('Overview',
                                 style: TextStyle(
@@ -126,12 +130,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             const Text('Recommendations',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
-                            _renderRecommendationsMovie(),
+                            _renderRecommendationsMovie(_movieBloc),
                             const SizedBox(height: 16.0),
                             const Text('Similar',
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.w600)),
-                            _renderSimilarMovie(),
+                            _renderSimilarMovie(_movieBloc),
                           ],
                         ),
                       ),
@@ -160,8 +164,10 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           lineWidth: 13.0,
           percent: movie.voteAverage! * 10 / 100,
           center: Text(
-            "${movie.voteAverage! * 10}%",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
+            "${(movie.voteAverage! * 10).toFixed(1)}%",
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+                fontWeight: FontWeight.bold, fontSize: 20.0),
           ),
           circularStrokeCap: CircularStrokeCap.round,
           progressColor: Colors.purple,
@@ -172,92 +178,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     );
   }
 
-  Widget _renderSimilarMovie() {
-    return StreamBuilder(
-      stream: _movieBloc.getMovieSimilarMessage$,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data is MovieSimilarSuccess) {
-            final movie = snapshot.data.data?.results;
-            return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: movie?.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                      leading: const Icon(Icons.list),
-                      title: Text("${movie![index].title}"));
-                });
-          }
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+  Widget _renderSimilarMovie(MovieBloc movieBloc) {
+    return SimilarWidget(bloc: movieBloc);
   }
 
-  Widget _renderRecommendationsMovie() {
-    return StreamBuilder(
-      stream: _movieBloc.getMovieRecommendationMessage$,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data is MovieRecommendationSuccess) {
-            final movie = snapshot.data.data?.results;
-            return ListView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: movie?.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                      leading: const Icon(Icons.list),
-                      title: Text("${movie![index].title}"));
-                });
-          }
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+  Widget _renderRecommendationsMovie(MovieBloc movieBloc) {
+    return RecommendationWidget(bloc: movieBloc);
   }
 
-  Widget _renderKeywordsMovie() {
-    return StreamBuilder(
-      stream: _movieBloc.getMovieKeywordMessage$,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data is MovieKeywordSuccess) {
-            final keywords = snapshot.data.data?.keywords;
-            return Wrap(
-              direction: Axis.horizontal,
-              runSpacing: 12.0, // <-- Spacing between down the line
-              children: keywords
-                  .map<Widget>((item) => BoxWapper(
-                      borderRadius: 16.0,
-                      title: '${item.name}',
-                      color: HexColor.fromHex('7F7D83')))
-                  .toList(),
-            );
-          }
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Text(snapshot.error.toString()),
-          );
-        }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
+  Widget _renderKeywordsMovie(MovieBloc movieBloc) {
+    return KeywordWidget(bloc: movieBloc);
   }
 
   Widget _renderContentMovie(List<dynamic> movie) {

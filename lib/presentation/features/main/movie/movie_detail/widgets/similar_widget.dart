@@ -14,53 +14,64 @@ class SimilarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        height: 250,
-        child: StreamBuilder(
-          stream: _movieBloc.getMovieSimilarMessage$,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
-              if (snapshot.data is MovieSimilarSuccess) {
-                final movie = snapshot.data.data?.results;
-                return ListView.builder(
-                    physics: AlwaysScrollableScrollPhysics(
-                        parent: Platform.isIOS
-                            ? const BouncingScrollPhysics()
-                            : const ClampingScrollPhysics()),
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: movie?.length ?? 0,
-                    itemBuilder: (BuildContext context, int index) {
-                      return AppTouchable(
-                          onPress: () {
-                            MovieNavigator.openMovieDetail(
-                                context, movie[index].id);
-                          },
-                          child: Container(
-                              key:
-                                  ValueKey(movie[index].id), // Use a unique key
-                              margin:
-                                  const EdgeInsets.only(right: 16.0, top: 8.0),
-                              child: FastImage(
-                                url:
-                                    'https://image.tmdb.org/t/p/original${movie![index].posterPath}',
-                                width: 200,
-                                height: 250,
-                                fit: BoxFit.cover,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(16)),
-                              )));
-                    });
-              }
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(snapshot.error.toString()),
-              );
-            }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          },
-        ));
+    return StreamBuilder(
+      stream: _movieBloc.getMovieSimilarMessage$,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data is MovieSimilarSuccess) {
+            final movie = snapshot.data.data?.results;
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (movie != null || movie.isNotEmpty) ...[
+                    const Text('Similar',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w600)),
+                    SizedBox(
+                        height: 250,
+                        child: ListView.builder(
+                            physics: AlwaysScrollableScrollPhysics(
+                                parent: Platform.isIOS
+                                    ? const BouncingScrollPhysics()
+                                    : const ClampingScrollPhysics()),
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemCount: movie?.length ?? 0,
+                            itemBuilder: (BuildContext context, int index) {
+                              return AppTouchable(
+                                  onPress: () {
+                                    MovieNavigator.openMovieDetail(
+                                        context, movie[index].id);
+                                  },
+                                  child: Container(
+                                      key: ValueKey(
+                                          movie[index].id), // Use a unique key
+                                      margin: const EdgeInsets.only(
+                                          right: 16.0, top: 8.0),
+                                      child: FastImage(
+                                        url:
+                                            'https://image.tmdb.org/t/p/original${movie![index].posterPath}',
+                                        width: 200,
+                                        height: 250,
+                                        fit: BoxFit.cover,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(16)),
+                                      )));
+                            })),
+                  ] else ...[
+                    const SizedBox.shrink(),
+                  ]
+                ]);
+          }
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+    );
   }
 }

@@ -14,6 +14,7 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_
 class MovieBloc {
   /// Input
   final Function0<void> dispose;
+  final Sink<bool> isCollapsed;
   final Sink<void> getPopular;
   final Sink<void> getGenreMovie;
   final Sink<int> getMovieDetail;
@@ -22,6 +23,7 @@ class MovieBloc {
   final Sink<int> getMovieRecommendation;
 
   /// Output
+  final Stream<bool> isCollapsed$;
   final Stream<bool> isLoading$;
   final Stream<MovieStatus> getPopularMessage$;
   final Stream<MovieStatus> getGenreMovieMessage$;
@@ -38,6 +40,7 @@ class MovieBloc {
     GetMovieSimilarUseCase getMovieSimilarUseCase,
     GetMovieRecommendationUseCase getMovieRecommendationUseCase,
   ) {
+    final isCollapsed = BehaviorSubject<bool>.seeded(false);
     final isLoading = BehaviorSubject<bool>.seeded(false);
     final currentPage = BehaviorSubject<int>.seeded(1);
     final getPopular = BehaviorSubject<void>();
@@ -46,6 +49,11 @@ class MovieBloc {
     final getMovieKeyword = BehaviorSubject<int>();
     final getMovieSimilar = BehaviorSubject<int>();
     final getMovieRecommendation = BehaviorSubject<int>();
+
+    final Stream<bool> isCollapsed$ = isCollapsed
+        .throttleTime(const Duration(milliseconds: 150))
+        .switchMap((value) => Stream.value(value))
+        .asBroadcastStream();
 
     /** region Get detail movie */
     final Stream<MovieStatus> getMovieDetailMessage$ = getMovieDetail
@@ -171,6 +179,8 @@ class MovieBloc {
     /** endregion Get popular movie */
 
     return MovieBloc._(
+      isCollapsed: isCollapsed,
+      isCollapsed$: isCollapsed$,
       isLoading$: isLoading.asBroadcastStream(),
       getPopular: getPopular,
       getGenreMovie: getGenreMovie,
@@ -185,6 +195,7 @@ class MovieBloc {
       getMovieSimilarMessage$: getMovieSimilarMessage$,
       getMovieRecommendationMessage$: getMovieRecommendationMessage$,
       dispose: () {
+        isCollapsed.close();
         isLoading.close();
         getPopular.close();
         getGenreMovie.close();
@@ -197,6 +208,7 @@ class MovieBloc {
   }
 
   MovieBloc._({
+    required this.isCollapsed,
     required this.getPopular,
     required this.getGenreMovie,
     required this.getMovieDetail,
@@ -204,6 +216,7 @@ class MovieBloc {
     required this.getMovieSimilar,
     required this.getMovieRecommendation,
     required this.dispose,
+    required this.isCollapsed$,
     required this.isLoading$,
     required this.getPopularMessage$,
     required this.getGenreMovieMessage$,

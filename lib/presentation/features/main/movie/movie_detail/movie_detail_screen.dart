@@ -1,14 +1,15 @@
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/double_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/leading_app_bar_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/expanded_app_bar_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/collapsed_app_bar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/keyword_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/recommendation_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/similar_widget.dart';
@@ -24,6 +25,9 @@ class MovieDetailScreen extends StatefulWidget {
   @override
   _MovieDetailScreenState createState() => _MovieDetailScreenState();
 }
+
+const collapsedBarHeight = 60.0;
+const expandedBarHeight = 350.0;
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final _movieBloc = injector.get<MovieBloc>();
@@ -47,118 +51,107 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
           final state = snapshot.data;
           if (state is MovieDetailSuccess) {
             final movie = state.data;
-            return CustomScrollView(
-                physics: AlwaysScrollableScrollPhysics(
-                    parent: Platform.isIOS
-                        ? const BouncingScrollPhysics()
-                        : const ClampingScrollPhysics()),
-                slivers: <Widget>[
-                  SliverAppBar(
-                    pinned: true,
-                    expandedHeight: 350.0,
-                    flexibleSpace: LayoutBuilder(builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      double scrollPosition = constraints.biggest.height;
-                      Color backgroundColor = Colors.transparent;
-                      if (scrollPosition > 100) {
-                        backgroundColor = Colors.transparent;
-                      } else if (scrollPosition > 50) {
-                        backgroundColor = Colors.black;
-                      }
-                      return FlexibleSpaceBar(
-                        title: Text(
-                          '${movie.originalTitle}',
-                          style: TextStyle(
-                              fontSize: 14.0,
-                              color: backgroundColor,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        titlePadding: const EdgeInsetsDirectional.only(
-                            start: 16.0, bottom: 16.0),
+            return NotificationListener<ScrollNotification>(
+                onNotification: (scrollInfo) {
+                  var isCollapsed = scrollInfo.metrics.pixels >
+                      (expandedBarHeight - collapsedBarHeight);
+                  _movieBloc.isCollapsed.add(isCollapsed);
+                  return false;
+                },
+                child: CustomScrollView(
+                    physics: AlwaysScrollableScrollPhysics(
+                        parent: Platform.isIOS
+                            ? const BouncingScrollPhysics()
+                            : const ClampingScrollPhysics()),
+                    slivers: <Widget>[
+                      SliverAppBar(
+                        pinned: true,
+                        expandedHeight: expandedBarHeight,
                         centerTitle: true,
-                        background: ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(20.0),
-                              bottomRight: Radius.circular(20.0),
-                            ),
-                            child: Stack(
-                              fit: StackFit.expand,
-                              children: <Widget>[
-                                Image(
-                                    image: CachedNetworkImageProvider(
-                                        'https://image.tmdb.org/t/p/original${movie.posterPath}'),
-                                    fit: BoxFit.cover),
-                                // ClipRRect(
-                                //   // Clip it cleanly.
-                                //   child: BackdropFilter(
-                                //     filter:
-                                //         ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                                //     child: Container(
-                                //       color: Colors.grey.withOpacity(0.1),
-                                //       alignment: Alignment.center,
-                                //       child: const SizedBox.shrink(),
-                                //     ),
-                                //   ),
-                                // ),
-                              ],
-                            )),
-                      );
-                    }),
-                  ),
-                  SliverList(
-                    delegate: SliverChildListDelegate([
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              '${movie.originalTitle}',
-                              style: const TextStyle(
-                                  fontSize: 26.0,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text('Release date : ${movie.releaseDate}'),
-                            Text('Status : ${movie.status}'),
-                            Text('${movie.tagline}',
+                        leading: LeadingAppBarWidget(bloc: _movieBloc),
+                        title: CollapsedAppBarWidget(
+                            bloc: _movieBloc, data: movie),
+                        flexibleSpace: ExpandedAppBarWidget(data: movie),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${movie.originalTitle}',
                                 style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500)),
-                            const SizedBox(height: 16.0),
-                            _renderContentMovie(movie.genres),
-                            const SizedBox(height: 16.0),
-                            _renderUserScore(movie),
-                            const SizedBox(height: 16.0),
-                            Text('Budget : ${movie.budget}'),
-                            Text('Revenue : ${movie.revenue}'),
-                            const SizedBox(height: 16.0),
-                            const Text('Keywords',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                            const SizedBox(height: 8.0),
-                            _renderKeywordsMovie(_movieBloc),
-                            const SizedBox(height: 16.0),
-                            const Text('Overview',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                            Text('${movie.overview}'),
-                            const SizedBox(height: 16.0),
-                            const Text('Recommendations',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                            _renderRecommendationsMovie(_movieBloc),
-                            const SizedBox(height: 16.0),
-                            const Text('Similar',
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.w600)),
-                            _renderSimilarMovie(_movieBloc),
-                          ],
+                                    fontSize: 26.0,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Text('Release date : ${movie.releaseDate}'),
+                              Text('Status : ${movie.status}'),
+                              Text('${movie.tagline}',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)),
+                              const SizedBox(height: 16.0),
+                              _renderContentMovie(movie.genres),
+                              const SizedBox(height: 16.0),
+                              _renderUserScore(movie),
+                              const SizedBox(height: 16.0),
+                              Text('Budget : ${movie.budget}'),
+                              Text('Revenue : ${movie.revenue}'),
+                            ],
+                          ),
                         ),
                       ),
-                    ]),
-                  ),
-                ]);
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Keywords',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 8.0),
+                              _renderKeywordsMovie(_movieBloc),
+                            ]
+                          ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Overview',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w600)),
+                              Text('${movie.overview}'),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 16.0),
+                          child: _renderRecommendationsMovie(_movieBloc),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16.0, top: 16.0),
+                          child: _renderSimilarMovie(_movieBloc),
+                        ),
+                      ),
+                    ]));
           }
         } else if (snapshot.hasError) {
           return Center(

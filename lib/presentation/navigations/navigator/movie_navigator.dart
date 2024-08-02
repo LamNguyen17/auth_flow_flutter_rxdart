@@ -5,5 +5,5 @@ import 'package:auth_flow_flutter_rxdart/presentation/navigations/constants.dart
 
 class MovieNavigator {
   static openMovieDetail(BuildContext context, int id) =>
-      context.pushReplacementNamed(Routes.home[Home.movieDetail]!, extra: id);
+      context.pushNamed(Routes.home[Home.movieDetail]!, extra: id);
 }

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:auth_flow_flutter_rxdart/common/extensions/double_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -37,10 +38,14 @@ class ExpandedAppBarWidget extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: <Widget>[
-                  Image(
-                      image: CachedNetworkImageProvider(
-                          'https://image.tmdb.org/t/p/original${data.posterPath}'),
-                      fit: BoxFit.cover),
+                  FastImage(
+                    url: data.posterPath == null
+                        ? null
+                        : 'https://image.tmdb.org/t/p/original${data.posterPath}',
+                    fit: BoxFit.cover,
+                    width: screenWidth,
+                    height: expandedBarHeight,
+                  ),
                   ClipRRect(
                     // Clip it cleanly.
                     child: BackdropFilter(
@@ -61,19 +66,18 @@ class ExpandedAppBarWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              width: 140,
-                              height: 200,
-                              child: Material(
+                            Material(
                                 borderRadius: BorderRadius.circular(16.0),
                                 elevation: 7,
                                 clipBehavior: Clip.antiAlias,
-                                child: Image(
-                                    image: CachedNetworkImageProvider(
-                                        'https://image.tmdb.org/t/p/original${data.posterPath}'),
-                                    fit: BoxFit.cover),
-                              ),
-                            ),
+                                child: FastImage(
+                                  url: data.posterPath == null
+                                      ? null
+                                      : 'https://image.tmdb.org/t/p/original${data.posterPath}',
+                                  fit: BoxFit.cover,
+                                  width: 140,
+                                  height: 200,
+                                )),
                             const SizedBox(height: 8.0),
                             Text(
                               '${data.originalTitle}',

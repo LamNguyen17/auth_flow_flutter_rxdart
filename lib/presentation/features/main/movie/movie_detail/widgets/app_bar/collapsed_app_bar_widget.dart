@@ -13,19 +13,20 @@ class CollapsedAppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
+    return StreamBuilder<bool>(
       stream: _movieBloc.isCollapsed$,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          final isCollapsed = snapshot.data;
-          return AnimatedOpacity(
-            duration: const Duration(milliseconds: 0),
-            opacity: isCollapsed ? 1 : 0,
-            child: Text('${data.originalTitle}',
+          final bool isCollapsed = snapshot.data;
+          print('isCollapsed: $isCollapsed');
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 200),
+            // opacity: isCollapsed ? 1 : 0,
+            child: isCollapsed ? Text('${data.originalTitle}',
                 style: TextStyle(
                     fontSize: 14.0,
                     color: isCollapsed ? Colors.black : Colors.transparent,
-                    fontWeight: FontWeight.bold)),
+                    fontWeight: FontWeight.bold)) : const SizedBox.shrink(),
           );
         }
         return const SizedBox.shrink();

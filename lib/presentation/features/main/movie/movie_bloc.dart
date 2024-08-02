@@ -51,7 +51,7 @@ class MovieBloc {
     final getMovieRecommendation = BehaviorSubject<int>();
 
     final Stream<bool> isCollapsed$ = isCollapsed
-        .throttleTime(const Duration(milliseconds: 150))
+        .throttleTime(const Duration(milliseconds: 200))
         .switchMap((value) => Stream.value(value))
         .asBroadcastStream();
 

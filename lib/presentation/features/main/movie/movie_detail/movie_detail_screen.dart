@@ -1,12 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/common/extensions/double_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/leading_app_bar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/expanded_app_bar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/collapsed_app_bar_widget.dart';
@@ -53,9 +49,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
             final movie = state.data;
             return NotificationListener<ScrollNotification>(
                 onNotification: (scrollInfo) {
-                  var isCollapsed = scrollInfo.metrics.pixels >
-                      (expandedBarHeight - collapsedBarHeight);
-                  _movieBloc.isCollapsed.add(isCollapsed);
+                  /** Listen to scroll vertical to collapse app bar */
+                  if (scrollInfo.metrics.axis == Axis.vertical) {
+                    var isCollapsed = scrollInfo.metrics.pixels >
+                        (expandedBarHeight - collapsedBarHeight);
+                    _movieBloc.isCollapsed.add(isCollapsed);
+                  }
                   return false;
                 },
                 child: Stack(children: [
@@ -100,7 +99,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         SliverToBoxAdapter(
                           child: Padding(
                             padding:
-                            const EdgeInsets.only(left: 16.0, top: 16.0),
+                                const EdgeInsets.only(left: 16.0, top: 16.0),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

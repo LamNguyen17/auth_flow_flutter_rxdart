@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dartz/dartz.dart';
@@ -9,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
 
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';

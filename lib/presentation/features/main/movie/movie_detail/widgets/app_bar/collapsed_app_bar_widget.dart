@@ -18,10 +18,8 @@ class CollapsedAppBarWidget extends StatelessWidget {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           final bool isCollapsed = snapshot.data;
-          print('isCollapsed: $isCollapsed');
           return AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
-            // opacity: isCollapsed ? 1 : 0,
             child: isCollapsed ? Text('${data.originalTitle}',
                 style: TextStyle(
                     fontSize: 14.0,

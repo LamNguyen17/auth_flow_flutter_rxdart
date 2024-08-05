@@ -7,7 +7,7 @@ enum Auth { signIn, socialSignIn, register }
 
 enum Main { home, profile, news }
 
-enum Home { movieList, movieDetail }
+enum Home { movieList, movieDetail, movieReservation }
 
 class Routes {
   static const splash = '/splash';
@@ -27,6 +27,7 @@ class Routes {
   static final Map<dynamic, String> home = {
     Home.movieList: 'movie_list',
     Home.movieDetail: 'movie_detail',
+    Home.movieReservation: 'movie_reservation',
   };
 
   static Widget errorWidget(BuildContext context, GoRouterState state) =>

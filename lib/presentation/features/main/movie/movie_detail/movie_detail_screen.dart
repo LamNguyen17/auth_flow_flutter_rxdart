@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/movie_navigator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -13,6 +14,9 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 
+const collapsedBarHeight = 60.0;
+const expandedBarHeight = 350.0;
+
 class MovieDetailScreen extends StatefulWidget {
   final int id;
 
@@ -21,9 +25,6 @@ class MovieDetailScreen extends StatefulWidget {
   @override
   _MovieDetailScreenState createState() => _MovieDetailScreenState();
 }
-
-const collapsedBarHeight = 60.0;
-const expandedBarHeight = 350.0;
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   final _movieBloc = injector.get<MovieBloc>();
@@ -35,6 +36,12 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     _movieBloc.getMovieKeyword.add(widget.id);
     _movieBloc.getMovieSimilar.add(widget.id);
     _movieBloc.getMovieRecommendation.add(widget.id);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _movieBloc.dispose();
   }
 
   @override
@@ -116,7 +123,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: ElevatedButton(
                         onPressed: () {
-                          // Handle button press
+                          MovieNavigator.openMovieReservation(context);
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

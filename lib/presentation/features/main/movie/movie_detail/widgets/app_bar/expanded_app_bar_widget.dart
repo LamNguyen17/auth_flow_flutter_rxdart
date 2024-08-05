@@ -71,15 +71,19 @@ class ExpandedAppBarWidget extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(16.0),
                                 elevation: 7,
                                 clipBehavior: Clip.antiAlias,
-                                child: FastImage(
-                                  key: const ValueKey('expanded_app_bar_poster'),
-                                  url: data.posterPath == null
-                                      ? null
-                                      : 'https://image.tmdb.org/t/p/w300${data.posterPath}',
-                                  fit: BoxFit.cover,
-                                  width: 140,
-                                  height: 200,
-                                )),
+                                child: SizedBox(
+                                    width: 140,
+                                    height: 200,
+                                    child: FastImage(
+                                      key: const ValueKey(
+                                          'expanded_app_bar_poster'),
+                                      url: data.posterPath == null
+                                          ? null
+                                          : 'https://image.tmdb.org/t/p/w300${data.posterPath}',
+                                      fit: BoxFit.cover,
+                                      width: 140,
+                                      height: 200,
+                                    ))),
                             const SizedBox(height: 8.0),
                             Text(
                               '${data.originalTitle}',

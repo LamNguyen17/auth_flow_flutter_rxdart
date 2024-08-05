@@ -1,6 +1,7 @@
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/movie_detail_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_list/movie_list_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/movie_reservation_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -22,6 +23,8 @@ const String tabList = AppImages.icBottomTabList;
 
 class AppNavManager {
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
+      GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> _rootMovieKey =
       GlobalKey<NavigatorState>();
 
   static final GoRouter _router = GoRouter(
@@ -55,6 +58,7 @@ class AppNavManager {
         },
         branches: <StatefulShellBranch>[
           StatefulShellBranch(
+            navigatorKey: _rootMovieKey,
             routes: <RouteBase>[
               GoRoute(
                 path: '/home',
@@ -70,12 +74,11 @@ class AppNavManager {
                     builder: (context, state) => const MovieListScreen(),
                   ),
                   GoRoute(
-                    parentNavigatorKey: _rootNavigatorKey,
                     path: Routes.home[Home.movieDetail]!,
                     name: Routes.home[Home.movieDetail]!,
-                    builder: (context, state) {
-                      int id = state.extra as int;
-                      return MovieDetailScreen(id: id);
+                    builder: (BuildContext context, dynamic state) {
+                      final movieId = state.extra as int;
+                      return MovieDetailScreen(id: movieId);
                     },
                   ),
                 ],

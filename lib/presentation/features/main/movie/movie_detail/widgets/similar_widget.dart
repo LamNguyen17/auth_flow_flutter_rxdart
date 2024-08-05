@@ -42,6 +42,8 @@ class SimilarWidget extends StatelessWidget {
                                 scrollDirection: Axis.horizontal,
                                 itemCount: movie?.length,
                                 itemBuilder: (BuildContext context, int index) {
+                                  print(
+                                      'itemBuilder: ${movie[index]?.posterPath}');
                                   return AppTouchable(
                                       onPress: () {
                                         MovieNavigator.openMovieDetail(
@@ -49,7 +51,16 @@ class SimilarWidget extends StatelessWidget {
                                       },
                                       child: Container(
                                         key: ValueKey(movie[index].id),
-                                        // Use a unique key
+                                        width: 200,
+                                        height: 250,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: Colors.grey[300]!,
+                                            width: 1,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(16.0),
+                                        ),
                                         margin: const EdgeInsets.only(
                                             right: 16.0, top: 8.0),
                                         child: FastImage(
@@ -60,7 +71,7 @@ class SimilarWidget extends StatelessWidget {
                                           height: 250,
                                           fit: BoxFit.cover,
                                           borderRadius: const BorderRadius.all(
-                                              Radius.circular(16)),
+                                              Radius.circular(16.0)),
                                         ),
                                       ));
                                 })),

@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: const Size.fromRadius(20),
                       // Image radius
                       child: FastImage(
-                        url: state is ProfileSuccess ? state.data.photoURL : '',
+                        url: state is ProfileSuccess ? state.data.photoURL : null,
                         fit: BoxFit.cover,
                         width: 40,
                         height: 40,

@@ -21,65 +21,69 @@ class RecommendationWidget extends StatelessWidget {
         if (snapshot.hasData) {
           if (snapshot.data is MovieRecommendationSuccess) {
             final movie = snapshot.data.data?.results;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (movie != null || movie.isNotEmpty) ...[
-                  const Text('Recommendations',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-                  SizedBox(
-                      height: 250,
-                      child: ListView.builder(
-                        physics: AlwaysScrollableScrollPhysics(
-                            parent: Platform.isIOS
-                                ? const BouncingScrollPhysics()
-                                : const ClampingScrollPhysics()),
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        // children: movie
-                        //     .map<Widget>((item) => Container(
-                        //         margin: const EdgeInsets.all(8.0),
-                        //         child: FastImage(
-                        //           key: PageStorageKey<int>(item.id),
-                        //           url:
-                        //               'https://image.tmdb.org/t/p/original${item.posterPath}',
-                        //           width: 200,
-                        //           height: 250,
-                        //           fit: BoxFit.cover,
-                        //           borderRadius:
-                        //               const BorderRadius.all(Radius.circular(16)),
-                        //         )))
-                        //     .toList()
-                        itemCount: movie?.length ?? 0,
-                        itemBuilder: (BuildContext context, int index) {
-                          return AppTouchable(
-                              onPress: () {
-                                MovieNavigator.openMovieDetail(
-                                    context, movie[index].id);
-                              },
-                              child: Container(
-                                  key: ValueKey(
-                                      movie[index].id), // Use a unique key
-                                  margin: const EdgeInsets.only(
-                                      right: 16.0, top: 8.0),
-                                  child: FastImage(
-                                    url: movie[index].posterPath == null
-                                        ? null
-                                        : 'https://image.tmdb.org/t/p/original${movie[index].posterPath}',
-                                    width: 200,
-                                    height: 250,
-                                    fit: BoxFit.cover,
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(16)),
-                                  )));
-                        },
-                      )),
-                ] else ...[
-                  const SizedBox.shrink(),
-                ]
-              ],
-            );
+            return Padding(
+                padding: movie != null && movie.isNotEmpty
+                    ? const EdgeInsets.only(left: 16.0, top: 16.0)
+                    : const EdgeInsets.all(0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (movie != null && movie.isNotEmpty) ...[
+                      const Text('Recommendations',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w600)),
+                      SizedBox(
+                          height: 250,
+                          child: ListView.builder(
+                            physics: AlwaysScrollableScrollPhysics(
+                                parent: Platform.isIOS
+                                    ? const BouncingScrollPhysics()
+                                    : const ClampingScrollPhysics()),
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            // children: movie
+                            //     .map<Widget>((item) => Container(
+                            //         margin: const EdgeInsets.all(8.0),
+                            //         child: FastImage(
+                            //           key: PageStorageKey<int>(item.id),
+                            //           url:
+                            //               'https://image.tmdb.org/t/p/original${item.posterPath}',
+                            //           width: 200,
+                            //           height: 250,
+                            //           fit: BoxFit.cover,
+                            //           borderRadius:
+                            //               const BorderRadius.all(Radius.circular(16)),
+                            //         )))
+                            //     .toList()
+                            itemCount: movie?.length ?? 0,
+                            itemBuilder: (BuildContext context, int index) {
+                              return AppTouchable(
+                                  onPress: () {
+                                    MovieNavigator.openMovieDetail(
+                                        context, movie[index].id);
+                                  },
+                                  child: Container(
+                                      key: ValueKey(
+                                          movie[index].id), // Use a unique key
+                                      margin: const EdgeInsets.only(
+                                          right: 16.0, top: 8.0),
+                                      child: FastImage(
+                                        url: movie[index].posterPath == null
+                                            ? null
+                                            : 'https://image.tmdb.org/t/p/original${movie[index].posterPath}',
+                                        width: 200,
+                                        height: 250,
+                                        fit: BoxFit.cover,
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(16)),
+                                      )));
+                            },
+                          )),
+                    ] else ...[
+                      const SizedBox.shrink(),
+                    ]
+                  ],
+                ));
           }
         } else if (snapshot.hasError) {
           return Center(

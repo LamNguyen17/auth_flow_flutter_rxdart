@@ -1,6 +1,6 @@
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 
 class CollapsedAppBarWidget extends StatelessWidget {

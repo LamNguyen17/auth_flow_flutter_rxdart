@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/genres_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/overview_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -97,72 +99,16 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                           ),
                         ),
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, top: 16.0),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Genres',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600)),
-                                  const SizedBox(height: 8.0),
-                                  _renderContentMovie(movie.genres),
-                                ]),
-                          ),
-                        ),
+                            child: GenresWidget(genre: movie.genres)),
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, top: 16.0),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text('Keywords',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w600)),
-                                  const SizedBox(height: 8.0),
-                                  _renderKeywordsMovie(_movieBloc),
-                                ]),
-                          ),
-                        ),
+                            child: KeywordWidget(bloc: _movieBloc)),
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, top: 16.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('Overview',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w600)),
-                                Text('${movie.overview}'),
-                              ],
-                            ),
-                          ),
-                        ),
+                            child: OverviewWidget(overview: movie.overview)),
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, top: 16.0),
-                            child: _renderRecommendationsMovie(_movieBloc),
-                          ),
-                        ),
+                            child: RecommendationWidget(bloc: _movieBloc)),
                         SliverToBoxAdapter(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, top: 16.0),
-                            child: _renderSimilarMovie(_movieBloc),
-                          ),
-                        ),
-                        const SliverToBoxAdapter(
-                          child: SizedBox(
-                              height:
-                                  100), // Spacer to ensure footer visibility
-                        ),
+                            child: SimilarWidget(bloc: _movieBloc)),
+                        const SliverToBoxAdapter(child: SizedBox(height: 100))
                       ]),
                   Align(
                     alignment: Alignment.bottomCenter,
@@ -196,27 +142,5 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
         );
       },
     ));
-  }
-
-  Widget _renderSimilarMovie(MovieBloc movieBloc) {
-    return SimilarWidget(bloc: movieBloc);
-  }
-
-  Widget _renderRecommendationsMovie(MovieBloc movieBloc) {
-    return RecommendationWidget(bloc: movieBloc);
-  }
-
-  Widget _renderKeywordsMovie(MovieBloc movieBloc) {
-    return KeywordWidget(bloc: movieBloc);
-  }
-
-  Widget _renderContentMovie(List<dynamic> movie) {
-    return Row(
-        children: movie
-            .map((item) => BoxWapper(
-                borderRadius: 16.0,
-                title: '${item.name}',
-                color: HexColor.fromHex('7F7D83')))
-            .toList());
   }
 }

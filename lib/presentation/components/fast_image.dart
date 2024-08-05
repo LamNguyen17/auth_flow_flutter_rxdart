@@ -11,7 +11,7 @@ class FastImage extends StatelessWidget {
 
   const FastImage(
       {super.key,
-      this.url,
+      required this.url,
       required this.width,
       required this.height,
       this.borderDefaultImg,
@@ -20,7 +20,7 @@ class FastImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (url!.isEmpty || url == null) {
+    if (url == null) {
       return const Center(child: Icon(Icons.error));
     }
     return CachedNetworkImage(

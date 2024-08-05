@@ -39,6 +39,7 @@ class ExpandedAppBarWidget extends StatelessWidget {
                 fit: StackFit.expand,
                 children: <Widget>[
                   FastImage(
+                    key: const ValueKey('expanded_app_bar'),
                     url: data.posterPath == null
                         ? null
                         : 'https://image.tmdb.org/t/p/original${data.posterPath}',
@@ -71,9 +72,10 @@ class ExpandedAppBarWidget extends StatelessWidget {
                                 elevation: 7,
                                 clipBehavior: Clip.antiAlias,
                                 child: FastImage(
+                                  key: const ValueKey('expanded_app_bar_poster'),
                                   url: data.posterPath == null
                                       ? null
-                                      : 'https://image.tmdb.org/t/p/original${data.posterPath}',
+                                      : 'https://image.tmdb.org/t/p/w300${data.posterPath}',
                                   fit: BoxFit.cover,
                                   width: 140,
                                   height: 200,

@@ -68,9 +68,9 @@ class RecommendationWidget extends StatelessWidget {
                                       margin: const EdgeInsets.only(
                                           right: 16.0, top: 8.0),
                                       child: FastImage(
-                                        url: movie[index].posterPath == null
+                                        url: movie[index]?.posterPath == null
                                             ? null
-                                            : 'https://image.tmdb.org/t/p/original${movie[index].posterPath}',
+                                            : 'https://image.tmdb.org/t/p/w300${movie[index].posterPath}',
                                         width: 200,
                                         height: 250,
                                         fit: BoxFit.cover,

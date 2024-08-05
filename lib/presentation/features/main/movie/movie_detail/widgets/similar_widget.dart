@@ -20,7 +20,6 @@ class SimilarWidget extends StatelessWidget {
         if (snapshot.hasData) {
           if (snapshot.data is MovieSimilarSuccess) {
             final movie = snapshot.data.data?.results;
-            print('movie: $movie - ${movie.length} - ${movie.isNotEmpty}');
             return Padding(
                 padding: movie != null && movie.isNotEmpty
                     ? const EdgeInsets.only(left: 16.0, top: 16.0)
@@ -41,7 +40,7 @@ class SimilarWidget extends StatelessWidget {
                                         : const ClampingScrollPhysics()),
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
-                                itemCount: movie?.length ?? 0,
+                                itemCount: movie?.length,
                                 itemBuilder: (BuildContext context, int index) {
                                   return AppTouchable(
                                       onPress: () {
@@ -49,21 +48,21 @@ class SimilarWidget extends StatelessWidget {
                                             context, movie[index].id);
                                       },
                                       child: Container(
-                                          key: ValueKey(movie[index].id),
-                                          // Use a unique key
-                                          margin: const EdgeInsets.only(
-                                              right: 16.0, top: 8.0),
-                                          child: FastImage(
-                                            url: movie[index].posterPath == null
-                                                ? null
-                                                : 'https://image.tmdb.org/t/p/original${movie[index].posterPath}',
-                                            width: 200,
-                                            height: 250,
-                                            fit: BoxFit.cover,
-                                            borderRadius:
-                                                const BorderRadius.all(
-                                                    Radius.circular(16)),
-                                          )));
+                                        key: ValueKey(movie[index].id),
+                                        // Use a unique key
+                                        margin: const EdgeInsets.only(
+                                            right: 16.0, top: 8.0),
+                                        child: FastImage(
+                                          url: movie[index]?.posterPath == null
+                                              ? null
+                                              : 'https://image.tmdb.org/t/p/w300${movie[index]?.posterPath}',
+                                          width: 200,
+                                          height: 250,
+                                          fit: BoxFit.cover,
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(16)),
+                                        ),
+                                      ));
                                 })),
                       ] else ...[
                         const SizedBox.shrink(),

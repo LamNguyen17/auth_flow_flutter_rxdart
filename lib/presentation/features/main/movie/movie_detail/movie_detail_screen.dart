@@ -1,17 +1,15 @@
 import 'dart:io';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/genres_widget.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/overview_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/genres_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/overview_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/leading_app_bar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/expanded_app_bar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/collapsed_app_bar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/keyword_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/recommendation_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/similar_widget.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 
@@ -108,7 +106,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             child: RecommendationWidget(bloc: _movieBloc)),
                         SliverToBoxAdapter(
                             child: SimilarWidget(bloc: _movieBloc)),
-                        const SliverToBoxAdapter(child: SizedBox(height: 100))
+                        const SliverToBoxAdapter(child: SizedBox(height: 100)),
                       ]),
                   Align(
                     alignment: Alignment.bottomCenter,

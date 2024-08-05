@@ -24,8 +24,6 @@ const String tabList = AppImages.icBottomTabList;
 class AppNavManager {
   static final GlobalKey<NavigatorState> _rootNavigatorKey =
       GlobalKey<NavigatorState>();
-  static final GlobalKey<NavigatorState> _rootMovieKey =
-      GlobalKey<NavigatorState>();
 
   static final GoRouter _router = GoRouter(
     initialLocation: Routes.splash,
@@ -58,7 +56,6 @@ class AppNavManager {
         },
         branches: <StatefulShellBranch>[
           StatefulShellBranch(
-            navigatorKey: _rootMovieKey,
             routes: <RouteBase>[
               GoRoute(
                 path: '/home',
@@ -68,19 +65,35 @@ class AppNavManager {
                 },
                 routes: [
                   GoRoute(
-                    parentNavigatorKey: _rootNavigatorKey,
-                    path: Routes.home[Home.movieList]!,
-                    name: Routes.home[Home.movieList]!,
+                    path: 'movies',
                     builder: (context, state) => const MovieListScreen(),
+                    routes: <GoRoute>[
+                      GoRoute(
+                        parentNavigatorKey: _rootNavigatorKey,
+                        path: 'booking',
+                        builder: (BuildContext context, GoRouterState state) {
+                          return const MovieReservationScreen();
+                        },
+                      ),
+                      GoRoute(
+                        parentNavigatorKey: _rootNavigatorKey,
+                        path: ':movieId',
+                        builder: (BuildContext context, GoRouterState state) {
+                          final movieId =
+                              int.parse(state.pathParameters['movieId']!);
+                          return MovieDetailScreen(id: movieId);
+                        },
+                      ),
+                    ],
                   ),
-                  GoRoute(
-                    path: Routes.home[Home.movieDetail]!,
-                    name: Routes.home[Home.movieDetail]!,
-                    builder: (BuildContext context, dynamic state) {
-                      final movieId = state.extra as int;
-                      return MovieDetailScreen(id: movieId);
-                    },
-                  ),
+                  // GoRoute(
+                  //   path: Routes.home[Home.movieDetail]!,
+                  //   name: Routes.home[Home.movieDetail]!,
+                  //   builder: (BuildContext context, dynamic state) {
+                  //     final movieId = state.extra as int;
+                  //     return MovieDetailScreen(id: movieId);
+                  //   },
+                  // ),
                 ],
               )
             ],

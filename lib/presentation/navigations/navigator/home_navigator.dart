@@ -5,8 +5,11 @@ import 'package:auth_flow_flutter_rxdart/presentation/navigations/constants.dart
 
 class HomeNavigator {
   static openMovieList(BuildContext context) =>
-      context.pushNamed(Routes.home[Home.movieList]!);
+      context.push('/home/movies');
+
+  // static openMovieDetail(BuildContext context, int id) =>
+  //     context.go(Routes.home[Home.movieDetail]!, extra: id);
 
   static openMovieDetail(BuildContext context, int id) =>
-      context.pushNamed(Routes.home[Home.movieDetail]!, extra: id);
+      context.push('/home/movies/$id');
 }

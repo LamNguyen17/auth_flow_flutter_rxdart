@@ -1,8 +1,10 @@
-import 'dart:math';
-import 'dart:ui';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/widgets/projector_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/widgets/select_date_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/widgets/select_seat_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/widgets/select_time_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_bar.dart';
 
 class MovieReservationScreen extends StatefulWidget {
@@ -15,94 +17,74 @@ class MovieReservationScreen extends StatefulWidget {
 class _MovieReservationScreenState extends State<MovieReservationScreen> {
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width - 16.0 * 2;
     return CustomAppBar(
       title: '',
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Stack(children: [
-            CustomPaint(
-              painter: CurvePainter(),
-              child: SizedBox(width: screenWidth, height: 250),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Stack(
+          children: [
+            CustomScrollView(
+              physics: AlwaysScrollableScrollPhysics(
+                  parent: Platform.isIOS
+                      ? const BouncingScrollPhysics()
+                      : const ClampingScrollPhysics()),
+              slivers: const <Widget>[
+                SliverToBoxAdapter(child: ProjectorWidget()),
+                SliverToBoxAdapter(child: SelectSeatWidget()),
+                SliverToBoxAdapter(child: SelectDateWidget()),
+                SliverToBoxAdapter(child: SelectTimeWidget()),
+                SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
             ),
-            Center(
-              child: ClipPath(
-                clipper: CurveClipper(),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-                  child: Container(
-                    width: screenWidth,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          colors: [
-                            Colors.orangeAccent,
-                            Colors.orangeAccent.withAlpha(1),
-                            Colors.black,
-                          ],
-                          // begin: FractionalOffset(0.0, 1.0),
-                          // end: FractionalOffset(0.0, 0.0),
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          // stops: [0.0, 1.0],
-                          tileMode: TileMode.clamp),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                width: double.infinity,
+                height: 100,
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Total price',
+                          style: TextStyle(
+                              fontSize: 16.0, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'Rp 100.000',
+                          style: TextStyle(
+                              color: Colors.orangeAccent,
+                              fontSize: 24.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                    // color: Colors.orangeAccent.withOpacity(0.1),
-                  ),
+                    SizedBox(
+                        width: 150,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orangeAccent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                            ),
+                          ),
+                          child: const Text('Buy Now',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w400)),
+                        )),
+                  ],
                 ),
               ),
             ),
-          ]),
+          ],
         ),
       ),
     );
   }
-}
-
-class CurvePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.orangeAccent
-      ..strokeWidth = 8
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-
-    final path = Path();
-
-    // Start at the left center of the canvas
-    path.moveTo(0, size.height / 2);
-
-    // Draw a quadratic Bezier curve
-    path.quadraticBezierTo(
-      // size.width / 2, size.height, // control point
-      // size.width, size.height / 2, // end point
-      size.width / 2, 0, // control point at the top center
-      size.width, size.height / 2, // end point at the middle right
-    );
-
-    canvas.drawPath(path, paint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class CurveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    final path = Path();
-    path.moveTo(0, size.height / 2);
-    path.quadraticBezierTo(
-      // size.width / 2, size.height, // control point
-      // size.width, size.height / 2, // end point
-      size.width / 2, 0, // control point at the top center
-      size.width, size.height / 2, // end point at the middle right
-    );
-    return path;
-  }
-
-  @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }

@@ -1,3 +1,5 @@
+import 'package:get_it/get_it.dart';
+
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecase.dart';
@@ -35,7 +37,11 @@ Future<void> injectionBloc() async {
   injector.registerFactory(() => ProfileBloc(
       injector.get<GetProfileUseCase>(),
   ));
-  injector.registerFactory(() => MovieBloc(
+  registerMovieBloc(injector);
+}
+
+Future<void> registerMovieBloc(GetIt injector) async {
+  injector.registerLazySingleton(() => MovieBloc(
     injector.get<GetGenreMovieListUseCase>(),
     injector.get<GetMovieListUseCase>(),
     injector.get<GetMovieDetailUseCase>(),

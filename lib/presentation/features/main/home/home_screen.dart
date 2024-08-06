@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     // Dispose of the ProfileBloc here
-    _movieBloc.dispose();
+    _movieBloc.disposeBag();
     _homeBloc.close();
     super.dispose();
   }

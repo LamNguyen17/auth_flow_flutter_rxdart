@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/widgets/projector_widget.dart';
@@ -15,6 +18,8 @@ class MovieReservationScreen extends StatefulWidget {
 }
 
 class _MovieReservationScreenState extends State<MovieReservationScreen> {
+  final _movieBloc = injector.get<MovieBloc>();
+
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
@@ -28,12 +33,47 @@ class _MovieReservationScreenState extends State<MovieReservationScreen> {
                   parent: Platform.isIOS
                       ? const BouncingScrollPhysics()
                       : const ClampingScrollPhysics()),
-              slivers: const <Widget>[
-                SliverToBoxAdapter(child: ProjectorWidget()),
-                SliverToBoxAdapter(child: SelectSeatWidget()),
-                SliverToBoxAdapter(child: SelectDateWidget()),
-                SliverToBoxAdapter(child: SelectTimeWidget()),
-                SliverToBoxAdapter(child: SizedBox(height: 100)),
+              slivers: <Widget>[
+                const SliverToBoxAdapter(child: ProjectorWidget()),
+                const SliverToBoxAdapter(child: SelectSeatWidget()),
+                const SliverToBoxAdapter(child: SelectDateWidget()),
+                const SliverToBoxAdapter(child: SelectTimeWidget()),
+                SliverToBoxAdapter(
+                    child: StreamBuilder(
+                  stream: _movieBloc.getMovieDetailMessage$,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      final state = snapshot.data;
+                      if (state is MovieDetailSuccess) {
+                        final movie = state.data;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Movie Title : ${movie.title}',
+                              style: const TextStyle(
+                                  fontSize: 16.0, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8.0),
+                            Text(
+                              'Movie Description : ${movie.overview}',
+                              style: const TextStyle(
+                                  fontSize: 14.0, fontWeight: FontWeight.w400),
+                            ),
+                          ],
+                        );
+                      }
+                      return const Text('Test');
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text(snapshot.error.toString()),
+                      );
+                    }
+                    return const SizedBox();
+                  },
+                )),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
             ),
             Align(

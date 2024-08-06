@@ -13,7 +13,7 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_
 
 class MovieBloc {
   /// Input
-  final Function0<void> dispose;
+  final Function0<void> disposeBag;
   final Sink<bool> isCollapsed;
   final Sink<void> getPopular;
   final Sink<void> getGenreMovie;
@@ -194,7 +194,7 @@ class MovieBloc {
       getMovieKeywordMessage$: getMovieKeywordMessage$,
       getMovieSimilarMessage$: getMovieSimilarMessage$,
       getMovieRecommendationMessage$: getMovieRecommendationMessage$,
-      dispose: () {
+      disposeBag: () {
         isCollapsed.close();
         isLoading.close();
         getPopular.close();
@@ -215,7 +215,7 @@ class MovieBloc {
     required this.getMovieKeyword,
     required this.getMovieSimilar,
     required this.getMovieRecommendation,
-    required this.dispose,
+    required this.disposeBag,
     required this.isCollapsed$,
     required this.isLoading$,
     required this.getPopularMessage$,

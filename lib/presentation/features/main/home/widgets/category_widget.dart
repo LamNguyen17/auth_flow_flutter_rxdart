@@ -30,7 +30,7 @@ class _CategoryWidgetState extends State<CategoryWidget> with AutomaticKeepAlive
 
   @override
   void dispose() {
-    _movieBloc.dispose();
+    _movieBloc.disposeBag();
     print('CategoryWidget dispose');
     super.dispose();
   }

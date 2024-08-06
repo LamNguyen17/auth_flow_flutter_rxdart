@@ -1,5 +1,6 @@
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:flutter/material.dart';
+
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 
 class LeadingAppBarWidget extends StatelessWidget {
   final MovieBloc _movieBloc;

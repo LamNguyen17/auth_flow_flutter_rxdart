@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/di/injection_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/movie_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/genres_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/overview_widget.dart';
@@ -44,8 +43,6 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     super.dispose();
     print('MovieDetailScreen_dispose');
     _movieBloc.disposeBag();
-    injector.unregister<MovieBloc>();
-    registerMovieBloc(injector);
   }
 
   @override

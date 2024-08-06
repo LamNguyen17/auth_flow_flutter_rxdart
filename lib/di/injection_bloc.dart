@@ -25,28 +25,28 @@ import 'package:auth_flow_flutter_rxdart/presentation/features/splash/splash_blo
 Future<void> injectionBloc() async {
   injector.registerFactory(() => HomeBloc());
   injector.registerFactory(() => AuthBloc(
-    injector.get<SignInWithGoogleUseCase>(),
-    injector.get<SignInWithFacebookUseCase>(),
-    injector.get<SignInWithAppleUseCase>(),
-    injector.get<SignInUseCase>(),
-    injector.get<RegisterUseCase>(),
-    injector.get<LogoutUseCase>(),
-    injector.get<DeleteAccountUseCase>(),
-  ));
+        injector.get<SignInWithGoogleUseCase>(),
+        injector.get<SignInWithFacebookUseCase>(),
+        injector.get<SignInWithAppleUseCase>(),
+        injector.get<SignInUseCase>(),
+        injector.get<RegisterUseCase>(),
+        injector.get<LogoutUseCase>(),
+        injector.get<DeleteAccountUseCase>(),
+      ));
   injector.registerFactory(() => SplashBloc());
   injector.registerFactory(() => ProfileBloc(
-      injector.get<GetProfileUseCase>(),
-  ));
+        injector.get<GetProfileUseCase>(),
+      ));
   registerMovieBloc(injector);
 }
 
 Future<void> registerMovieBloc(GetIt injector) async {
   injector.registerLazySingleton(() => MovieBloc(
-    injector.get<GetGenreMovieListUseCase>(),
-    injector.get<GetMovieListUseCase>(),
-    injector.get<GetMovieDetailUseCase>(),
-    injector.get<GetMovieKeywordUseCase>(),
-    injector.get<GetMovieSimilarUseCase>(),
-    injector.get<GetMovieRecommendationUseCase>(),
-  ));
+        injector.get<GetGenreMovieListUseCase>(),
+        injector.get<GetMovieListUseCase>(),
+        injector.get<GetMovieDetailUseCase>(),
+        injector.get<GetMovieKeywordUseCase>(),
+        injector.get<GetMovieSimilarUseCase>(),
+        injector.get<GetMovieRecommendationUseCase>(),
+      ));
 }

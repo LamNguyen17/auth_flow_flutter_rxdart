@@ -1,6 +1,9 @@
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/di/injection_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_detail_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_keyword_usecase.dart';
@@ -57,7 +60,7 @@ class MovieBloc {
 
     /** region Get detail movie */
     final Stream<MovieStatus> getMovieDetailMessage$ = getMovieDetail
-        .debounceTime(const Duration(milliseconds: 350))
+        .debounceTime(const Duration(milliseconds: 150))
         .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieDetailUseCase.execute(id))
@@ -77,7 +80,7 @@ class MovieBloc {
 
     /** region Get keyword movie */
     final Stream<MovieStatus> getMovieKeywordMessage$ = getMovieKeyword
-        .debounceTime(const Duration(milliseconds: 350))
+        .debounceTime(const Duration(milliseconds: 150))
         .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieKeywordUseCase.execute(id))
@@ -97,7 +100,7 @@ class MovieBloc {
 
     /** region Get similar movie */
     final Stream<MovieStatus> getMovieSimilarMessage$ = getMovieSimilar
-        .debounceTime(const Duration(milliseconds: 350))
+        .debounceTime(const Duration(milliseconds: 150))
         .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieSimilarUseCase.execute(id))
@@ -118,7 +121,7 @@ class MovieBloc {
     /** region Get recommendation movie */
     final Stream<MovieStatus> getMovieRecommendationMessage$ =
         getMovieRecommendation
-            .debounceTime(const Duration(milliseconds: 350))
+            .debounceTime(const Duration(milliseconds: 150))
             .exhaustMap((int id) {
       isLoading.add(true);
       return Stream.fromFuture(getMovieRecommendationUseCase.execute(id))
@@ -139,7 +142,7 @@ class MovieBloc {
 
     /** region Get genre movie */
     final Stream<MovieStatus> getGenreMovieMessage$ = getGenreMovie
-        .debounceTime(const Duration(milliseconds: 350))
+        .debounceTime(const Duration(milliseconds: 150))
         .exhaustMap((_) {
       isLoading.add(true);
       return Stream.fromFuture(getGenreMovieListUseCase.execute("movie"))
@@ -159,20 +162,31 @@ class MovieBloc {
 
     /** region Get popular movie */
     final Stream<MovieStatus> getPopularMessage$ = getPopular
-        .debounceTime(const Duration(milliseconds: 350))
+        .debounceTime(const Duration(milliseconds: 150))
         .exhaustMap((_) {
       isLoading.add(true);
+      // Check cache first
+      if (MovieBloc._cache != null) {
+        return Stream.value(MovieBloc._cache!);
+      }
       return getMovieListUseCase
           .execute(RequestMovieList("popular", currentPage.value))
           .flatMap((either) {
             isLoading.add(false);
-            return either.fold(
-                (error) => Stream.value(MovieListError(error.toString())),
-                (data) => Stream.value(MovieListSuccess(data, "popular")));
+            return either.fold((error) {
+              MovieBloc._cache = null; // Clear cache on error
+              return Stream.value(MovieListError(error.toString()));
+            }, (data) {
+              // return Stream.value(MovieListSuccess(data, "popular"));
+              final movieListSuccess = MovieListSuccess(data, "popular");
+              MovieBloc._cache = movieListSuccess;
+              return Stream.value(movieListSuccess);
+            });
           })
           .debug()
           .onErrorReturnWith((error, _) {
             isLoading.add(false);
+            MovieBloc._cache = null; // Clear cache on error
             return const MovieListError("Đã có lỗi xảy ra");
           });
     });
@@ -203,6 +217,8 @@ class MovieBloc {
         getMovieKeyword.close();
         getMovieSimilar.close();
         getMovieRecommendation.close();
+        injector.unregister<MovieBloc>();
+        registerMovieBloc(injector);
       },
     );
   }
@@ -225,4 +241,6 @@ class MovieBloc {
     required this.getMovieSimilarMessage$,
     required this.getMovieRecommendationMessage$,
   });
+
+  static MovieListSuccess? _cache;
 }

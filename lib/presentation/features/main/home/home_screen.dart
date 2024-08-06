@@ -33,7 +33,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _movieBloc = injector.get<MovieBloc>();
-  final _homeBloc = injector.get<HomeBloc>();
 
   @override
   void initState() {
@@ -43,10 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // Dispose of the ProfileBloc here
-    _movieBloc.disposeBag();
-    _homeBloc.close();
     super.dispose();
+    _movieBloc.disposeBag();
   }
 
   @override

@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/widgets/movie_cell_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/movie_navigator.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 
@@ -57,35 +56,12 @@ class RecommendationWidget extends StatelessWidget {
                             //     .toList()
                             itemCount: movie?.length ?? 0,
                             itemBuilder: (BuildContext context, int index) {
-                              return AppTouchable(
-                                  onPress: () {
+                              return MovieCellWidget(
+                                  movieCardItem: movie[index],
+                                  onPressed: () {
                                     MovieNavigator.openMovieDetail(
                                         context, movie[index].id);
-                                  },
-                                  child: Container(
-                                      key: ValueKey(movie[index].id),
-                                      width: 200,
-                                      height: 250,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.grey[300]!,
-                                          width: 1,
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(16.0),
-                                      ),
-                                      margin: const EdgeInsets.only(
-                                          right: 16.0, top: 8.0),
-                                      child: FastImage(
-                                        url: movie[index]?.posterPath == null
-                                            ? null
-                                            : 'https://image.tmdb.org/t/p/w300${movie[index].posterPath}',
-                                        width: 200,
-                                        height: 250,
-                                        fit: BoxFit.cover,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(16.0)),
-                                      )));
+                                  });
                             },
                           )),
                     ] else ...[

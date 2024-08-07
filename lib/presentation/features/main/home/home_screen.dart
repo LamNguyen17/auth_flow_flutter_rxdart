@@ -1,13 +1,12 @@
 import 'dart:io';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_bloc.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/home_navigator.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/widgets/movie_cell_widget.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/home_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/widgets/search_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_carousel.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/widgets/category_widget.dart';
@@ -64,7 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       size: const Size.fromRadius(20),
                       // Image radius
                       child: FastImage(
-                        url: state is ProfileSuccess ? state.data.photoURL : null,
+                        url: state is ProfileSuccess
+                            ? state.data.photoURL
+                            : null,
                         fit: BoxFit.cover,
                         width: 40,
                         height: 40,
@@ -153,22 +154,13 @@ class _HomeScreenState extends State<HomeScreen> {
               return AppCarousel(
                 itemCount: movies,
                 itemBuilder: (BuildContext context, int index) {
-                  final ResultItem? movie = movies?[index];
-                  return AppTouchable(
-                    onPress: () {
-                      print('AppTouchable_getPopular: $movie');
-                      HomeNavigator.openMovieDetail(context, movie!.id);
-                    },
-                    child: Container(
-                        margin: const EdgeInsets.all(2),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(36),
-                            child: Image.network(
-                              'https://image.tmdb.org/t/p/w300${movie?.posterPath}',
-                              fit: BoxFit.cover,
-                              width: 1000,
-                            ))),
-                  );
+                  return MovieCellWidget(
+                      width: 1000,
+                      movieCardItem: movies![index],
+                      onPressed: () {
+                        HomeNavigator.openMovieDetail(
+                            context, movies[index].id);
+                      });
                 },
               );
             } else if (state is MovieListError) {

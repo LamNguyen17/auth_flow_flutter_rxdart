@@ -18,13 +18,16 @@ class GenresWidget extends StatelessWidget {
         const Text('Genres',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
         const SizedBox(height: 8.0),
-        Row(
-            children: _genres
-                .map((item) => BoxWapper(
-                    borderRadius: 16.0,
-                    title: '${item.name}',
-                    color: HexColor.fromHex('7F7D83')))
-                .toList()),
+        Wrap(
+          direction: Axis.horizontal,
+          runSpacing: 12.0, // <-- Spacing between down the line
+          children: _genres
+              .map<Widget>((item) => BoxWapper(
+              borderRadius: 16.0,
+              title: '${item.name}',
+              color: HexColor.fromHex('7F7D83')))
+              .toList(),
+        ),
       ]),
     );
   }

@@ -41,7 +41,7 @@ Future<void> injectionBloc() async {
 }
 
 Future<void> registerMovieBloc(GetIt injector) async {
-  injector.registerLazySingleton(() => MovieBloc(
+  injector.registerFactory(() => MovieBloc(
         injector.get<GetGenreMovieListUseCase>(),
         injector.get<GetMovieListUseCase>(),
         injector.get<GetMovieDetailUseCase>(),

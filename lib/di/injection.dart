@@ -13,7 +13,7 @@ final injector = GetIt.instance;
 Future<void> configureDI() async {
   injector.registerLazySingleton(() => ApiGateway());
   injector.registerLazySingleton(() => StorageGateway());
-  injector.registerFactory(() => NotificationService());
+  injector.registerLazySingleton(() => NotificationService());
   injectionBloc();
   injectionData();
   injectionDomain();

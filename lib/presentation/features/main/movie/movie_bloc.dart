@@ -217,8 +217,8 @@ class MovieBloc {
         getMovieKeyword.close();
         getMovieSimilar.close();
         getMovieRecommendation.close();
-        injector.unregister<MovieBloc>();
-        registerMovieBloc(injector);
+        // injector.unregister<MovieBloc>();
+        // registerMovieBloc(injector);
       },
     );
   }

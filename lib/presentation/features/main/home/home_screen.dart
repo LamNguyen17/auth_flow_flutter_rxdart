@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/widgets/movie_cell_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/home_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/widgets/search_widget.dart';
@@ -31,18 +31,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _movieBloc = injector.get<MovieBloc>();
+  late MovieBloc _movieBloc;
 
   @override
   void initState() {
     super.initState();
+    _createBloc();
+  }
+
+  void _createBloc() {
+    _movieBloc = BlocProvider.of<MovieBloc>(context);
     _movieBloc.getPopular.add(null);
   }
 
   @override
   void dispose() {
+    _movieBloc.dispose();
     super.dispose();
-    _movieBloc.disposeBag();
   }
 
   @override
@@ -121,6 +126,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _renderMovieWidget() {
+    final movieBloc = BlocProvider.of<MovieBloc>(context).getPopular.add(null);
+
     return Column(children: <Widget>[
       Container(
         margin: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),

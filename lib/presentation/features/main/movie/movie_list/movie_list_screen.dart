@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:flutter/material.dart';
 
@@ -15,18 +16,21 @@ class MovieListScreen extends StatefulWidget {
 }
 
 class _MovieListScreenState extends State<MovieListScreen> {
-  final _movieBloc = injector.get<MovieBloc>();
+  // final _movieBloc = injector.get<MovieBloc>();
+  late MovieBloc _movieBloc;
 
   @override
   void initState() {
     super.initState();
+    // _movieBloc.getPopular.add(null);
+    _movieBloc = BlocProvider.of<MovieBloc>(context);
     _movieBloc.getPopular.add(null);
   }
 
   @override
   void dispose() {
     super.dispose();
-    _movieBloc.disposeBag();
+    _movieBloc.dispose();
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
@@ -14,7 +15,7 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_genre_movie_l
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_list_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 
-class MovieBloc {
+class MovieBloc extends BlocBase {
   /// Input
   final Function0<void> disposeBag;
   final Sink<bool> isCollapsed;
@@ -34,6 +35,12 @@ class MovieBloc {
   final Stream<MovieStatus> getMovieKeywordMessage$;
   final Stream<MovieStatus> getMovieSimilarMessage$;
   final Stream<MovieStatus> getMovieRecommendationMessage$;
+
+  @override
+  void dispose() {
+    print('MovieBloc_dispose');
+    disposeBag();
+  }
 
   factory MovieBloc(
     GetGenreMovieListUseCase getGenreMovieListUseCase,
@@ -209,6 +216,7 @@ class MovieBloc {
       getMovieSimilarMessage$: getMovieSimilarMessage$,
       getMovieRecommendationMessage$: getMovieRecommendationMessage$,
       disposeBag: () {
+        print('MovieBloc_dispose');
         isCollapsed.close();
         isLoading.close();
         getPopular.close();

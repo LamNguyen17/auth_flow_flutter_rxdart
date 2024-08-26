@@ -1,4 +1,7 @@
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/movie_detail_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_list/movie_list_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/movie_reservation_screen.dart';
@@ -61,12 +64,21 @@ class AppNavManager {
                 path: '/home',
                 name: Routes.main[Main.home]!,
                 builder: (BuildContext context, GoRouterState state) {
-                  return const HomeScreen();
+                  return BlocProvider(
+                    bloc: injector.get<MovieBloc>(),
+                    child: const HomeScreen(),
+                  );
                 },
                 routes: [
                   GoRoute(
                     path: 'movies',
-                    builder: (context, state) => const MovieListScreen(),
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) {
+                      return BlocProvider(
+                        bloc: injector.get<MovieBloc>(),
+                        child: const MovieListScreen(),
+                      );
+                    },
                     routes: <GoRoute>[
                       GoRoute(
                         parentNavigatorKey: _rootNavigatorKey,
@@ -86,14 +98,6 @@ class AppNavManager {
                       ),
                     ],
                   ),
-                  // GoRoute(
-                  //   path: Routes.home[Home.movieDetail]!,
-                  //   name: Routes.home[Home.movieDetail]!,
-                  //   builder: (BuildContext context, dynamic state) {
-                  //     final movieId = state.extra as int;
-                  //     return MovieDetailScreen(id: movieId);
-                  //   },
-                  // ),
                 ],
               )
             ],

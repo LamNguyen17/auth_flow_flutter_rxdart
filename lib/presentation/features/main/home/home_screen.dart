@@ -1,7 +1,7 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -47,74 +47,77 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProfileBloc, ProfileState>(
-        builder: (BuildContext context, state) {
-      return CustomAppBar(
-        type: AppbarType.profile,
-        title: 'Home Screen',
-        childLeading: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Center(
-                child: ClipOval(
-                  child: SizedBox.fromSize(
-                      size: const Size.fromRadius(20),
-                      // Image radius
-                      child: FastImage(
-                        url: state is ProfileSuccess
-                            ? state.data.photoURL
-                            : null,
-                        fit: BoxFit.cover,
-                        width: 40,
-                        height: 40,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(20)),
-                      )),
-                ),
+    final profileBloc = BlocProvider.of<ProfileBloc>(context);
+    return StreamBuilder(
+        stream: profileBloc.getProfileMessage$,
+        builder: (context, snapshot) {
+          return CustomAppBar(
+            type: AppbarType.profile,
+            title: 'Home Screen',
+            childLeading: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Center(
+                    child: ClipOval(
+                      child: SizedBox.fromSize(
+                          size: const Size.fromRadius(20),
+                          // Image radius
+                          child: FastImage(
+                            url: snapshot.data is ProfileSuccess
+                                ? snapshot.data?.data.photoURL
+                                : null,
+                            fit: BoxFit.cover,
+                            width: 40,
+                            height: 40,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20)),
+                          )),
+                    ),
+                  ),
+                  const Text(
+                    'Home',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  AppTouchable(
+                      onPress: () {
+                        // Open the notifications
+                      },
+                      child: SvgPicture.asset(
+                        icNotification,
+                        fit: BoxFit.scaleDown,
+                        width: 24.0,
+                        height: 24.0,
+                      ))
+                ],
               ),
-              const Text(
-                'Home',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
-              AppTouchable(
-                  onPress: () {
-                    // Open the notifications
-                  },
-                  child: SvgPicture.asset(
-                    icNotification,
-                    fit: BoxFit.scaleDown,
-                    width: 24.0,
-                    height: 24.0,
-                  ))
-            ],
-          ),
-        ),
-        child: RefreshIndicator(
-          onRefresh: () async {},
-          child: ListView.builder(
-              physics: AlwaysScrollableScrollPhysics(
-                  parent: Platform.isIOS
-                      ? const BouncingScrollPhysics()
-                      : const ClampingScrollPhysics()),
-              itemCount: outerList.length,
-              itemBuilder: (context, index) {
-                final item = outerList[index];
-                switch (item) {
-                  case 'search':
-                    return const SearchWidget();
-                  case 'category':
-                    return const CategoryWidget();
-                  case 'movie':
-                    return _renderMovieWidget();
-                  default:
-                    return const SizedBox.shrink();
-                }
-              }),
-        ),
-      );
-    });
+            ),
+            child: RefreshIndicator(
+              onRefresh: () async {},
+              child: ListView.builder(
+                  physics: AlwaysScrollableScrollPhysics(
+                      parent: Platform.isIOS
+                          ? const BouncingScrollPhysics()
+                          : const ClampingScrollPhysics()),
+                  itemCount: outerList.length,
+                  itemBuilder: (context, index) {
+                    final item = outerList[index];
+                    switch (item) {
+                      case 'search':
+                        // return SearchWidget(bloc: profileBloc);
+                        return const SearchWidget();
+                      case 'category':
+                        return const CategoryWidget();
+                      case 'movie':
+                        return _renderMovieWidget();
+                      default:
+                        return const SizedBox.shrink();
+                    }
+                  }),
+            ),
+          );
+        });
   }
 
   Widget _renderMovieWidget() {

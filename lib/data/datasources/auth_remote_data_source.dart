@@ -50,6 +50,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return CustomerResponse.fromJson(userMap);
     } else {
       User? user = FirebaseAuth.instance.currentUser;
+      print('AuthRemoteDataSourceImpl_getProfile: $user');
       if (user != null) {
         CustomerResponse transform = CustomerResponse(
             displayName: user.displayName,

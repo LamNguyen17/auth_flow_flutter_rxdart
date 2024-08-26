@@ -2,60 +2,58 @@ import 'dart:async';
 
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 
-class ProfileBloc extends Cubit<ProfileState> {
-  final GetProfileUseCase getProfile;
-
+class ProfileBloc extends BlocBase {
   /// Input
-  final Function0<void> dispose;
+  final Function0<void> disposeBag;
+  final Sink<void> getProfile;
 
   /// Output
-  StreamSubscription<ProfileState>? _profileSubscription;
+  final Stream<dynamic> getProfileMessage$;
 
   factory ProfileBloc(GetProfileUseCase getProfileUseCase) {
+    final getProfile = BehaviorSubject<void>();
+    final getProfileMessage$ = getProfile
+        .debounceTime(const Duration(milliseconds: 350))
+        .exhaustMap((_) {
+          return Stream.fromFuture(getProfileUseCase.execute(NoParams()))
+              .flatMap((either) => either.fold((error) {
+                    return Stream.value(ProfileError(error.toString()));
+                  }, (data) {
+                    return Stream.value(ProfileSuccess(data: data));
+                  }));
+        })
+        .startWith(const ProfileLoading())
+        .onErrorReturnWith((error, _) => ProfileError(error.toString()))
+        .publishReplay(maxSize: 1)
+        .refCount();
+
     final factory = ProfileBloc._(
-      getProfile: getProfileUseCase,
-      dispose: () {},
+      getProfile: getProfile,
+      getProfileMessage$: getProfileMessage$,
+      disposeBag: () {
+        getProfile.close();
+      },
     );
-    factory.initialize();
+    // factory.initialize();
     return factory;
   }
 
   @override
-  Future<void> close() {
-    _profileSubscription?.cancel();
-    dispose();
-    return super.close();
-  }
-
-  void initialize() {
-    _profileSubscription = getUserProfile().listen((event) {
-      emit(event);
-    });
-  }
-
-  Stream<ProfileState> getUserProfile() {
-    return Stream.fromFuture(getProfile.execute(NoParams()))
-        .debounceTime(const Duration(milliseconds: 350))
-        .exhaustMap((either) => either.fold((error) {
-              return Stream.value(ProfileError(error.toString()));
-            }, (data) {
-              return Stream.value(ProfileSuccess(data: data));
-            }))
-        .startWith(const ProfileLoading())
-        .onErrorReturnWith(
-            (error, _) => const ProfileError("Đã có lỗi xảy ra"));
+  void dispose() {
+    disposeBag();
   }
 
   ProfileBloc._({
     required this.getProfile,
-    required this.dispose,
-  }) : super(const ProfileInitial()) {
-    // initialize();
+    required this.getProfileMessage$,
+    required this.disposeBag,
+  }) {
+    getProfile.add(null);
   }
 }

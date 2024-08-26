@@ -1,58 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/social_sign_in/social_sign_in_view.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/clear_focus.dart';
 
-class SignInScreen extends StatefulWidget {
+class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
 
   @override
-  _SignInScreenState createState() => _SignInScreenState();
-}
-
-class _SignInScreenState extends State<SignInScreen> {
-  final _authBloc = injector.get<AuthBloc>();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _authBloc.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<AuthBloc>(create: (_) => _authBloc),
-        ],
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: ClearFocus(
-            child: SafeArea(
-              child: Center(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        AppImages.fbLogo,
-                        height: 100,
-                      ),
-                      renderInputWidget(),
-                      SocialSignInView(),
-                    ]),
-              ),
-            ),
+    final node = FocusScope.of(context);
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: ClearFocus(
+        child: SafeArea(
+          child: Center(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    AppImages.fbLogo,
+                    height: 100,
+                  ),
+                  renderInputWidget(node, context),
+                  const SocialSignInView(),
+                ]),
           ),
-        ));
+        ),
+      ),
+    );
   }
 
-  Widget renderInputWidget() {
+  Widget renderInputWidget(FocusScopeNode node, BuildContext context) {
+    final authBloc = BlocProvider.of<AuthBloc>(context);
     return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         // Add horizontal margin to the entire column
@@ -79,7 +63,7 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ],
             ),
-            renderEmailTextField(),
+            renderEmailTextField(authBloc, node),
             Row(
               children: [
                 Container(
@@ -100,9 +84,9 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ],
             ),
-            renderPasswordTextField(),
+            renderPasswordTextField(authBloc),
             const SizedBox(height: 20),
-            renderSignInButton(),
+            renderSignInButton(authBloc),
             const SizedBox(height: 50),
             renderCustomDivider(),
             const SizedBox(height: 50),
@@ -110,16 +94,15 @@ class _SignInScreenState extends State<SignInScreen> {
         ));
   }
 
-  Widget renderEmailTextField() {
-    final node = FocusScope.of(context);
+  Widget renderEmailTextField(AuthBloc authBloc, FocusScopeNode node) {
     return StreamBuilder<String?>(
-        stream: _authBloc.email$,
+        stream: authBloc.email$,
         builder: (context, snapshot) {
           return TextFormField(
             onEditingComplete: () => node.nextFocus(),
             maxLength: 50,
-            controller: _authBloc.emailTextEditing,
-            onChanged: _authBloc.email,
+            controller: authBloc.emailTextEditing,
+            onChanged: authBloc.email,
             keyboardType: TextInputType.emailAddress,
             style: const TextStyle(fontSize: 12, color: Colors.black),
             decoration: InputDecoration(
@@ -146,15 +129,15 @@ class _SignInScreenState extends State<SignInScreen> {
         });
   }
 
-  Widget renderPasswordTextField() {
+  Widget renderPasswordTextField(AuthBloc authBloc) {
     return StreamBuilder<String?>(
-        stream: _authBloc.password$,
+        stream: authBloc.password$,
         builder: (context, snapshot) {
           return TextFormField(
             maxLength: 20,
             obscureText: true,
-            controller: _authBloc.passwordTextEditing,
-            onChanged: _authBloc.password,
+            controller: authBloc.passwordTextEditing,
+            onChanged: authBloc.password,
             style: const TextStyle(fontSize: 12, color: Colors.black),
             decoration: InputDecoration(
                 contentPadding:
@@ -180,12 +163,12 @@ class _SignInScreenState extends State<SignInScreen> {
         });
   }
 
-  Widget renderSignInButton() {
+  Widget renderSignInButton(AuthBloc authBloc) {
     return SizedBox(
       width: 300,
       height: 45,
       child: StreamBuilder<bool>(
-          stream: _authBloc.isSubmitLogin$,
+          stream: authBloc.isSubmitLogin$,
           builder: (context, snapshotSubmit) {
             return ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -199,13 +182,13 @@ class _SignInScreenState extends State<SignInScreen> {
               ),
               onPressed: snapshotSubmit.data == true
                   ? () {
-                      _authBloc.login.add(LoginCommand(
-                          email: _authBloc.emailTextEditing.text,
-                          password: _authBloc.passwordTextEditing.text));
+                      authBloc.login.add(LoginCommand(
+                          email: authBloc.emailTextEditing.text,
+                          password: authBloc.passwordTextEditing.text));
                     }
                   : null,
               child: StreamBuilder(
-                  stream: _authBloc.isLoading$,
+                  stream: authBloc.isLoading$,
                   builder: (context, snapshot) {
                     bool isLoading = snapshot.data ?? false;
                     return Column(

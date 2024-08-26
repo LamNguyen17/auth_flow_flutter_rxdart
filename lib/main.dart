@@ -1,8 +1,10 @@
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_dropdown_alert/dropdown_alert.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/services/notification_service.dart';
@@ -22,7 +24,7 @@ void main() async {
     values: FlavorValues(baseUrl: AppConfig.baseUrl),
   );
   await NotificationService().init();
-  Bloc.observer = const AppBlocObserver();
+  // Bloc.observer = const AppBlocObserver();
   runApp(const MyApp());
 }
 
@@ -32,30 +34,30 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-        providers: [
-          BlocProvider<ProfileBloc>(create: (_) => injector.get<ProfileBloc>()),
-        ],
-        child: MaterialApp.router(
-          routerConfig: AppNavManager.router,
-          title: 'Flutter Demo',
-          debugShowCheckedModeBanner: false,
-          // darkTheme: ThemeData(
-          //   brightness: Brightness.dark,
-          // ),
-          // themeMode: ThemeMode.dark,
-          theme: ThemeData(
-            splashColor: Colors.transparent,
-            highlightColor: Colors.transparent,
-            hoverColor: Colors.transparent,
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-          builder: (context, child) => Stack(
-            children: [child!, const DropdownAlert()],
-          ),
-        ));
+    return BlocProvider<ProfileBloc>(
+        bloc: injector.get<ProfileBloc>(),
+        child: BlocProvider<AuthBloc>(
+            bloc: injector.get<AuthBloc>(),
+            child: MaterialApp.router(
+              routerConfig: AppNavManager.router,
+              title: 'Flutter Demo',
+              debugShowCheckedModeBanner: false,
+              // darkTheme: ThemeData(
+              //   brightness: Brightness.dark,
+              // ),
+              // themeMode: ThemeMode.dark,
+              theme: ThemeData(
+                splashColor: Colors.transparent,
+                highlightColor: Colors.transparent,
+                hoverColor: Colors.transparent,
+                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                useMaterial3: true,
+              ),
+              // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+              builder: (context, child) => Stack(
+                children: [child!, const DropdownAlert()],
+              ),
+            )));
   }
 }
 
@@ -107,21 +109,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class AppBlocObserver extends BlocObserver {
-  const AppBlocObserver();
-
-  @override
-  void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
-    super.onChange(bloc, change);
-    if (bloc is Cubit) print(change);
-  }
-
-  @override
-  void onTransition(
-    Bloc<dynamic, dynamic> bloc,
-    Transition<dynamic, dynamic> transition,
-  ) {
-    super.onTransition(bloc, transition);
-    print(transition);
-  }
-}
+// class AppBlocObserver extends BlocObserver {
+//   const AppBlocObserver();
+//
+//   @override
+//   void onChange(BlocBase<dynamic> bloc, Change<dynamic> change) {
+//     super.onChange(bloc, change);
+//     if (bloc is Cubit) print(change);
+//   }
+//
+//   @override
+//   void onTransition(
+//     Bloc<dynamic, dynamic> bloc,
+//     Transition<dynamic, dynamic> transition,
+//   ) {
+//     super.onTransition(bloc, transition);
+//     print(transition);
+//   }
+// }

@@ -1,6 +1,6 @@
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
@@ -15,45 +15,47 @@ class SearchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProfileBloc, ProfileState>(
-      builder: (BuildContext context, state) {
-        return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      state is ProfileSuccess
-                          ? "Welcome, ${state.data.displayName} 🤟"
-                          : '',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w400,
+    final profileBloc = BlocProvider.of<ProfileBloc>(context);
+    return StreamBuilder(
+        stream: profileBloc.getProfileMessage$,
+        builder: (context, snapshot) {
+          return Container(
+              margin:
+                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        snapshot.data is ProfileSuccess
+                            ? "Welcome, ${snapshot.data?.data.displayName} 🤟"
+                            : '',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Let's relax and watch a movie!",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: HexColor.fromHex('7F7D83')),
-                    ),
-                  ],
-                ),
-                SvgPicture.asset(
-                  icSearch,
-                  colorFilter:
-                  const ColorFilter.mode(Colors.black, BlendMode.srcIn),
-                  fit: BoxFit.scaleDown,
-                  width: 24.0,
-                  height: 24.0,
-                ),
-              ],
-            ));
-      },
-    );
+                      Text(
+                        "Let's relax and watch a movie!",
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: HexColor.fromHex('7F7D83')),
+                      ),
+                    ],
+                  ),
+                  SvgPicture.asset(
+                    icSearch,
+                    colorFilter:
+                        const ColorFilter.mode(Colors.black, BlendMode.srcIn),
+                    fit: BoxFit.scaleDown,
+                    width: 24.0,
+                    height: 24.0,
+                  ),
+                ],
+              ));
+        });
   }
 }

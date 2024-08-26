@@ -34,7 +34,7 @@ Future<void> injectionBloc() async {
         injector.get<DeleteAccountUseCase>(),
       ));
   injector.registerFactory(() => SplashBloc());
-  injector.registerFactory(() => ProfileBloc(
+  injector.registerLazySingleton(() => ProfileBloc(
         injector.get<GetProfileUseCase>(),
       ));
   registerMovieBloc(injector);

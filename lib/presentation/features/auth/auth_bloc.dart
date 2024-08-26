@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
 
@@ -22,12 +22,12 @@ import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/main
 import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 
-class AuthBloc extends Cubit<AuthStatus> {
+class AuthBloc extends BlocBase {
   /// Input
   final Function1<String, void> email;
   final Function1<String, void> password;
   final Function1<String, void> confirmPassword;
-  final Function0<void> dispose;
+  final Function0<void> disposeBag;
   final Sink<void> signInWithGoogle;
   final Sink<void> signInWithFacebook;
   final Sink<void> signInWithApple;
@@ -48,6 +48,11 @@ class AuthBloc extends Cubit<AuthStatus> {
   final Stream<String?> email$;
   final Stream<String?> password$;
   final Stream<String?> confirmPassword$;
+
+  @override
+  void dispose() {
+    disposeBag();
+  }
 
   factory AuthBloc(
     SignInWithGoogleUseCase signInWithGoogleUseCase,
@@ -270,7 +275,7 @@ class AuthBloc extends Cubit<AuthStatus> {
       password$: password.stream.transform(passwordValid$).skip(1),
       confirmPassword$:
           confirmPassword.stream.transform(confirmPasswordValid$).skip(1),
-      dispose: () {
+      disposeBag: () {
         initState$.cancel();
         authError$.cancel();
         email.close();
@@ -300,7 +305,7 @@ class AuthBloc extends Cubit<AuthStatus> {
     required this.emailTextEditing,
     required this.passwordTextEditing,
     required this.confirmPasswordTextEditing,
-    required this.dispose,
+    required this.disposeBag,
     required this.signInWithGoogle,
     required this.signInWithFacebook,
     required this.signInWithApple,
@@ -315,7 +320,7 @@ class AuthBloc extends Cubit<AuthStatus> {
     required this.email$,
     required this.password$,
     required this.confirmPassword$,
-  }) : super(const AuthStatusInitial());
+  });
 
   static Stream<AuthStatus> _responseSignIn(dynamic result) {
     return result.fold((error) {

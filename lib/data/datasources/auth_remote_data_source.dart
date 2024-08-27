@@ -41,7 +41,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final AccessToken? accessToken = await FacebookAuth.instance.accessToken;
     if (accessToken != null) {
       final userData = await FacebookAuth.instance.getUserData();
-      print('AuthRemoteDataSourceImpl_getProfile: $userData');
       CustomerResponse transform = CustomerResponse(
         displayName: userData['name'],
         email: userData['email'],

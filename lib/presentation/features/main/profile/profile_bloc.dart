@@ -32,7 +32,9 @@ class ProfileBloc extends BlocBase {
               .debug()
               .startWith(const ProfileLoading())
               .onErrorReturnWith((error, _) => ProfileError(error.toString()));
-        });
+        })
+        .publishReplay(maxSize: 1)
+        .autoConnect();
 
     final factory = ProfileBloc._(
       getProfile: getProfile,

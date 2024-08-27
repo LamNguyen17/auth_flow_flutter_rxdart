@@ -159,20 +159,15 @@ class AuthBloc extends BlocBase {
     /** endregion SignInWithGoogle + err message */
 
     /** region SignIn + err message */
-    final isValidSubmitLogin$ = Rx.combineLatest2<String?, String, bool>(
-      email,
-      password,
-      (e, p) =>
-          Validation.validateEmail(e) == null &&
-          Validation.validatePass(p) == null,
-    ).shareValueSeeded(false);
+    final isValidSubmitLogin$ =
+        Rx.combineLatest2<String?, String, bool>(email, password, (e, p) {
+      return Validation.validateEmail(e) == null &&
+          Validation.validatePass(p) == null;
+    }).shareValueSeeded(false);
     isValidSubmitLogin$.listen((enable) {
       loginBtn.add(enable);
     });
-
-    final submitLogin$ = loginBtn
-        .withLatestFrom(isValidSubmitLogin$, (_, bool isValid) => isValid)
-        .share();
+    final submitLogin$ = loginBtn.stream.shareValue();
 
     final Stream<AuthStatus> loginError$ = login
         .debounceTime(const Duration(milliseconds: 300))

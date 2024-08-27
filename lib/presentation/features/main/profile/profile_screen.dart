@@ -35,86 +35,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
               stream: profileBloc.getProfileMessage$,
               builder: (context, snapshot) {
                 return Center(
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        snapshot.data is ProfileSuccess &&
-                                snapshot.data.data.photoURL != null
-                            ? ClipOval(
-                                child: Material(
-                                  child: Image.network(
-                                    snapshot.data.data.photoURL!,
-                                    fit: BoxFit.fitHeight,
-                                  ),
-                                ),
-                              )
-                            : const ClipOval(
-                                child: Material(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(16.0),
-                                    child: Icon(
-                                      Icons.person,
-                                      size: 60,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                        const SizedBox(height: 16.0),
-                        const Text(
-                          'Hello',
-                          style: TextStyle(
-                            fontSize: 26,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          snapshot.data?.data.displayName ?? '',
-                          style: const TextStyle(
-                            fontSize: 26,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          '( ${snapshot.data?.data.email ?? ''} )',
-                          style: const TextStyle(
-                            fontSize: 20,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(height: 24.0),
-                        const Text(
-                          'You are now signed in using your Google account. To sign out of your account, click the "Sign Out" button below.',
-                          style: TextStyle(fontSize: 14, letterSpacing: 0.2),
-                        ),
-                        const SizedBox(height: 16.0),
-                        ElevatedButton(
-                          onPressed: () {
-                            authBloc.logout.add(null);
-                          },
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(
-                              Colors.redAccent,
-                            ),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                          ),
-                          child: const Text('Đăng xuất',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 2,
-                              )),
-                        ),
-                      ]),
+                  child: _renderStatePage(snapshot.data),
                 );
               }),
         ),
       ),
     );
+  }
+
+  Widget _renderStatePage(ProfileState? state) {
+    if (state is ProfileLoading) {
+      return const CircularProgressIndicator();
+    } else if (state is ProfileSuccess || state is ProfileError) {
+      return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            state is ProfileSuccess && state.data.photoURL != null
+                ? ClipOval(
+                    child: Material(
+                      child: Image.network(
+                        state.data.photoURL!,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
+                  )
+                : const ClipOval(
+                    child: Material(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Icon(
+                          Icons.person,
+                          size: 60,
+                        ),
+                      ),
+                    ),
+                  ),
+            const SizedBox(height: 16.0),
+            const Text(
+              'Hello',
+              style: TextStyle(
+                fontSize: 26,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            state is ProfileSuccess &&
+                    state.data.displayName?.isNotEmpty == true
+                ? Text(
+                    state.data.displayName!,
+                    style: const TextStyle(
+                      fontSize: 26,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+            const SizedBox(height: 8.0),
+            state is ProfileSuccess && state.data.email?.isNotEmpty == true
+                ? Text(
+                    '( ${state.data.email ?? ''} )',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      letterSpacing: 0.5,
+                    ),
+                  )
+                : const SizedBox.shrink(),
+            const SizedBox(height: 24.0),
+            const Text(
+              'You are now signed in using your Google account. To sign out of your account, click the "Sign Out" button below.',
+              style: TextStyle(fontSize: 14, letterSpacing: 0.2),
+            ),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () {
+                authBloc.logout.add(null);
+              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(
+                  Colors.redAccent,
+                ),
+                shape: MaterialStateProperty.all(
+                  RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              child: const Text('Đăng xuất',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 2,
+                  )),
+            ),
+          ]);
+    } else {
+      return const SizedBox();
+    }
   }
 }

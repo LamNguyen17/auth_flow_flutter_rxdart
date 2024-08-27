@@ -17,7 +17,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   final _splashBloc = injector.get<SplashBloc>();
   final _authBloc = injector.get<AuthBloc>();
-  final _notificationService = injector.get<NotificationService>();
 
   @override
   void initState() {

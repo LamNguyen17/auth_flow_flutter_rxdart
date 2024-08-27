@@ -3,19 +3,15 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/widgets/movie_cell_widget.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/home_navigator.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/widgets/movie_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/widgets/search_widget.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/components/app_carousel.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/widgets/category_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_bar.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_bloc.dart';
 
@@ -36,12 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _createBloc();
-  }
-
-  void _createBloc() {
     _movieBloc = BlocProvider.of<MovieBloc>(context);
     _movieBloc.getPopular.add(null);
+    _movieBloc.getGenreMovie.add(null);
   }
 
   @override
@@ -110,12 +103,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     final item = outerList[index];
                     switch (item) {
                       case 'search':
-                        // return SearchWidget(bloc: profileBloc);
                         return const SearchWidget();
                       case 'category':
                         return const CategoryWidget();
                       case 'movie':
-                        return _renderMovieWidget();
+                        return const MovieWidget();
                       default:
                         return const SizedBox.shrink();
                     }
@@ -123,63 +115,5 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           );
         });
-  }
-
-  Widget _renderMovieWidget() {
-    final movieBloc = BlocProvider.of<MovieBloc>(context).getPopular.add(null);
-
-    return Column(children: <Widget>[
-      Container(
-        margin: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            const Text(
-              'Popular',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            AppTouchable(
-              onPress: () {
-                // Open the category screen
-                HomeNavigator.openMovieList(context);
-              },
-              child: const Text(
-                'See all',
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: Colors.blue),
-              ),
-            ),
-          ],
-        ),
-      ),
-      StreamBuilder(
-        stream: _movieBloc.getPopularMessage$,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final state = snapshot.data;
-            if (state is MovieListSuccess) {
-              final movies = state.data?.results;
-              return AppCarousel(
-                itemCount: movies,
-                itemBuilder: (BuildContext context, int index) {
-                  return MovieCellWidget(
-                      width: 1000,
-                      movieCardItem: movies![index],
-                      onPressed: () {
-                        HomeNavigator.openMovieDetail(
-                            context, movies[index].id);
-                      });
-                },
-              );
-            } else if (state is MovieListError) {
-              return Text('Movie Error: ${state.message}');
-            }
-          }
-          return const SizedBox.shrink();
-        },
-      )
-    ]);
   }
 }

@@ -8,16 +8,18 @@ abstract class BlocBase {
 // Updated BlocProvider
 class BlocProvider<T extends BlocBase> extends StatefulWidget {
   final T bloc;
-  final Widget child;
+  final Widget? child;
 
-  BlocProvider({
+  const BlocProvider({
+    super.key,
     required this.bloc,
-    required this.child,
+    this.child,
   });
 
-  BlocProvider.value({
+  const BlocProvider.value({
+    super.key,
     required this.bloc,
-    required this.child,
+    this.child,
   });
 
   @override
@@ -38,7 +40,7 @@ class _BlocProviderState<T extends BlocBase> extends State<BlocProvider<T>> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return widget.child ?? const SizedBox.shrink();
   }
 }
 //

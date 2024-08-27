@@ -16,21 +16,19 @@ class MovieListScreen extends StatefulWidget {
 }
 
 class _MovieListScreenState extends State<MovieListScreen> {
-  // final _movieBloc = injector.get<MovieBloc>();
   late MovieBloc _movieBloc;
 
   @override
   void initState() {
     super.initState();
-    // _movieBloc.getPopular.add(null);
     _movieBloc = BlocProvider.of<MovieBloc>(context);
     _movieBloc.getPopular.add(null);
   }
 
   @override
   void dispose() {
-    super.dispose();
     _movieBloc.dispose();
+    super.dispose();
   }
 
   @override

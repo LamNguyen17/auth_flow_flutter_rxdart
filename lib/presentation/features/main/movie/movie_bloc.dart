@@ -38,7 +38,6 @@ class MovieBloc extends BlocBase {
 
   @override
   void dispose() {
-    print('MovieBloc_dispose');
     disposeBag();
   }
 

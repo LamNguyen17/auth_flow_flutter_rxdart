@@ -1,7 +1,7 @@
 import 'dart:io';
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/dark_mode_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
@@ -9,34 +9,12 @@ import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 
-class CategoryWidget extends StatefulWidget {
+class CategoryWidget extends StatelessWidget {
   const CategoryWidget({super.key});
 
   @override
-  _CategoryWidgetState createState() => _CategoryWidgetState();
-}
-
-class _CategoryWidgetState extends State<CategoryWidget> with AutomaticKeepAliveClientMixin {
-  final _movieBloc = injector.get<MovieBloc>();
-
-  @override
-  bool get wantKeepAlive => true;
-
-  @override
-  void initState() {
-    super.initState();
-    _movieBloc.getGenreMovie.add(null);
-  }
-
-  @override
-  void dispose() {
-    _movieBloc.disposeBag();
-    print('CategoryWidget dispose');
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final movieBloc = BlocProvider.of<MovieBloc>(context);
     return Column(
       children: <Widget>[
         Container(
@@ -67,7 +45,7 @@ class _CategoryWidgetState extends State<CategoryWidget> with AutomaticKeepAlive
           height: 40,
           margin: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 24.0),
           child: StreamBuilder(
-            stream: _movieBloc.getGenreMovieMessage$,
+            stream: movieBloc.getGenreMovieMessage$,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final state = snapshot.data;

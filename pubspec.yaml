@@ -36,8 +36,8 @@ dependencies:
   go_router: 14.2.0
   flutter_svg: 2.0.10+1
   flutter_local_notifications: 17.2.1+2
-  carousel_slider: ^4.2.1
-  percent_indicator: ^4.2.3
+  carousel_slider: 4.2.1
+  percent_indicator: 4.2.3
 
 dev_dependencies:
   flutter_test:

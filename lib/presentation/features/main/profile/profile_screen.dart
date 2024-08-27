@@ -17,6 +17,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final authBloc = injector.get<AuthBloc>();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final profileBloc = BlocProvider.of<ProfileBloc>(context);
     return Scaffold(

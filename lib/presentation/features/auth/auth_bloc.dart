@@ -1,5 +1,6 @@
 import 'dart:async';
-import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dartz/dartz.dart';
@@ -8,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
@@ -107,11 +110,15 @@ class AuthBloc extends BlocBase {
         .exhaustMap((_) {
       isLoading.add(true);
       return Stream.fromFuture(signInWithAppleUseCase.execute(NoParams()))
-          .flatMap((either) => _responseSignIn(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion SignInWithApple + err message*/
 
@@ -121,11 +128,15 @@ class AuthBloc extends BlocBase {
         .exhaustMap((_) {
       isLoading.add(true);
       return Stream.fromFuture(signInWithFacebookUseCase.execute(NoParams()))
-          .flatMap((either) => _responseSignIn(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion SignInWithFacebook + err message*/
 
@@ -133,17 +144,22 @@ class AuthBloc extends BlocBase {
     final Stream<AuthStatus> signInWithGoogleError$ = signInWithGoogle
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
+      isLoading.add(true);
       return Stream.fromFuture(signInWithGoogleUseCase.execute(NoParams()))
-          .flatMap((either) => _responseSignIn(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion SignInWithGoogle + err message */
 
     /** region SignIn + err message */
-    final isValidSubmitLogin$ = Rx.combineLatest2<String, String, bool>(
+    final isValidSubmitLogin$ = Rx.combineLatest2<String?, String, bool>(
       email,
       password,
       (e, p) =>
@@ -161,13 +177,18 @@ class AuthBloc extends BlocBase {
     final Stream<AuthStatus> loginError$ = login
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap<AuthStatus>((LoginCommand loginCommand) {
+      isLoading.add(true);
       return Stream.fromFuture(signInUseCase.execute(
               ReqLoginCommand(loginCommand.email, loginCommand.password)))
-          .flatMap((either) => _responseSignIn(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion SignIn */
 
@@ -184,14 +205,17 @@ class AuthBloc extends BlocBase {
                     AppNavManager.currentContext.currentContext!);
                 return Stream.value(const LogoutSuccess(null));
               }))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false));
+          .debug()
+          .onErrorReturnWith((error, _) {
+        isLoading.add(false);
+        return const LogoutError("Đã có lỗi xảy ra");
+      });
     });
     /** endregion Logout */
 
     /** region Register + err message */
     final isValidSubmitRegister$ =
-        Rx.combineLatest3<String, String, String, bool>(
+        Rx.combineLatest3<String?, String, String, bool>(
       email,
       password,
       confirmPassword,
@@ -211,13 +235,18 @@ class AuthBloc extends BlocBase {
     final Stream<AuthStatus> registerError$ = register
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap<AuthStatus>((RegisterCommand registerCommand) {
+      isLoading.add(true);
       return Stream.fromFuture(registerUseCase.execute(ReqRegisterCommand(
               registerCommand.email, registerCommand.password)))
-          .flatMap((either) => _responseRegister(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseRegister(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const RegisterError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Register */
 
@@ -225,20 +254,24 @@ class AuthBloc extends BlocBase {
     final Stream<dynamic> deleteAccountError$ = deleteAccount
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap((_) {
+      isLoading.add(true);
       return Stream.fromFuture(deleteAccountUseCase.execute(NoParams()))
           .flatMap((either) => either.fold((error) {
+                isLoading.add(false);
                 AlertController.show(
                     "Thông báo", error.toString(), TypeAlert.error);
-                return Stream.value(LogoutError(error.toString()));
+                return Stream.value(DeleteAccountError(error.toString()));
               }, (data) {
+                isLoading.add(false);
                 AuthNavigator.openReplaceSignIn(
                     AppNavManager.currentContext.currentContext!);
-                return Stream.value(const LogoutSuccess(null));
+                return Stream.value(const DeleteAccountSuccess(null));
               }))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const LogoutError("Đã có lỗi xảy ra"));
+          .debug()
+          .onErrorReturnWith((error, _) {
+        isLoading.add(false);
+        return const DeleteAccountError("Đã có lỗi xảy ra");
+      });
     });
     /** endregion Delete Account */
 

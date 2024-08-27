@@ -28,11 +28,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late MovieBloc _movieBloc;
+  late ProfileBloc _profileBloc;
 
   @override
   void initState() {
     super.initState();
+    _profileBloc = BlocProvider.of<ProfileBloc>(context);
     _movieBloc = BlocProvider.of<MovieBloc>(context);
+    _profileBloc.getProfile.add(null);
     _movieBloc.getPopular.add(null);
     _movieBloc.getGenreMovie.add(null);
   }
@@ -45,9 +48,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileBloc = BlocProvider.of<ProfileBloc>(context);
     return StreamBuilder(
-        stream: profileBloc.getProfileMessage$,
+        stream: _profileBloc.getProfileMessage$,
         builder: (context, snapshot) {
           return CustomAppBar(
             type: AppbarType.profile,

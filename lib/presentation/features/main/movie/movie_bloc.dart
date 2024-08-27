@@ -1,9 +1,7 @@
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_detail_usecase.dart';

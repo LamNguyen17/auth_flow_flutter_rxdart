@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/get_profile_usecase.dart';
@@ -25,13 +26,13 @@ class ProfileBloc extends BlocBase {
               .flatMap((either) => either.fold((error) {
                     return Stream.value(ProfileError(error.toString()));
                   }, (data) {
+                    print('ProfileBloc_loggggg: $data');
                     return Stream.value(ProfileSuccess(data: data));
-                  }));
-        })
-        .startWith(const ProfileLoading())
-        .onErrorReturnWith((error, _) => ProfileError(error.toString()))
-        .publishReplay(maxSize: 1)
-        .refCount();
+                  }))
+              .debug()
+              .startWith(const ProfileLoading())
+              .onErrorReturnWith((error, _) => ProfileError(error.toString()));
+        });
 
     final factory = ProfileBloc._(
       getProfile: getProfile,
@@ -53,7 +54,5 @@ class ProfileBloc extends BlocBase {
     required this.getProfile,
     required this.getProfileMessage$,
     required this.disposeBag,
-  }) {
-    getProfile.add(null);
-  }
+  });
 }

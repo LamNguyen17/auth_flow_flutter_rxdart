@@ -41,6 +41,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     final AccessToken? accessToken = await FacebookAuth.instance.accessToken;
     if (accessToken != null) {
       final userData = await FacebookAuth.instance.getUserData();
+      print('AuthRemoteDataSourceImpl_getProfile: $userData');
       CustomerResponse transform = CustomerResponse(
         displayName: userData['name'],
         email: userData['email'],
@@ -50,7 +51,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       return CustomerResponse.fromJson(userMap);
     } else {
       User? user = FirebaseAuth.instance.currentUser;
-      print('AuthRemoteDataSourceImpl_getProfile: $user');
       if (user != null) {
         CustomerResponse transform = CustomerResponse(
             displayName: user.displayName,

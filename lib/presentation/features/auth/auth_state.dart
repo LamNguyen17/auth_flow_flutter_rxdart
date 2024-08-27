@@ -37,6 +37,23 @@ class LogoutError extends AuthStatus {
   List<Object> get props => [message];
 }
 
+class DeleteAccountSuccess extends AuthStatus {
+  final dynamic data;
+  const DeleteAccountSuccess(this.data);
+
+  @override
+  List<Object> get props => [data];
+}
+
+class DeleteAccountError extends AuthStatus {
+  final String message;
+
+  const DeleteAccountError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
 class SignInSuccess extends AuthStatus {
   // final Customer data;
   final dynamic data;

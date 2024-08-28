@@ -1,5 +1,6 @@
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/favourite_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -38,26 +39,29 @@ class MyApp extends StatelessWidget {
         bloc: injector.get<ProfileBloc>(),
         child: BlocProvider<AuthBloc>(
             bloc: injector.get<AuthBloc>(),
-            child: MaterialApp.router(
-              routerConfig: AppNavManager.router,
-              title: 'Flutter Demo',
-              debugShowCheckedModeBanner: false,
-              // darkTheme: ThemeData(
-              //   brightness: Brightness.dark,
-              // ),
-              // themeMode: ThemeMode.dark,
-              theme: ThemeData(
-                splashColor: Colors.transparent,
-                highlightColor: Colors.transparent,
-                hoverColor: Colors.transparent,
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-                useMaterial3: true,
-              ),
-              // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-              builder: (context, child) => Stack(
-                children: [child!, const DropdownAlert()],
-              ),
-            )));
+            child: BlocProvider<FavouriteBloc>(
+                bloc: injector.get<FavouriteBloc>(),
+                child: MaterialApp.router(
+                  routerConfig: AppNavManager.router,
+                  title: 'Flutter Demo',
+                  debugShowCheckedModeBanner: false,
+                  // darkTheme: ThemeData(
+                  //   brightness: Brightness.dark,
+                  // ),
+                  // themeMode: ThemeMode.dark,
+                  theme: ThemeData(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                    colorScheme:
+                        ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                    useMaterial3: true,
+                  ),
+                  // home: const MyHomePage(title: 'Flutter Demo Home Page'),
+                  builder: (context, child) => Stack(
+                    children: [child!, const DropdownAlert()],
+                  ),
+                ))));
   }
 }
 

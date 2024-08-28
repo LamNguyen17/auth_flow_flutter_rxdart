@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class MovieList extends Equatable {
   int? page;
-  List<ResultItem>? results;
+  List<MovieItem>? results;
   int? totalPages;
   int? totalResults;
 
@@ -17,10 +17,12 @@ class MovieList extends Equatable {
   List<Object?> get props => [page, results, totalPages, totalResults];
 }
 
-class ResultItem extends Equatable {
+class MovieItem extends Equatable {
   bool? adult;
   String? backdropPath;
   List<int>? genreIds;
+  int? budget;
+  List<Genre>? genres;
   int id;
   String? originalLanguage;
   String? originalTitle;
@@ -32,11 +34,17 @@ class ResultItem extends Equatable {
   bool? video;
   double? voteAverage;
   int? voteCount;
+  String? status;
+  int? revenue;
 
-  ResultItem({
+  MovieItem({
+    this.status,
+    this.revenue,
     this.adult,
     this.backdropPath,
     this.genreIds,
+    this.budget,
+    this.genres,
     required this.id,
     this.originalLanguage,
     this.originalTitle,
@@ -52,9 +60,13 @@ class ResultItem extends Equatable {
 
   @override
   List<Object?> get props => [
+        status,
+        revenue,
         adult,
         backdropPath,
         genreIds,
+        budget,
+        genres,
         id,
         originalLanguage,
         originalTitle,
@@ -67,4 +79,17 @@ class ResultItem extends Equatable {
         voteAverage,
         voteCount,
       ];
+}
+
+class Genre extends Equatable {
+  int? id;
+  String? name;
+
+  Genre({
+    this.id,
+    this.name,
+  });
+
+  @override
+  List<Object?> get props => [id, name];
 }

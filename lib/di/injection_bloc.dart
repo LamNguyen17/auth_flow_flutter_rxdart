@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/favourite_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -34,6 +35,7 @@ Future<void> injectionBloc() async {
         injector.get<DeleteAccountUseCase>(),
       ));
   injector.registerFactory(() => SplashBloc());
+  injector.registerFactory(() => FavouriteBloc());
   injector.registerLazySingleton(() => ProfileBloc(
         injector.get<GetProfileUseCase>(),
       ));

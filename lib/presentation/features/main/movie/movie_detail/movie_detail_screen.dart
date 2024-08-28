@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/favourite_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/movie_navigator.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/genres_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/overview_widget.dart';
@@ -27,11 +28,12 @@ class MovieDetailScreen extends StatefulWidget {
 }
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
-  final _movieBloc = injector.get<MovieBloc>();
+  late MovieBloc _movieBloc;
 
   @override
   void initState() {
     super.initState();
+    _movieBloc = BlocProvider.of<MovieBloc>(context);
     _movieBloc.getMovieDetail.add(widget.id);
     _movieBloc.getMovieKeyword.add(widget.id);
     _movieBloc.getMovieSimilar.add(widget.id);
@@ -42,7 +44,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   void dispose() {
     super.dispose();
     print('MovieDetailScreen_dispose');
-    _movieBloc.disposeBag();
+    _movieBloc.dispose();
   }
 
   @override
@@ -83,18 +85,13 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                         ),
                         SliverToBoxAdapter(
                           child: Container(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, top: 16.0),
+                            padding: const EdgeInsets.fromLTRB(
+                                16.0, 16.0, 16.0, 0.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  '${movie.originalTitle}',
-                                  style: const TextStyle(
-                                      fontSize: 26.0,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                                FavouriteWidget(
+                                    movie: movie),
                                 Text('Release date : ${movie.releaseDate}'),
                                 Text('Status : ${movie.status}'),
                                 const SizedBox(height: 16.0),
@@ -104,8 +101,8 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             ),
                           ),
                         ),
-                        SliverToBoxAdapter(
-                            child: GenresWidget(genre: movie.genres)),
+                        // SliverToBoxAdapter(
+                        //     child: GenresWidget(genre: movie.genres)),
                         SliverToBoxAdapter(
                             child: KeywordWidget(bloc: _movieBloc)),
                         SliverToBoxAdapter(

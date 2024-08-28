@@ -10,7 +10,7 @@ MovieListResponse _$MovieListResponseFromJson(Map<String, dynamic> json) =>
     MovieListResponse(
       page: (json['page'] as num?)?.toInt(),
       results: (json['results'] as List<dynamic>?)
-          ?.map((e) => ResultItemResponse.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => MovieItemResponse.fromJson(e as Map<String, dynamic>))
           .toList(),
       totalPages: (json['total_pages'] as num?)?.toInt(),
       totalResults: (json['total_results'] as num?)?.toInt(),
@@ -24,14 +24,20 @@ Map<String, dynamic> _$MovieListResponseToJson(MovieListResponse instance) =>
       'total_results': instance.totalResults,
     };
 
-ResultItemResponse _$ResultItemResponseFromJson(Map<String, dynamic> json) =>
-    ResultItemResponse(
+MovieItemResponse _$MovieItemResponseFromJson(Map<String, dynamic> json) =>
+    MovieItemResponse(
+      status: json['status'] as String?,
+      revenue: (json['revenue'] as num?)?.toInt(),
       adult: json['adult'] as bool?,
       backdropPath: json['backdrop_path'] as String?,
       genreIds: (json['genre_ids'] as List<dynamic>?)
           ?.map((e) => (e as num).toInt())
           .toList(),
       id: (json['id'] as num).toInt(),
+      budget: (json['budget'] as num?)?.toInt(),
+      genres: (json['genres'] as List<dynamic>?)
+          ?.map((e) => GenreResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
       originalLanguage: json['original_language'] as String?,
       originalTitle: json['original_title'] as String?,
       overview: json['overview'] as String?,
@@ -44,11 +50,15 @@ ResultItemResponse _$ResultItemResponseFromJson(Map<String, dynamic> json) =>
       voteCount: (json['vote_count'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$ResultItemResponseToJson(ResultItemResponse instance) =>
+Map<String, dynamic> _$MovieItemResponseToJson(MovieItemResponse instance) =>
     <String, dynamic>{
+      'status': instance.status,
+      'revenue': instance.revenue,
       'adult': instance.adult,
       'backdrop_path': instance.backdropPath,
       'genre_ids': instance.genreIds,
+      'budget': instance.budget,
+      'genres': instance.genres?.map((e) => e.toJson()).toList(),
       'id': instance.id,
       'original_language': instance.originalLanguage,
       'original_title': instance.originalTitle,
@@ -60,4 +70,16 @@ Map<String, dynamic> _$ResultItemResponseToJson(ResultItemResponse instance) =>
       'video': instance.video,
       'vote_average': instance.voteAverage,
       'vote_count': instance.voteCount,
+    };
+
+GenreResponse _$GenreResponseFromJson(Map<String, dynamic> json) =>
+    GenreResponse(
+      id: (json['id'] as num?)?.toInt(),
+      name: json['name'] as String?,
+    );
+
+Map<String, dynamic> _$GenreResponseToJson(GenreResponse instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
     };

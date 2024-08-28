@@ -1,16 +1,16 @@
 import 'dart:ui';
-import 'package:auth_flow_flutter_rxdart/common/extensions/double_extensions.dart';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 import 'package:flutter/material.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+
+import 'package:auth_flow_flutter_rxdart/common/extensions/double_extensions.dart';
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 
 const expandedBarHeight = 350.0;
 
 class ExpandedAppBarWidget extends StatelessWidget {
-  final MovieDetail data;
+  final MovieItem data;
 
   const ExpandedAppBarWidget({super.key, required this.data});
 
@@ -116,7 +116,7 @@ class ExpandedAppBarWidget extends StatelessWidget {
     );
   }
 
-  Widget _renderUserScore(MovieDetail movie) {
+  Widget _renderUserScore(MovieItem movie) {
     return Container(
         decoration: BoxDecoration(
           color: Colors.black.withOpacity(0.6),

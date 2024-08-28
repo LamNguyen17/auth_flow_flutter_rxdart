@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/favourite_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 
 class MovieCellWidget extends StatelessWidget {
   final VoidCallback? onPressed;
-  final ResultItem movieCardItem;
+  final MovieItem movieCardItem;
   final double? width;
   final double? height;
 
   const MovieCellWidget(
-      {super.key, required this.movieCardItem, this.width, this.height,  this.onPressed});
+      {super.key,
+      required this.movieCardItem,
+      this.width,
+      this.height,
+      this.onPressed});
 
   @override
   Widget build(BuildContext context) {
+    final favouriteBloc = BlocProvider.of<FavouriteBloc>(context);
     return AppTouchable(
       onPress: onPressed,
       child: Container(
@@ -50,6 +57,30 @@ class MovieCellWidget extends StatelessWidget {
                 ),
                 child: _buildTextualInfo(movieCardItem),
               ),
+              StreamBuilder<bool>(
+                  stream: favouriteBloc.isFavorite$,
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.data == true) {
+                      return Positioned(
+                        top: 4.0,
+                        right: 4.0,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white30,
+                              borderRadius: BorderRadius.circular(50.0),
+                            ),
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              child: const Icon(
+                                Icons.favorite,
+                                color: Colors.red,
+                              ),
+                              onTap: () {},
+                            )),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
             ],
           )),
     );
@@ -74,7 +105,7 @@ class MovieCellWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildTextualInfo(ResultItem movieCardItem) {
+  Widget _buildTextualInfo(MovieItem movieCardItem) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.center,

@@ -6,7 +6,7 @@ part 'movie_list_model.g.dart';
 @JsonSerializable(explicitToJson: true)
 class MovieListResponse {
   final int? page;
-  final List<ResultItemResponse>? results;
+  final List<MovieItemResponse>? results;
   @JsonKey(name: 'total_pages')
   final int? totalPages;
   @JsonKey(name: 'total_results')
@@ -30,12 +30,16 @@ class MovieListResponse {
 }
 
 @JsonSerializable(explicitToJson: true)
-class ResultItemResponse {
+class MovieItemResponse {
+  final String? status;
+  final int? revenue;
   final bool? adult;
   @JsonKey(name: 'backdrop_path')
   final String? backdropPath;
   @JsonKey(name: 'genre_ids')
   final List<int>? genreIds;
+  final int? budget;
+  final List<GenreResponse>? genres;
   final int id;
   @JsonKey(name: 'original_language')
   final String? originalLanguage;
@@ -54,11 +58,15 @@ class ResultItemResponse {
   @JsonKey(name: 'vote_count')
   final int? voteCount;
 
-  ResultItemResponse(
-      {this.adult,
+  MovieItemResponse(
+      {this.status,
+      this.revenue,
+      this.adult,
       this.backdropPath,
       this.genreIds,
       required this.id,
+      this.budget,
+      this.genres,
       this.originalLanguage,
       this.originalTitle,
       this.overview,
@@ -70,13 +78,17 @@ class ResultItemResponse {
       this.voteAverage,
       this.voteCount});
 
-  factory ResultItemResponse.fromJson(Map<String, dynamic> json) =>
-      _$ResultItemResponseFromJson(json);
+  factory MovieItemResponse.fromJson(Map<String, dynamic> json) =>
+      _$MovieItemResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ResultItemResponseToJson(this);
+  Map<String, dynamic> toJson() => _$MovieItemResponseToJson(this);
 
-  ResultItem toEntity() {
-    return ResultItem(
+  MovieItem toEntity() {
+    return MovieItem(
+        genres: genres?.map((x) => x.toEntity()).toList(),
+        budget: budget,
+        status: status,
+        revenue: revenue,
         adult: adult,
         backdropPath: backdropPath,
         genreIds: genreIds,
@@ -91,5 +103,28 @@ class ResultItemResponse {
         video: video,
         voteAverage: voteAverage,
         voteCount: voteCount);
+  }
+}
+
+@JsonSerializable(explicitToJson: true)
+class GenreResponse {
+  final int? id;
+  final String? name;
+
+  GenreResponse({
+    this.id,
+    this.name,
+  });
+
+  factory GenreResponse.fromJson(Map<String, dynamic> json) =>
+      _$GenreResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GenreResponseToJson(this);
+
+  Genre toEntity() {
+    return Genre(
+      id: id,
+      name: name,
+    );
   }
 }

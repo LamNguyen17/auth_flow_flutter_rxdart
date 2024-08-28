@@ -2,7 +2,6 @@ import 'package:auth_flow_flutter_rxdart/common/extensions/failure.dart';
 import 'package:auth_flow_flutter_rxdart/data/config/app_config.dart';
 import 'package:auth_flow_flutter_rxdart/data/gateway/api_gateway.dart';
 import 'package:auth_flow_flutter_rxdart/data/models/movie/genre_movie_list_model.dart';
-import 'package:auth_flow_flutter_rxdart/data/models/movie/movie_detail_model.dart';
 import 'package:auth_flow_flutter_rxdart/data/models/movie/movie_keyword_model.dart';
 import 'package:auth_flow_flutter_rxdart/data/models/movie/movie_list_model.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_movie_list.dart';
@@ -10,7 +9,7 @@ import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_m
 abstract class MovieRemoteDataSource {
   Future<List<GenreMovieListResponse>> getGenreMovieList(String type);
 
-  Future<MovieDetailResponse> getMovieDetail(int id);
+  Future<MovieItemResponse> getMovieDetail(int id);
 
   Future<MovieKeywordResponse> getMovieKeywords(int id);
 
@@ -57,11 +56,11 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   /// Get movie detail
   /// id = movie id
   @override
-  Future<MovieDetailResponse> getMovieDetail(int id) async {
+  Future<MovieItemResponse> getMovieDetail(int id) async {
     final response =
         await _apiGateway.dio.get("/movie/$id?api_key=${AppConfig.apiKey}");
     if (response.statusCode == 200) {
-      return MovieDetailResponse.fromJson(response.data);
+      return MovieItemResponse.fromJson(response.data);
     } else {
       throw const ServerFailure('');
     }

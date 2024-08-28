@@ -1,8 +1,7 @@
-import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:flutter/material.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_state.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/widgets/movie_cell_widget.dart';
@@ -75,7 +74,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
             )));
   }
 
-  Widget _renderStatePage(ResultItem movie) {
+  Widget _renderStatePage(MovieItem movie) {
     return NotificationListener<ScrollNotification>(
       onNotification: (scrollInfo) {
         if (scrollInfo is ScrollStartNotification) {

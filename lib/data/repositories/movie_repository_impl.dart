@@ -1,10 +1,9 @@
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_keyword.dart';
 import 'package:dartz/dartz.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/failure.dart';
 import 'package:auth_flow_flutter_rxdart/common/services/network_service.dart';
 import 'package:auth_flow_flutter_rxdart/data/datasources/movie_remote_data_source.dart';
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_keyword.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/request/request_movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/genre_movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
@@ -48,7 +47,7 @@ class MovieRepositoryImpl implements MovieRepository {
   }
 
   @override
-  Future<Either<Failure, MovieDetail>> getMovieDetails(int id) async {
+  Future<Either<Failure, MovieItem>> getMovieDetails(int id) async {
     final isConnected = await _networkService.isConnected;
     if (isConnected) {
       try {

@@ -73,7 +73,7 @@ class AppNavManager {
                     path: 'movies',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (BuildContext context, GoRouterState state) {
-                      return BlocProvider(
+                      return BlocProvider<MovieBloc>(
                         bloc: injector.get<MovieBloc>(),
                         child: const MovieListScreen(),
                       );
@@ -92,7 +92,10 @@ class AppNavManager {
                         builder: (BuildContext context, GoRouterState state) {
                           final movieId =
                               int.parse(state.pathParameters['movieId']!);
-                          return MovieDetailScreen(id: movieId);
+                          return BlocProvider<MovieBloc>(
+                            bloc: injector.get<MovieBloc>(),
+                            child: MovieDetailScreen(id: movieId),
+                          );
                         },
                       ),
                     ],

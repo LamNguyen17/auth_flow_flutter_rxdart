@@ -1,7 +1,8 @@
-import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_detail.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart';
 import 'package:flutter/material.dart';
+
+import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/box_wapper.dart';
 
 class GenresWidget extends StatelessWidget {
   final List<Genre> _genres;

@@ -31,6 +31,7 @@ class FavouriteBloc extends BlocBase {
       return Stream.value(item);
     });
     updateFavorite$.listen((event) {
+      print('updateFavorite: $event');
       if (appendFavorites.any((MovieItem item) => item.id == event.id)) {
         appendFavorites.removeWhere((MovieItem item) => item.id == event.id);
         isFavorite.add(false);

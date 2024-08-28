@@ -1,25 +1,24 @@
 import 'dart:io';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/widgets/movie_cell_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/favourite_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/app_bar.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/widgets/movie_cell_widget.dart';
 
-class NewScreen extends StatelessWidget {
-  const NewScreen({super.key});
+class FavouritesScreen extends StatelessWidget {
+  const FavouritesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final favouriteBloc = BlocProvider.of<FavouriteBloc>(context);
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        title: const Text('New Screen'),
-      ),
-      body: StreamBuilder(
+    return CustomAppBar(
+      type: AppbarType.normal,
+      title: 'Favourites',
+      child: StreamBuilder(
         stream: favouriteBloc.favoriteList$,
         builder: (context, snapshot) {
+          print('favouriteBloc: ${snapshot.data}');
           if (snapshot.data == null || snapshot.data!.isEmpty) {
             return const SizedBox.shrink();
           }

@@ -1,11 +1,11 @@
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/favourite_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_bloc.dart';
 
 class FavouriteWidget extends StatelessWidget {
-  final dynamic movie;
+  final MovieItem movie;
 
   const FavouriteWidget({super.key, required this.movie});
 
@@ -28,7 +28,6 @@ class FavouriteWidget extends StatelessWidget {
             stream: favouriteBloc.isFavorite$,
             builder: (BuildContext context,
                 AsyncSnapshot snapshot) {
-              print('FavouriteWidget_build: ${snapshot.data}');
               return Container(
                   decoration: BoxDecoration(
                     color: Colors.white30,

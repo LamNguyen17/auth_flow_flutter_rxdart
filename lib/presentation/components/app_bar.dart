@@ -12,6 +12,7 @@ const String icBack = AppImages.icBack;
 enum AppbarType {
   profile,
   normal,
+  home,
 }
 
 class CustomAppBar extends StatelessWidget {
@@ -45,7 +46,9 @@ class CustomAppBar extends StatelessWidget {
           leadingWidth: renderLeadingWidth(context),
           title: type == AppbarType.profile
               ? const SizedBox.shrink()
-              : Text(title ?? ''),
+              : Text(title ?? '',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600)),
           actions: actions,
         ),
         body: child,
@@ -59,7 +62,9 @@ class CustomAppBar extends StatelessWidget {
           trailing: actions?[0],
           middle: type == AppbarType.profile
               ? const SizedBox.shrink()
-              : Text(title ?? ''),
+              : Text(title ?? '',
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w600)),
         ),
         child: child,
       );
@@ -81,6 +86,7 @@ class CustomAppBar extends StatelessWidget {
   Widget renderLeading(BuildContext context) {
     switch (type) {
       case AppbarType.profile:
+      case AppbarType.home:
         return Container(child: childLeading);
       case AppbarType.normal:
       default:

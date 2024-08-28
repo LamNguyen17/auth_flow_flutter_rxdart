@@ -12,4 +12,10 @@ class HomeNavigator {
 
   static openMovieDetail(BuildContext context, int id) =>
       context.push('/home/movies/$id');
+
+  static openFavouriteList(BuildContext context) =>
+      context.push('/home/favourite_list');
+
+  static openNotificationList(BuildContext context) =>
+      context.push('/home/notifications');
 }

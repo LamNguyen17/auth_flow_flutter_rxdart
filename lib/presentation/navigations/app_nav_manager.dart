@@ -5,13 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourites_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/notification/notification_list/notification_list_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/movie_detail_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_list/movie_list_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/movie_reservation_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_screen.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/new_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/register/register_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
@@ -100,17 +101,22 @@ class AppNavManager {
                       ),
                     ],
                   ),
+                  GoRoute(
+                    path: 'favourite_list',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const FavouritesScreen();
+                    },
+                  ),
+                  GoRoute(
+                    path: 'notifications',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const NotificationListScreen();
+                    },
+                  ),
                 ],
               )
-            ],
-          ),
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                  path: '/news',
-                  name: Routes.main[Main.news]!,
-                  builder: (BuildContext context, GoRouterState state) =>
-                      const NewScreen())
             ],
           ),
           StatefulShellBranch(
@@ -168,15 +174,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
                     colorFilter:
                         ColorFilter.mode(Colors.grey[500]!, BlendMode.srcIn)),
                 activeIcon: SvgPicture.asset(tabHome,
-                    colorFilter:
-                        ColorFilter.mode(Colors.green[500]!, BlendMode.srcIn)),
-              ),
-              BottomNavigationBarItem(
-                label: 'News',
-                icon: SvgPicture.asset(tabList,
-                    colorFilter:
-                        ColorFilter.mode(Colors.grey[500]!, BlendMode.srcIn)),
-                activeIcon: SvgPicture.asset(tabList,
                     colorFilter:
                         ColorFilter.mode(Colors.green[500]!, BlendMode.srcIn)),
               ),

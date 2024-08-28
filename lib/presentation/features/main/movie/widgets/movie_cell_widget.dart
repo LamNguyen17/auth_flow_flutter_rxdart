@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/favourite_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 

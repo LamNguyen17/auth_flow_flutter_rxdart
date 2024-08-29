@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -95,7 +96,10 @@ class AppNavManager {
                               int.parse(state.pathParameters['movieId']!);
                           return BlocProvider<MovieBloc>(
                             bloc: injector.get<MovieBloc>(),
-                            child: MovieDetailScreen(id: movieId),
+                            child: BlocProvider<FavouriteItemBloc>(
+                              bloc: injector.get<FavouriteItemBloc>(),
+                              child: MovieDetailScreen(id: movieId),
+                            ),
                           );
                         },
                       ),

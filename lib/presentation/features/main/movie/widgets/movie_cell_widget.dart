@@ -1,3 +1,5 @@
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
@@ -21,7 +23,6 @@ class MovieCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final favouriteBloc = BlocProvider.of<FavouriteBloc>(context);
     return AppTouchable(
       onPress: onPressed,
       child: Container(
@@ -57,30 +58,31 @@ class MovieCellWidget extends StatelessWidget {
                 ),
                 child: _buildTextualInfo(movieCardItem),
               ),
-              StreamBuilder<bool>(
-                  stream: favouriteBloc.isFavorite$,
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.data == true) {
-                      return Positioned(
-                        top: 4.0,
-                        right: 4.0,
-                        child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white30,
-                              borderRadius: BorderRadius.circular(50.0),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
-                              child: const Icon(
-                                Icons.favorite,
-                                color: Colors.red,
-                              ),
-                              onTap: () {},
-                            )),
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
+              // StreamBuilder<bool>(
+              //     stream: BlocProvider.of<FavouriteItemBloc>(context)
+              //         .isFavorite$,
+              //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+              //       if (snapshot.data == true) {
+              //         return Positioned(
+              //           top: 4.0,
+              //           right: 4.0,
+              //           child: Container(
+              //               decoration: BoxDecoration(
+              //                 color: Colors.white30,
+              //                 borderRadius: BorderRadius.circular(50.0),
+              //               ),
+              //               padding: const EdgeInsets.all(8.0),
+              //               child: InkWell(
+              //                 child: const Icon(
+              //                   Icons.favorite,
+              //                   color: Colors.red,
+              //                 ),
+              //                 onTap: () {},
+              //               )),
+              //         );
+              //       }
+              //       return const SizedBox.shrink();
+              //     }),
             ],
           )),
     );

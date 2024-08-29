@@ -38,6 +38,7 @@ dependencies:
   flutter_local_notifications: 17.2.1+2
   carousel_slider: 4.2.1
   percent_indicator: 4.2.3
+  cloud_firestore: ^5.0.2
 
 dev_dependencies:
   flutter_test:

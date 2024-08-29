@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
@@ -90,8 +92,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                FavouriteWidget(
-                                    movie: movie),
+                                FavouriteWidget(movie: movie),
                                 Text('Release date : ${movie.releaseDate}'),
                                 Text('Status : ${movie.status}'),
                                 const SizedBox(height: 16.0),

@@ -1,3 +1,7 @@
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/add_favourite_use_case.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/get_favourite_list_use_case.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/remove_favourite_use_case.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -34,7 +38,14 @@ Future<void> injectionBloc() async {
         injector.get<DeleteAccountUseCase>(),
       ));
   injector.registerFactory(() => SplashBloc());
-  injector.registerFactory(() => FavouriteBloc());
+  injector.registerFactory(() => FavouriteItemBloc(
+    injector.get<GetFavouriteListUseCase>(),
+    injector.get<AddFavouriteUseCase>(),
+    injector.get<RemoveFavouriteUseCase>(),
+  ));
+  injector.registerFactory(() => FavouriteBloc(
+    injector.get<GetFavouriteListUseCase>(),
+  ));
   injector.registerLazySingleton(() => ProfileBloc(
         injector.get<GetProfileUseCase>(),
       ));

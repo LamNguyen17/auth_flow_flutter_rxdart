@@ -1,74 +1,56 @@
 import 'dart:async';
 
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/base_usecase.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/add_favourite_use_case.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/get_favourite_list_use_case.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/remove_favourite_use_case.dart';
 
 class FavouriteBloc extends BlocBase {
-
   /// Input
   final Function0<void> disposeBag;
-  final Sink<MovieItem> updateFavorite;
+  final Sink<void> getFavouriteList;
 
   /// Output
-  final Stream<bool> isFavorite$;
-  final Stream<List<MovieItem>> favoriteList$;
+  final Stream<dynamic> favoriteList$;
 
   @override
   void dispose() {
     disposeBag();
   }
 
-  factory FavouriteBloc() {
-    final isFavorite = BehaviorSubject<bool>.seeded(false);
-    final updateFavorite = BehaviorSubject<MovieItem>();
-    final favoriteList = BehaviorSubject<List<MovieItem>>();
-    final List<MovieItem> appendFavorites = [];
+  factory FavouriteBloc(
+    GetFavouriteListUseCase getFavouriteListUseCase,
+  ) {
+    final getFavouriteList = BehaviorSubject<void>();
+    final isLoading = BehaviorSubject<bool>.seeded(false);
 
-    final updateFavorite$ = updateFavorite.flatMap((MovieItem item) {
-      return Stream.value(item);
+    final Stream<dynamic> favoriteList$ = getFavouriteList.exhaustMap((_) {
+      isLoading.add(true);
+      return Stream.fromFuture(getFavouriteListUseCase.execute(NoParams()))
+          .flatMap((either) {
+        isLoading.add(false);
+        return either.fold(
+            (error) => Stream.value(error), (data) => Stream.value(data));
+      }).debug();
     });
-    updateFavorite$.listen((event) {
-      print('updateFavorite: $event');
-      if (appendFavorites.any((MovieItem item) => item.id == event.id)) {
-        appendFavorites.removeWhere((MovieItem item) => item.id == event.id);
-        isFavorite.add(false);
-      } else {
-        appendFavorites.add(event);
-        isFavorite.add(true);
-      }
-      favoriteList.add(appendFavorites);
-    });
-
-
-    // final isFavorite$ = isFavorite.stream.shareValue();
-    // favoriteList.stream.map((list) => list.any((dynamic item) {
-    //       if (item.id == item.id) {
-    //         isFavorite.add(true);
-    //         return true;
-    //       } else {
-    //         return false;
-    //       }
-    //     }));
-    // final isFavorite$ = isFavorite.stream.shareValue();
 
     return FavouriteBloc._(
-        updateFavorite: updateFavorite,
-        isFavorite$: isFavorite.asBroadcastStream(),
-        favoriteList$: favoriteList.asBroadcastStream(),
+        getFavouriteList: getFavouriteList,
+        favoriteList$: favoriteList$,
         disposeBag: () {
-          isFavorite.close();
-          favoriteList.close();
-          print('FavouriteBloc_disposeBag');
+          getFavouriteList.close();
+          isLoading.close();
         });
   }
 
   FavouriteBloc._({
-    required this.updateFavorite,
+    required this.getFavouriteList,
     required this.disposeBag,
-    required this.isFavorite$,
     required this.favoriteList$,
   });
 }

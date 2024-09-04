@@ -43,16 +43,11 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                           : const ClampingScrollPhysics()),
                   itemCount: snapshot.data?.length,
                   itemBuilder: (context, index) {
-                    // return Container(
-                    //     margin: const EdgeInsets.only(left: 16),
-                    //     child: MovieCellWidget(
-                    //         movieCardItem: snapshot.data![index],
-                    //         onPressed: () {}));
-                    DocumentSnapshot data =
-                        snapshot.data?[index] as DocumentSnapshot<Object?>;
-                    print(
-                        'move_id: $data - ${data['id']} - ${data.id} - ${data.data()}');
-                    return Text('${data['id']}');
+                    return Container(
+                        margin: const EdgeInsets.only(left: 16),
+                        child: MovieCellWidget(
+                            movieCardItem: snapshot.data?[index],
+                            onPressed: () {}));
                   });
         },
       ),

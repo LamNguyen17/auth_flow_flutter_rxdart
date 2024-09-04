@@ -37,7 +37,7 @@ class FavouriteBloc extends BlocBase {
         return either.fold(
             (error) => Stream.value(error), (data) => Stream.value(data));
       }).debug();
-    });
+    }).publishReplay(maxSize: 1).autoConnect();
 
     return FavouriteBloc._(
         getFavouriteList: getFavouriteList,

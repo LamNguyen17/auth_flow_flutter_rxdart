@@ -48,6 +48,7 @@ MovieItemResponse _$MovieItemResponseFromJson(Map<String, dynamic> json) =>
       video: json['video'] as bool?,
       voteAverage: (json['vote_average'] as num?)?.toDouble(),
       voteCount: (json['vote_count'] as num?)?.toInt(),
+      docId: json['doc_id'] as String?,
     );
 
 Map<String, dynamic> _$MovieItemResponseToJson(MovieItemResponse instance) =>
@@ -70,6 +71,7 @@ Map<String, dynamic> _$MovieItemResponseToJson(MovieItemResponse instance) =>
       'video': instance.video,
       'vote_average': instance.voteAverage,
       'vote_count': instance.voteCount,
+      'doc_id': instance.docId,
     };
 
 GenreResponse _$GenreResponseFromJson(Map<String, dynamic> json) =>

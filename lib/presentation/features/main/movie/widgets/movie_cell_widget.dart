@@ -23,6 +23,8 @@ class MovieCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final favouriteItemBloc = BlocProvider.of<FavouriteItemBloc>(context);
+    final favouriteBloc = BlocProvider.of<FavouriteBloc>(context);
     return AppTouchable(
       onPress: onPressed,
       child: Container(
@@ -58,31 +60,29 @@ class MovieCellWidget extends StatelessWidget {
                 ),
                 child: _buildTextualInfo(movieCardItem),
               ),
-              // StreamBuilder<bool>(
-              //     stream: BlocProvider.of<FavouriteItemBloc>(context)
-              //         .isFavorite$,
-              //     builder: (BuildContext context, AsyncSnapshot snapshot) {
-              //       if (snapshot.data == true) {
-              //         return Positioned(
-              //           top: 4.0,
-              //           right: 4.0,
-              //           child: Container(
-              //               decoration: BoxDecoration(
-              //                 color: Colors.white30,
-              //                 borderRadius: BorderRadius.circular(50.0),
-              //               ),
-              //               padding: const EdgeInsets.all(8.0),
-              //               child: InkWell(
-              //                 child: const Icon(
-              //                   Icons.favorite,
-              //                   color: Colors.red,
-              //                 ),
-              //                 onTap: () {},
-              //               )),
-              //         );
-              //       }
-              //       return const SizedBox.shrink();
-              //     }),
+
+              Positioned(
+                top: 4.0,
+                right: 4.0,
+                child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white30,
+                      borderRadius: BorderRadius.circular(50.0),
+                    ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: AppTouchable(
+                      child: const Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                      ),
+                      onPress: () {
+                        print('movieCardItem_docID: ${movieCardItem.docId}');
+                        // favouriteItemBloc.removeFavourite.add(movieCardItem.docId.toString());
+                        favouriteBloc.getFavouriteList.add(null);
+                      },
+                    )),
+              ),
+
             ],
           )),
     );

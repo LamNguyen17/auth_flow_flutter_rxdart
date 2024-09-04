@@ -47,7 +47,7 @@ class FavouriteWidget extends StatelessWidget {
                         movie.id,
                         movie.title,
                         movie.posterPath,
-                        movie.voteAverage,
+                        movie.voteAverage
                       ));
                     },
                   ));

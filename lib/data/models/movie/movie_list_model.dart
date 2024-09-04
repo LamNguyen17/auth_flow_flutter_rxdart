@@ -57,26 +57,30 @@ class MovieItemResponse {
   final double? voteAverage;
   @JsonKey(name: 'vote_count')
   final int? voteCount;
+  @JsonKey(name: 'doc_id')
+  final String? docId;
 
-  MovieItemResponse(
-      {this.status,
-      this.revenue,
-      this.adult,
-      this.backdropPath,
-      this.genreIds,
-      required this.id,
-      this.budget,
-      this.genres,
-      this.originalLanguage,
-      this.originalTitle,
-      this.overview,
-      this.popularity,
-      this.posterPath,
-      this.releaseDate,
-      this.title,
-      this.video,
-      this.voteAverage,
-      this.voteCount});
+  MovieItemResponse({
+    this.status,
+    this.revenue,
+    this.adult,
+    this.backdropPath,
+    this.genreIds,
+    required this.id,
+    this.budget,
+    this.genres,
+    this.originalLanguage,
+    this.originalTitle,
+    this.overview,
+    this.popularity,
+    this.posterPath,
+    this.releaseDate,
+    this.title,
+    this.video,
+    this.voteAverage,
+    this.voteCount,
+    this.docId,
+  });
 
   factory MovieItemResponse.fromJson(Map<String, dynamic> json) =>
       _$MovieItemResponseFromJson(json);
@@ -85,24 +89,26 @@ class MovieItemResponse {
 
   MovieItem toEntity() {
     return MovieItem(
-        genres: genres?.map((x) => x.toEntity()).toList(),
-        budget: budget,
-        status: status,
-        revenue: revenue,
-        adult: adult,
-        backdropPath: backdropPath,
-        genreIds: genreIds,
-        id: id,
-        originalLanguage: originalLanguage,
-        originalTitle: originalTitle,
-        overview: overview,
-        popularity: popularity,
-        posterPath: posterPath,
-        releaseDate: releaseDate,
-        title: title,
-        video: video,
-        voteAverage: voteAverage,
-        voteCount: voteCount);
+      genres: genres?.map((x) => x.toEntity()).toList(),
+      budget: budget,
+      status: status,
+      revenue: revenue,
+      adult: adult,
+      backdropPath: backdropPath,
+      genreIds: genreIds,
+      id: id,
+      originalLanguage: originalLanguage,
+      originalTitle: originalTitle,
+      overview: overview,
+      popularity: popularity,
+      posterPath: posterPath,
+      releaseDate: releaseDate,
+      title: title,
+      video: video,
+      voteAverage: voteAverage,
+      voteCount: voteCount,
+      docId: docId,
+    );
   }
 }
 

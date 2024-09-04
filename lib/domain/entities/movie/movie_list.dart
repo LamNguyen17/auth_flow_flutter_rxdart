@@ -36,6 +36,7 @@ class MovieItem extends Equatable {
   int? voteCount;
   String? status;
   int? revenue;
+  String? docId;
 
   MovieItem({
     this.status,
@@ -56,6 +57,7 @@ class MovieItem extends Equatable {
     this.video,
     this.voteAverage,
     this.voteCount,
+    this.docId,
   });
 
   @override
@@ -78,6 +80,7 @@ class MovieItem extends Equatable {
         video,
         voteAverage,
         voteCount,
+        docId,
       ];
 }
 

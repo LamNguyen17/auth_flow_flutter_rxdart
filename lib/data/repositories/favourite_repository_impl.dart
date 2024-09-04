@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/add_favourite_use_case.dart';
 import 'package:dartz/dartz.dart';
 
@@ -33,7 +34,7 @@ class FavouriteRepositoryImpl implements FavouriteRepository {
     if (isConnected) {
       try {
         var response = await _remoteDataSource.getFavouriteList();
-        return Right(response);
+        return Right(response.map((e) => e.toEntity()).toList());
       } on Exception catch (e) {
         return Left(ServerFailure(e.toString()));
       }

@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
@@ -14,6 +15,7 @@ class MovieWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final movieBloc = BlocProvider.of<MovieBloc>(context);
+    final favouriteBloc = BlocProvider.of<FavouriteBloc>(context);
     return Column(children: <Widget>[
       Container(
         margin: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 8.0),

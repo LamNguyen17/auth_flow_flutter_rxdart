@@ -1,11 +1,11 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
+
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
-import 'package:flutter/material.dart';
-
-import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_bar.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_bloc.dart';
 
@@ -18,54 +18,54 @@ class FavouritesScreen extends StatefulWidget {
 
 class _FavouritesScreenState extends State<FavouritesScreen> {
   late FavouriteBloc _favouriteBloc;
-  late FavouriteItemBloc _favouriteItemBloc;
 
   @override
   void initState() {
     super.initState();
     _favouriteBloc = BlocProvider.of<FavouriteBloc>(context)!;
-    _favouriteItemBloc = BlocProvider.of<FavouriteItemBloc>(context)!;
     _favouriteBloc.getFavouriteList.add(null);
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(
-      type: AppbarType.normal,
-      title: 'Favourites',
-      child: StreamBuilder(
-        stream: _favouriteBloc.favoriteList$,
-        builder: (context, snapshot) {
-          return !snapshot.hasData
-              ? const Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                  physics: AlwaysScrollableScrollPhysics(
-                      parent: Platform.isIOS
-                          ? const BouncingScrollPhysics()
-                          : const ClampingScrollPhysics()),
-                  itemCount: snapshot.data?.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                        margin: const EdgeInsets.only(left: 16),
-                        child: MovieFavouriteCellWidget(
-                          favouriteItemBloc: _favouriteItemBloc,
-                          movieCardItem: snapshot.data?[index],
-                        ));
-                  });
-        },
-      ),
-    );
+        type: AppbarType.normal,
+        title: 'Favourites',
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _favouriteBloc.getFavouriteList.add(null);
+          },
+          child: StreamBuilder(
+            stream: _favouriteBloc.favoriteList$,
+            builder: (context, snapshot) {
+              return !snapshot.hasData
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      physics: AlwaysScrollableScrollPhysics(
+                          parent: Platform.isIOS
+                              ? const BouncingScrollPhysics()
+                              : const ClampingScrollPhysics()),
+                      itemCount: snapshot.data?.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                            child: Container(
+                                margin: const EdgeInsets.only(left: 16),
+                                child: MovieFavouriteCellWidget(
+                                  movieCardItem: snapshot.data?[index],
+                                )));
+                      });
+            },
+          ),
+        ));
   }
 }
 
 class MovieFavouriteCellWidget extends StatelessWidget {
-  final FavouriteItemBloc favouriteItemBloc;
   final MovieItem movieCardItem;
 
   const MovieFavouriteCellWidget({
     super.key,
     required this.movieCardItem,
-    required this.favouriteItemBloc,
   });
 
   @override
@@ -97,15 +97,17 @@ class MovieFavouriteCellWidget extends StatelessWidget {
                 ),
                 child: _buildTextualInfo(movieCardItem),
               ),
-              _renderFavouriteButton(context, favouriteItemBloc),
+              _renderFavouriteButton(context),
             ],
           ),
         ));
   }
 
-  Widget _renderFavouriteButton(BuildContext context, FavouriteItemBloc bloc) {
-    return StreamBuilder<dynamic>(
-        stream: bloc.isFavorite$,
+  Widget _renderFavouriteButton(BuildContext context) {
+    final favouriteItemBloc = BlocProvider.of<FavouriteItemBloc>(context)!;
+    return StreamBuilder<bool>(
+        initialData: false,
+        stream: favouriteItemBloc.removeFavourite$,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           return Positioned(
             top: 4.0,
@@ -116,12 +118,12 @@ class MovieFavouriteCellWidget extends StatelessWidget {
                   borderRadius: BorderRadius.circular(50.0),
                 ),
                 padding: const EdgeInsets.all(8.0),
-                child: AppTouchable(
+                child: InkWell(
                   child: const Icon(
                     Icons.favorite,
                     color: Colors.red,
                   ),
-                  onPress: () {
+                  onTap: () {
                     print('movieCardItem_docID: ${movieCardItem.docId}');
                     favouriteItemBloc.removeFavourite
                         .add(movieCardItem.docId.toString());

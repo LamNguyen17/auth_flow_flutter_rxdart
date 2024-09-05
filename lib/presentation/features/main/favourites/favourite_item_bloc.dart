@@ -20,11 +20,13 @@ class FavouriteItemBloc extends BlocBase {
 
   /// Output
   final Stream<dynamic> isFavorite$;
+  final Stream<bool> addFavourite$;
+  final Stream<bool> removeFavourite$;
 
   @override
   void dispose() {
     disposeBag();
-    // _favouriteBloc.dispose();
+    _favouriteBloc.dispose();
   }
 
   factory FavouriteItemBloc(
@@ -47,34 +49,31 @@ class FavouriteItemBloc extends BlocBase {
       }).debug();
     });
 
-    final Stream<bool> removeFavourite$ =
-        removeFavourite.exhaustMap((String id) {
-      isLoading.add(true);
-      return Stream.fromFuture(removeFavouriteUseCase.execute(id))
-          .flatMap((either) {
-        isLoading.add(false);
-        return either.fold((error) => Stream.value(true), (data) {
-          print('removeFavourite: $id');
-          favouriteBloc.getFavouriteList.add(null);
-          return Stream.value(false);
-        });
-      }).debug();
-    });
+    final Stream<bool> removeFavourite$ = removeFavourite
+        .exhaustMap((String id) {
+          isLoading.add(true);
+          return Stream.fromFuture(removeFavouriteUseCase.execute(id))
+              .flatMap((either) {
+            isLoading.add(false);
+            return either.fold((error) => Stream.value(true), (data) {
+              print('removeFavourite: $id');
+              favouriteBloc.getFavouriteList.add(null);
+              return Stream.value(false);
+            });
+          }).debug();
+        })
+        .publishReplay(maxSize: 1)
+        .autoConnect();
 
-    final Stream<dynamic> isFavorite$ = Rx.merge([addFavourite$, removeFavourite$])
-        .whereNotNull()
-        .publish();
-
-    // final Stream<dynamic> isFavorite$ =
-    //     Rx.merge([addFavourite$, removeFavourite$]).switchMap((bool isFav) {
-    //   print('isFavorite_loggerr: $isFav');
-    //   return Stream.value(isFav ?? false);
-    // });
+    final Stream<dynamic> isFavorite$ =
+        Rx.merge([addFavourite$]).whereNotNull().publish();
 
     return FavouriteItemBloc._(
         favouriteBloc: favouriteBloc,
         addFavourite: addFavourite,
+        addFavourite$: addFavourite$,
         removeFavourite: removeFavourite,
+        removeFavourite$: removeFavourite$,
         isFavorite$: isFavorite$,
         disposeBag: () {
           isLoading.close();
@@ -89,6 +88,8 @@ class FavouriteItemBloc extends BlocBase {
     required this.removeFavourite,
     required this.disposeBag,
     required this.isFavorite$,
+    required this.addFavourite$,
+    required this.removeFavourite$,
     required FavouriteBloc favouriteBloc,
   }) : _favouriteBloc = favouriteBloc;
 }

@@ -13,7 +13,6 @@ class FavouriteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('favouriteItemBloc: ${movie.docId}');
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,8 +23,9 @@ class FavouriteWidget extends StatelessWidget {
           style: const TextStyle(
               fontSize: 26.0, color: Colors.red, fontWeight: FontWeight.bold),
         )),
-        StreamBuilder<dynamic>(
-            stream: bloc.isFavorite$,
+        StreamBuilder<bool>(
+            initialData: false,
+            stream: bloc.addFavourite$,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
               return Container(
                   decoration: BoxDecoration(
@@ -39,12 +39,9 @@ class FavouriteWidget extends StatelessWidget {
                       color: snapshot.data == true ? Colors.red : Colors.grey,
                     ),
                     onPress: () {
-                      bloc.addFavourite.add(ReqAddFavouriteCommand(
-                        movie.id,
-                        movie.title,
-                        movie.posterPath,
-                        movie.voteAverage
-                      ));
+                      print('FavouriteWidget: ${movie.id}');
+                      bloc.addFavourite.add(ReqAddFavouriteCommand(movie.id,
+                          movie.title, movie.posterPath, movie.voteAverage));
                     },
                   ));
             }),

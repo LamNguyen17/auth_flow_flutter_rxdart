@@ -39,13 +39,14 @@ Future<void> injectionBloc() async {
       ));
   injector.registerFactory(() => SplashBloc());
   injector.registerFactory(() => FavouriteItemBloc(
-    injector.get<GetFavouriteListUseCase>(),
-    injector.get<AddFavouriteUseCase>(),
-    injector.get<RemoveFavouriteUseCase>(),
-  ));
+        injector.get<AddFavouriteUseCase>(),
+        injector.get<RemoveFavouriteUseCase>(),
+      ));
   injector.registerFactory(() => FavouriteBloc(
-    injector.get<GetFavouriteListUseCase>(),
-  ));
+        injector.get<GetFavouriteListUseCase>(),
+        injector.get<AddFavouriteUseCase>(),
+        injector.get<RemoveFavouriteUseCase>(),
+      ));
   injector.registerLazySingleton(() => ProfileBloc(
         injector.get<GetProfileUseCase>(),
       ));

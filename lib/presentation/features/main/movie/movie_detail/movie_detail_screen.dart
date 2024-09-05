@@ -35,7 +35,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _movieBloc = BlocProvider.of<MovieBloc>(context);
+    _movieBloc = BlocProvider.of<MovieBloc>(context)!;
     _movieBloc.getMovieDetail.add(widget.id);
     _movieBloc.getMovieKeyword.add(widget.id);
     _movieBloc.getMovieSimilar.add(widget.id);

@@ -34,8 +34,8 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _profileBloc = BlocProvider.of<ProfileBloc>(context);
-    _movieBloc = BlocProvider.of<MovieBloc>(context);
+    _profileBloc = BlocProvider.of<ProfileBloc>(context)!;
+    _movieBloc = BlocProvider.of<MovieBloc>(context)!;
     _profileBloc.getProfile.add(null);
     _movieBloc.getPopular.add(null);
     _movieBloc.getGenreMovie.add(null);

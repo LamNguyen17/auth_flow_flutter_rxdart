@@ -109,7 +109,11 @@ class AppNavManager {
                     path: 'favourite_list',
                     parentNavigatorKey: _rootNavigatorKey,
                     builder: (BuildContext context, GoRouterState state) {
-                      return const FavouritesScreen();
+                      // return const FavouritesScreen();
+                      return BlocProvider<FavouriteItemBloc>(
+                        bloc: injector.get<FavouriteItemBloc>(),
+                        child: const FavouritesScreen(),
+                      );
                     },
                   ),
                   GoRoute(

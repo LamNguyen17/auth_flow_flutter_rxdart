@@ -42,7 +42,7 @@ class MovieWidget extends StatelessWidget {
         ),
       ),
       StreamBuilder(
-        stream: movieBloc.getPopularMessage$,
+        stream: movieBloc?.getPopularMessage$,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             final state = snapshot.data;

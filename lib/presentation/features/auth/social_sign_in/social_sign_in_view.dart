@@ -19,7 +19,7 @@ class SocialSignInView extends StatelessWidget {
           child: Center(
             child: AppTouchable(
                 onPress: () {
-                  authBloc.signInWithFacebook.add(null);
+                  authBloc?.signInWithFacebook.add(null);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -44,7 +44,7 @@ class SocialSignInView extends StatelessWidget {
           child: Center(
             child: AppTouchable(
                 onPress: () {
-                  authBloc.signInWithGoogle.add(null);
+                  authBloc?.signInWithGoogle.add(null);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -71,7 +71,7 @@ class SocialSignInView extends StatelessWidget {
                 child: Center(
                   child: AppTouchable(
                     onPress: () {
-                      authBloc.signInWithApple.add(null);
+                      authBloc?.signInWithApple.add(null);
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(

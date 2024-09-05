@@ -20,7 +20,7 @@ class _MovieListScreenState extends State<MovieListScreen> {
   @override
   void initState() {
     super.initState();
-    _movieBloc = BlocProvider.of<MovieBloc>(context);
+    _movieBloc = BlocProvider.of<MovieBloc>(context)!;
     _movieBloc.getPopular.add(null);
   }
 

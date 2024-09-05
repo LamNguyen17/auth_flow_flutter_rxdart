@@ -86,7 +86,7 @@ class RegisterScreen extends StatelessWidget {
   }
 
   Widget renderInputWidget(FocusScopeNode node, BuildContext context) {
-    final authBloc = BlocProvider.of<AuthBloc>(context);
+    final authBloc = BlocProvider.of<AuthBloc>(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(

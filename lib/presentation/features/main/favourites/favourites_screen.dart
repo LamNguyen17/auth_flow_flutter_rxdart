@@ -1,4 +1,8 @@
 import 'dart:io';
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +24,7 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
   @override
   void initState() {
     super.initState();
-    _favouriteBloc = BlocProvider.of<FavouriteBloc>(context);
+    _favouriteBloc = BlocProvider.of<FavouriteBloc>(context)!;
     _favouriteBloc.getFavouriteList.add(null);
   }
 
@@ -31,9 +35,8 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
       type: AppbarType.normal,
       title: 'Favourites',
       child: StreamBuilder(
-        stream: favouriteBloc.favoriteList$,
+        stream: favouriteBloc?.favoriteList$,
         builder: (context, snapshot) {
-          print('favouriteBloc_snapshot: ${snapshot.data}');
           return !snapshot.hasData
               ? const Center(child: CircularProgressIndicator())
               : ListView.builder(

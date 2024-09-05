@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             bottom: 20.0,
           ),
           child: StreamBuilder(
-              stream: profileBloc.getProfileMessage$,
+              stream: profileBloc?.getProfileMessage$,
               builder: (context, snapshot) {
                 return Center(
                   child: _renderStatePage(snapshot.data),

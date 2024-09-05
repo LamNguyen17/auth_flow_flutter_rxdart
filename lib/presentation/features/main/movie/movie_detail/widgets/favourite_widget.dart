@@ -1,10 +1,10 @@
-import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/add_favourite_use_case.dart';
 import 'package:flutter/material.dart';
 
-import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/add_favourite_use_case.dart';
+import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
 
 class FavouriteWidget extends StatelessWidget {
   final MovieItem movie;
@@ -25,9 +25,8 @@ class FavouriteWidget extends StatelessWidget {
               fontSize: 26.0, color: Colors.red, fontWeight: FontWeight.bold),
         )),
         StreamBuilder<bool>(
-            stream: favouriteItemBloc.isFavorite$,
+            stream: favouriteItemBloc?.isFavorite$,
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-              print('AsyncSnapshot: ${snapshot.data}');
               return Container(
                   decoration: BoxDecoration(
                     color: Colors.white30,
@@ -43,7 +42,8 @@ class FavouriteWidget extends StatelessWidget {
                       // snapshot.data == true
                       //     ? favouriteItemBloc.removeFavourite.add(movie.id)
                       //     :
-                      favouriteItemBloc.addFavourite.add(ReqAddFavouriteCommand(
+                      print('favouriteItemBloc: ${movie.docId}');
+                      favouriteItemBloc?.addFavourite.add(ReqAddFavouriteCommand(
                         movie.id,
                         movie.title,
                         movie.posterPath,

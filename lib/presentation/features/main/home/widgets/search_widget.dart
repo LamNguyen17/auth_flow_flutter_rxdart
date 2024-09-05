@@ -17,7 +17,7 @@ class SearchWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileBloc = BlocProvider.of<ProfileBloc>(context);
     return StreamBuilder(
-        stream: profileBloc.getProfileMessage$,
+        stream: profileBloc?.getProfileMessage$,
         builder: (context, snapshot) {
           return Container(
               margin:

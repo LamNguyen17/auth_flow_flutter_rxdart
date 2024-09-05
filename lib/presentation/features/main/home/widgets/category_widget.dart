@@ -45,7 +45,7 @@ class CategoryWidget extends StatelessWidget {
           height: 40,
           margin: const EdgeInsets.only(left: 16.0, top: 16.0, bottom: 24.0),
           child: StreamBuilder(
-            stream: movieBloc.getGenreMovieMessage$,
+            stream: movieBloc?.getGenreMovieMessage$,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final state = snapshot.data;

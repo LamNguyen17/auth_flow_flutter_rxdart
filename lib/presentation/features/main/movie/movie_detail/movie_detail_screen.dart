@@ -31,11 +31,13 @@ class MovieDetailScreen extends StatefulWidget {
 
 class _MovieDetailScreenState extends State<MovieDetailScreen> {
   late MovieBloc _movieBloc;
+  late FavouriteItemBloc _favouriteItemBloc;
 
   @override
   void initState() {
     super.initState();
     _movieBloc = BlocProvider.of<MovieBloc>(context)!;
+    _favouriteItemBloc = BlocProvider.of<FavouriteItemBloc>(context)!;
     _movieBloc.getMovieDetail.add(widget.id);
     _movieBloc.getMovieKeyword.add(widget.id);
     _movieBloc.getMovieSimilar.add(widget.id);
@@ -47,6 +49,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
     super.dispose();
     print('MovieDetailScreen_dispose');
     _movieBloc.dispose();
+    _favouriteItemBloc.dispose();
   }
 
   @override
@@ -92,7 +95,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                FavouriteWidget(movie: movie),
+                                FavouriteWidget(movie: movie, bloc: _favouriteItemBloc),
                                 Text('Release date : ${movie.releaseDate}'),
                                 Text('Status : ${movie.status}'),
                                 const SizedBox(height: 16.0),

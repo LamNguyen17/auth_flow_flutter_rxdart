@@ -1,10 +1,9 @@
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/fast_image.dart';
 
@@ -23,52 +22,77 @@ class MovieCellWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<FavouriteItemBloc>(
-        bloc: injector.get<FavouriteItemBloc>(),
-        child: AppTouchable(
-          onPress: onPressed,
-          child: Container(
-              key: ValueKey(movieCardItem.id),
-              width: width ?? 200,
-              height: height ?? 250,
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: Colors.grey[300]!,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(16.0),
+    final favouriteItemBloc = BlocProvider.of<FavouriteItemBloc>(context);
+    return AppTouchable(
+      onPress: onPressed,
+      child: Container(
+          key: ValueKey(movieCardItem.id),
+          width: width ?? 200,
+          height: height ?? 250,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.grey[300]!,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(16.0),
+          ),
+          margin: const EdgeInsets.only(right: 16.0, top: 8.0),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              FastImage(
+                width: width ?? 200,
+                height: height ?? 250,
+                fit: BoxFit.cover,
+                borderRadius: const BorderRadius.all(Radius.circular(16.0)),
+                url: movieCardItem.posterPath == null
+                    ? null
+                    : 'https://image.tmdb.org/t/p/w300${movieCardItem.posterPath}',
               ),
-              margin: const EdgeInsets.only(right: 16.0, top: 8.0),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  FastImage(
-                    width: width ?? 200,
-                    height: height ?? 250,
-                    fit: BoxFit.cover,
-                    borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-                    url: movieCardItem.posterPath == null
-                        ? null
-                        : 'https://image.tmdb.org/t/p/w300${movieCardItem.posterPath}',
-                  ),
-                  Container(
-                    decoration: _buildGradientBackground(),
-                    padding: const EdgeInsets.only(
-                      bottom: 16.0,
-                      left: 16.0,
-                      right: 16.0,
-                    ),
-                    child: _buildTextualInfo(movieCardItem),
-                  ),
-                  _renderFavouriteButton(context),
-                ],
-              )),
-        ));
+              Container(
+                decoration: _buildGradientBackground(),
+                padding: const EdgeInsets.only(
+                  bottom: 16.0,
+                  left: 16.0,
+                  right: 16.0,
+                ),
+                child: _buildTextualInfo(movieCardItem),
+              ),
+              _renderFavouriteButton(context, favouriteItemBloc),
+            ],
+          )),
+    );
   }
 
-  Widget _renderFavouriteButton(BuildContext context) {
-    // final favouriteBloc = BlocProvider.of<FavouriteBloc>(context);
-    final favouriteItemBloc = BlocProvider.of<FavouriteItemBloc>(context);
+  Widget _renderFavouriteButton(BuildContext context, FavouriteItemBloc? bloc) {
+    // return StreamBuilder<dynamic>(
+    //     stream: bloc?.isFavorite$,
+    //     builder: (BuildContext context, AsyncSnapshot snapshot) {
+    //       return Positioned(
+    //         top: 4.0,
+    //         right: 4.0,
+    //         child: Container(
+    //             decoration: BoxDecoration(
+    //               color: Colors.white30,
+    //               borderRadius: BorderRadius.circular(50.0),
+    //             ),
+    //             padding: const EdgeInsets.all(8.0),
+    //             child: snapshot.data == true
+    //                 ? AppTouchable(
+    //                     child: const Icon(
+    //                       Icons.favorite,
+    //                       color: Colors.red,
+    //                     ),
+    //                     onPress: () {
+    //                       print('movieCardItem_docID: ${movieCardItem.docId}');
+    //                       bloc?.removeFavourite
+    //                           .add(movieCardItem.docId.toString());
+    //                     },
+    //                   )
+    //                 : const SizedBox.shrink()),
+    //       );
+    //     });
+
     return Positioned(
       top: 4.0,
       right: 4.0,
@@ -85,7 +109,8 @@ class MovieCellWidget extends StatelessWidget {
             ),
             onPress: () {
               print('movieCardItem_docID: ${movieCardItem.docId}');
-              favouriteItemBloc?.removeFavourite.add(movieCardItem.docId.toString());
+              bloc?.removeFavourite
+                  .add(movieCardItem.docId.toString());
             },
           )),
     );

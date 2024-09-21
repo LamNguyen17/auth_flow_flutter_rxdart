@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dropdown_alert/alert_controller.dart';
 import 'package:flutter_dropdown_alert/model/data_alert.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_apple_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/delete_account_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/register_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_with_facebook_usecase.dart';
@@ -21,14 +25,15 @@ import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/main
 import 'package:auth_flow_flutter_rxdart/presentation/utils/validations.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
 
-class AuthBloc extends Cubit<AuthStatus> {
+class AuthBloc extends BlocBase {
   /// Input
   final Function1<String, void> email;
   final Function1<String, void> password;
   final Function1<String, void> confirmPassword;
-  final Function0<void> dispose;
+  final Function0<void> disposeBag;
   final Sink<void> signInWithGoogle;
   final Sink<void> signInWithFacebook;
+  final Sink<void> signInWithApple;
   final Sink<dynamic> login;
   final Sink<dynamic> register;
   final Sink<void> logout;
@@ -47,9 +52,15 @@ class AuthBloc extends Cubit<AuthStatus> {
   final Stream<String?> password$;
   final Stream<String?> confirmPassword$;
 
+  @override
+  void dispose() {
+    disposeBag();
+  }
+
   factory AuthBloc(
     SignInWithGoogleUseCase signInWithGoogleUseCase,
     SignInWithFacebookUseCase signInWithFacebookUseCase,
+    SignInWithAppleUseCase signInWithAppleUseCase,
     SignInUseCase signInUseCase,
     RegisterUseCase registerUseCase,
     LogoutUseCase logoutUseCase,
@@ -93,17 +104,39 @@ class AuthBloc extends Cubit<AuthStatus> {
     }).listen((event) {});
     /** region initState */
 
+    /** region SignInWithApple + err message*/
+    final Stream<AuthStatus> signInWithAppleError$ = signInWithApple
+        .debounceTime(const Duration(milliseconds: 350))
+        .exhaustMap((_) {
+      isLoading.add(true);
+      return Stream.fromFuture(signInWithAppleUseCase.execute(NoParams()))
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
+    });
+    /** endregion SignInWithApple + err message*/
+
     /** region SignInWithFacebook + err message*/
     final Stream<AuthStatus> signInWithFacebookError$ = signInWithFacebook
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
       isLoading.add(true);
       return Stream.fromFuture(signInWithFacebookUseCase.execute(NoParams()))
-          .flatMap((either) => _responseSignIn(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion SignInWithFacebook + err message*/
 
@@ -111,41 +144,46 @@ class AuthBloc extends Cubit<AuthStatus> {
     final Stream<AuthStatus> signInWithGoogleError$ = signInWithGoogle
         .debounceTime(const Duration(milliseconds: 350))
         .exhaustMap((_) {
+      isLoading.add(true);
       return Stream.fromFuture(signInWithGoogleUseCase.execute(NoParams()))
-          .flatMap((either) => _responseSignIn(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion SignInWithGoogle + err message */
 
     /** region SignIn + err message */
-    final isValidSubmitLogin$ = Rx.combineLatest2<String, String, bool>(
-      email,
-      password,
-      (e, p) =>
-          Validation.validateEmail(e) == null &&
-          Validation.validatePass(p) == null,
-    ).shareValueSeeded(false);
+    final isValidSubmitLogin$ =
+        Rx.combineLatest2<String?, String, bool>(email, password, (e, p) {
+      return Validation.validateEmail(e) == null &&
+          Validation.validatePass(p) == null;
+    }).shareValueSeeded(false);
     isValidSubmitLogin$.listen((enable) {
       loginBtn.add(enable);
     });
-
-    final submitLogin$ = loginBtn
-        .withLatestFrom(isValidSubmitLogin$, (_, bool isValid) => isValid)
-        .share();
+    final submitLogin$ = loginBtn.stream.shareValue();
 
     final Stream<AuthStatus> loginError$ = login
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap<AuthStatus>((LoginCommand loginCommand) {
+      isLoading.add(true);
       return Stream.fromFuture(signInUseCase.execute(
               ReqLoginCommand(loginCommand.email, loginCommand.password)))
-          .flatMap((either) => _responseSignIn(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseSignIn(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const SignInError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion SignIn */
 
@@ -162,14 +200,17 @@ class AuthBloc extends Cubit<AuthStatus> {
                     AppNavManager.currentContext.currentContext!);
                 return Stream.value(const LogoutSuccess(null));
               }))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false));
+          .debug()
+          .onErrorReturnWith((error, _) {
+        isLoading.add(false);
+        return const LogoutError("Đã có lỗi xảy ra");
+      });
     });
     /** endregion Logout */
 
     /** region Register + err message */
     final isValidSubmitRegister$ =
-        Rx.combineLatest3<String, String, String, bool>(
+        Rx.combineLatest3<String?, String, String, bool>(
       email,
       password,
       confirmPassword,
@@ -189,13 +230,18 @@ class AuthBloc extends Cubit<AuthStatus> {
     final Stream<AuthStatus> registerError$ = register
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap<AuthStatus>((RegisterCommand registerCommand) {
+      isLoading.add(true);
       return Stream.fromFuture(registerUseCase.execute(ReqRegisterCommand(
               registerCommand.email, registerCommand.password)))
-          .flatMap((either) => _responseRegister(either))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const SignInError("Đã có lỗi xảy ra"));
+          .flatMap((either) {
+            isLoading.add(false);
+            return _responseRegister(either);
+          })
+          .debug()
+          .onErrorReturnWith((error, _) {
+            isLoading.add(false);
+            return const RegisterError("Đã có lỗi xảy ra");
+          });
     });
     /** endregion Register */
 
@@ -203,20 +249,24 @@ class AuthBloc extends Cubit<AuthStatus> {
     final Stream<dynamic> deleteAccountError$ = deleteAccount
         .debounceTime(const Duration(milliseconds: 300))
         .exhaustMap((_) {
+      isLoading.add(true);
       return Stream.fromFuture(deleteAccountUseCase.execute(NoParams()))
           .flatMap((either) => either.fold((error) {
+                isLoading.add(false);
                 AlertController.show(
                     "Thông báo", error.toString(), TypeAlert.error);
-                return Stream.value(LogoutError(error.toString()));
+                return Stream.value(DeleteAccountError(error.toString()));
               }, (data) {
+                isLoading.add(false);
                 AuthNavigator.openReplaceSignIn(
                     AppNavManager.currentContext.currentContext!);
-                return Stream.value(const LogoutSuccess(null));
+                return Stream.value(const DeleteAccountSuccess(null));
               }))
-          .doOnDone(() => isLoading.add(false))
-          .doOnError((error, _) => isLoading.add(false))
-          .onErrorReturnWith(
-              (error, _) => const LogoutError("Đã có lỗi xảy ra"));
+          .debug()
+          .onErrorReturnWith((error, _) {
+        isLoading.add(false);
+        return const DeleteAccountError("Đã có lỗi xảy ra");
+      });
     });
     /** endregion Delete Account */
 
@@ -227,6 +277,7 @@ class AuthBloc extends Cubit<AuthStatus> {
       deleteAccountError$,
       signInWithGoogleError$,
       signInWithFacebookError$,
+      signInWithAppleError$,
     ]).listen((event) {});
 
     return AuthBloc._(
@@ -235,6 +286,7 @@ class AuthBloc extends Cubit<AuthStatus> {
       confirmPassword: confirmPassword.add,
       signInWithGoogle: signInWithGoogle,
       signInWithFacebook: signInWithFacebook,
+      signInWithApple: signInWithApple,
       login: login,
       register: register,
       logout: logout,
@@ -251,7 +303,7 @@ class AuthBloc extends Cubit<AuthStatus> {
       password$: password.stream.transform(passwordValid$).skip(1),
       confirmPassword$:
           confirmPassword.stream.transform(confirmPasswordValid$).skip(1),
-      dispose: () {
+      disposeBag: () {
         initState$.cancel();
         authError$.cancel();
         email.close();
@@ -266,6 +318,7 @@ class AuthBloc extends Cubit<AuthStatus> {
         confirmPasswordController.dispose();
         signInWithGoogle.close();
         signInWithFacebook.close();
+        signInWithApple.close();
         initState.close();
         isLoading.close();
       },
@@ -280,9 +333,10 @@ class AuthBloc extends Cubit<AuthStatus> {
     required this.emailTextEditing,
     required this.passwordTextEditing,
     required this.confirmPasswordTextEditing,
-    required this.dispose,
+    required this.disposeBag,
     required this.signInWithGoogle,
     required this.signInWithFacebook,
+    required this.signInWithApple,
     required this.login,
     required this.register,
     required this.logout,
@@ -294,7 +348,7 @@ class AuthBloc extends Cubit<AuthStatus> {
     required this.email$,
     required this.password$,
     required this.confirmPassword$,
-  }) : super(const AuthStatusInitial());
+  });
 
   static Stream<AuthStatus> _responseSignIn(dynamic result) {
     return result.fold((error) {

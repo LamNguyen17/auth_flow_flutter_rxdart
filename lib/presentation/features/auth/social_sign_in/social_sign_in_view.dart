@@ -1,20 +1,17 @@
 import 'dart:io';
-
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SocialSignInView extends StatelessWidget {
-  SocialSignInView({super.key});
-
-  final _authBloc = injector.get<AuthBloc>();
+  const SocialSignInView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final authBloc = BlocProvider.of<AuthBloc>(context);
     return Row(
       children: <Widget>[
         Expanded(
@@ -22,9 +19,7 @@ class SocialSignInView extends StatelessWidget {
           child: Center(
             child: AppTouchable(
                 onPress: () {
-                  // signInWithGoogle();
-                  // _authBloc.signInWithFacebook.add(null);
-                  context.read<AuthBloc>().signInWithFacebook.add(null);
+                  authBloc?.signInWithFacebook.add(null);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -49,8 +44,7 @@ class SocialSignInView extends StatelessWidget {
           child: Center(
             child: AppTouchable(
                 onPress: () {
-                  // _authBloc.signInWithGoogle.add(null);
-                  context.read<AuthBloc>().signInWithGoogle.add(null);
+                  authBloc?.signInWithGoogle.add(null);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -76,6 +70,9 @@ class SocialSignInView extends StatelessWidget {
                 flex: 1,
                 child: Center(
                   child: AppTouchable(
+                    onPress: () {
+                      authBloc?.signInWithApple.add(null);
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
                           vertical: 12.0, horizontal: 24.0),

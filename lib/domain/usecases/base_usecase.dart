@@ -7,6 +7,10 @@ abstract class BaseUseCase<Type, Params>{
   Future<Either<Failure, Type>> execute(Params params);
 }
 
+abstract class StreamBaseUseCase<Type, Params>{
+  Stream<Either<Failure, Type>> execute(Params params);
+}
+
 class NoParams extends Equatable {
   @override
   List<Object> get props => [];

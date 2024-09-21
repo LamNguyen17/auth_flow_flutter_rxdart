@@ -1,11 +1,19 @@
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
+import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourites_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/notification/notification_list/notification_list_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/movie_detail_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_list/movie_list_screen.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_reservation/movie_reservation_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_screen.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/new/new_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/register/register_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/sign_in/sign_in_screen.dart';
@@ -54,19 +62,69 @@ class AppNavManager {
           StatefulShellBranch(
             routes: <RouteBase>[
               GoRoute(
-                  path: '/home',
-                  name: Routes.main[Main.home]!,
-                  builder: (BuildContext context, GoRouterState state) =>
-                      const HomeScreen())
-            ],
-          ),
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                  path: '/news',
-                  name: Routes.main[Main.news]!,
-                  builder: (BuildContext context, GoRouterState state) =>
-                      const NewScreen())
+                path: '/home',
+                name: Routes.main[Main.home]!,
+                builder: (BuildContext context, GoRouterState state) {
+                  return BlocProvider(
+                    bloc: injector.get<MovieBloc>(),
+                    child: const HomeScreen(),
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: 'movies',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) {
+                      return BlocProvider<MovieBloc>(
+                        bloc: injector.get<MovieBloc>(),
+                        child: const MovieListScreen(),
+                      );
+                    },
+                    routes: <GoRoute>[
+                      GoRoute(
+                        parentNavigatorKey: _rootNavigatorKey,
+                        path: 'booking',
+                        builder: (BuildContext context, GoRouterState state) {
+                          return const MovieReservationScreen();
+                        },
+                      ),
+                      GoRoute(
+                        parentNavigatorKey: _rootNavigatorKey,
+                        path: ':movieId',
+                        builder: (BuildContext context, GoRouterState state) {
+                          final movieId =
+                              int.parse(state.pathParameters['movieId']!);
+                          return BlocProvider<MovieBloc>(
+                            bloc: injector.get<MovieBloc>(),
+                            child: BlocProvider<FavouriteItemBloc>(
+                              bloc: injector.get<FavouriteItemBloc>(),
+                              child: MovieDetailScreen(id: movieId),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  GoRoute(
+                    path: 'favourite_list',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) {
+                      // return const FavouritesScreen();
+                      return BlocProvider<FavouriteItemBloc>(
+                        bloc: injector.get<FavouriteItemBloc>(),
+                        child: const FavouritesScreen(),
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: 'notifications',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const NotificationListScreen();
+                    },
+                  ),
+                ],
+              )
             ],
           ),
           StatefulShellBranch(
@@ -121,35 +179,20 @@ class ScaffoldWithNavBar extends StatelessWidget {
               BottomNavigationBarItem(
                 label: 'Home',
                 icon: SvgPicture.asset(tabHome,
-                    colorFilter: ColorFilter.mode(
-                        Colors.grey[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.grey[500]!, BlendMode.srcIn)),
                 activeIcon: SvgPicture.asset(tabHome,
-                    colorFilter: ColorFilter.mode(
-                        Colors.green[500]!,
-                        BlendMode.srcIn)),
-              ),
-              BottomNavigationBarItem(
-                label: 'News',
-                icon: SvgPicture.asset(tabList,
-                    colorFilter: ColorFilter.mode(
-                        Colors.grey[500]!,
-                        BlendMode.srcIn)),
-                activeIcon: SvgPicture.asset(tabList,
-                    colorFilter: ColorFilter.mode(
-                        Colors.green[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.green[500]!, BlendMode.srcIn)),
               ),
               BottomNavigationBarItem(
                 label: 'Profile',
                 icon: SvgPicture.asset(tabProfile,
-                    colorFilter: ColorFilter.mode(
-                        Colors.grey[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.grey[500]!, BlendMode.srcIn)),
                 activeIcon: SvgPicture.asset(tabProfile,
-                    colorFilter: ColorFilter.mode(
-                        Colors.green[500]!,
-                        BlendMode.srcIn)),
+                    colorFilter:
+                        ColorFilter.mode(Colors.green[500]!, BlendMode.srcIn)),
               )
             ],
             currentIndex: navigationShell.currentIndex,
@@ -157,9 +200,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
             unselectedItemColor: HexColor.fromHex('7F7D83'),
             selectedItemColor: HexColor.fromHex('67A346'),
             selectedLabelStyle:
-            const TextStyle(fontSize: 10, fontFamily: 'Inter'),
+                const TextStyle(fontSize: 10, fontFamily: 'Inter'),
             unselectedLabelStyle:
-            const TextStyle(fontSize: 9, fontFamily: 'Inter'),
+                const TextStyle(fontSize: 9, fontFamily: 'Inter'),
             type: BottomNavigationBarType.fixed,
           ),
         ),

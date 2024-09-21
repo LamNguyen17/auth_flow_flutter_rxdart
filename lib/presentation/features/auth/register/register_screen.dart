@@ -1,51 +1,39 @@
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/social_sign_in/social_sign_in_view.dart';
 import 'package:flutter/material.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_state.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/social_sign_in/social_sign_in_view.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/clear_focus.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
-}
-
-class _RegisterScreenState extends State<RegisterScreen> {
-  final _authBloc = injector.get<AuthBloc>();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _authBloc.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final node = FocusScope.of(context);
     return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: ClearFocus(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  AppImages.fbLogo,
-                  height: 100,
+          resizeToAvoidBottomInset: false,
+          body: ClearFocus(
+            child: SafeArea(
+              child: Center(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      AppImages.fbLogo,
+                      height: 100,
+                    ),
+                    renderInputWidget(node, context),
+                    const SocialSignInView(),
+                  ],
                 ),
-                renderInputWidget(),
-                SocialSignInView(),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        );
   }
 
   Widget renderTitleTextField(String title, bool isRequired) {
@@ -62,12 +50,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
         isRequired == true
             ? Container(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: const Text(
-            '*',
-            style: TextStyle(fontSize: 12, color: Colors.red),
-          ),
-        )
+                margin: const EdgeInsets.only(bottom: 8),
+                child: const Text(
+                  '*',
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+              )
             : const SizedBox.shrink(),
       ],
     );
@@ -97,20 +85,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ]);
   }
 
-  Widget renderInputWidget() {
+  Widget renderInputWidget(FocusScopeNode node, BuildContext context) {
+    final authBloc = BlocProvider.of<AuthBloc>(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             renderTitleTextField('Email', true),
-            renderEmailTextField(),
+            renderEmailTextField(authBloc, node),
             renderTitleTextField('Mật khẩu', true),
-            renderPasswordTextField(),
+            renderPasswordTextField(authBloc),
             renderTitleTextField('Xác nhận mật khẩu', true),
-            renderConfirmPasswordTextField(),
+            renderConfirmPasswordTextField(authBloc),
             const SizedBox(height: 20),
-            renderRegisterButton(),
+            renderRegisterButton(authBloc),
             const SizedBox(height: 30),
             renderCustomDivider(),
             const SizedBox(height: 30),
@@ -118,21 +107,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget renderEmailTextField() {
-    final node = FocusScope.of(context);
+  Widget renderEmailTextField(AuthBloc authBloc, FocusScopeNode node) {
     return StreamBuilder<String?>(
-        stream: _authBloc.email$,
+        stream: authBloc.email$,
         builder: (context, snapshot) {
           return TextFormField(
             onEditingComplete: () => node.nextFocus(),
             maxLength: 50,
-            controller: _authBloc.emailTextEditing,
-            onChanged: _authBloc.email,
+            controller: authBloc.emailTextEditing,
+            onChanged: authBloc.email,
             keyboardType: TextInputType.emailAddress,
             style: const TextStyle(fontSize: 12, color: Colors.black),
             decoration: InputDecoration(
                 contentPadding:
-                const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
+                    const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
                 counter: const SizedBox.shrink(),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
@@ -149,24 +137,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hintText: 'Nhập email',
                 errorText: snapshot.data,
                 hintStyle:
-                const TextStyle(fontSize: 12, color: Colors.blueGrey)),
+                    const TextStyle(fontSize: 12, color: Colors.blueGrey)),
           );
         });
   }
 
-  Widget renderPasswordTextField() {
+  Widget renderPasswordTextField(AuthBloc authBloc) {
     return StreamBuilder<String?>(
-        stream: _authBloc.password$,
+        stream: authBloc.password$,
         builder: (context, snapshot) {
           return TextFormField(
             maxLength: 20,
             obscureText: true,
-            controller: _authBloc.passwordTextEditing,
-            onChanged: _authBloc.password,
+            controller: authBloc.passwordTextEditing,
+            onChanged: authBloc.password,
             style: const TextStyle(fontSize: 12, color: Colors.black),
             decoration: InputDecoration(
                 contentPadding:
-                const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
+                    const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
                 counter: const SizedBox.shrink(),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
@@ -183,24 +171,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hintText: 'Nhập mật khẩu',
                 errorText: snapshot.data,
                 hintStyle:
-                const TextStyle(fontSize: 12, color: Colors.blueGrey)),
+                    const TextStyle(fontSize: 12, color: Colors.blueGrey)),
           );
         });
   }
 
-  Widget renderConfirmPasswordTextField() {
+  Widget renderConfirmPasswordTextField(AuthBloc authBloc) {
     return StreamBuilder<String?>(
-        stream: _authBloc.confirmPassword$,
+        stream: authBloc.confirmPassword$,
         builder: (context, snapshot) {
           return TextFormField(
             maxLength: 20,
             obscureText: true,
-            controller: _authBloc.confirmPasswordTextEditing,
-            onChanged: _authBloc.confirmPassword,
+            controller: authBloc.confirmPasswordTextEditing,
+            onChanged: authBloc.confirmPassword,
             style: const TextStyle(fontSize: 12, color: Colors.black),
             decoration: InputDecoration(
                 contentPadding:
-                const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
+                    const EdgeInsets.fromLTRB(16.0, 10.0, 16.0, 10.0),
                 counter: const SizedBox.shrink(),
                 focusedBorder: const OutlineInputBorder(
                   borderRadius: BorderRadius.all(Radius.circular(8.0)),
@@ -217,17 +205,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 hintText: 'Nhập xác nhận mật khẩu',
                 errorText: snapshot.data,
                 hintStyle:
-                const TextStyle(fontSize: 12, color: Colors.blueGrey)),
+                    const TextStyle(fontSize: 12, color: Colors.blueGrey)),
           );
         });
   }
 
-  Widget renderRegisterButton() {
+  Widget renderRegisterButton(AuthBloc authBloc) {
     return SizedBox(
       width: 300,
       height: 45,
       child: StreamBuilder<bool>(
-          stream: _authBloc.isSubmitRegister$,
+          stream: authBloc.isSubmitRegister$,
           builder: (context, snapshotSubmit) {
             return ElevatedButton(
               style: ElevatedButton.styleFrom(
@@ -241,12 +229,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               onPressed: snapshotSubmit.data == true
                   ? () {
-                _authBloc.register.add(RegisterCommand(
-                    email: _authBloc.emailTextEditing.text,
-                    password: _authBloc.passwordTextEditing.text));
-              } : null,
+                      authBloc.register.add(RegisterCommand(
+                          email: authBloc.emailTextEditing.text,
+                          password: authBloc.passwordTextEditing.text));
+                    }
+                  : null,
               child: StreamBuilder(
-                  stream: _authBloc.isLoading$,
+                  stream: authBloc.isLoading$,
                   builder: (context, snapshot) {
                     bool isLoading = snapshot.data ?? false;
                     return Column(
@@ -255,19 +244,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         isLoading
                             ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3,
-                            ))
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ))
                             : Text('Đăng ký',
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: snapshotSubmit.data == true
-                                    ? Colors.white
-                                    : Colors.grey[400])),
+                                style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: snapshotSubmit.data == true
+                                        ? Colors.white
+                                        : Colors.grey[400])),
                       ],
                     );
                   }),

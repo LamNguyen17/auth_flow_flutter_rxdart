@@ -1,7 +1,8 @@
-import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/services/notification_service.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/components/app_button.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/splash/splash_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/assets/images/app_images.dart';
@@ -58,6 +59,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                       onPress: () {
                         _splashBloc.onSignIn.add(null);
+                        // _notificationService.showNotification('Hello', 'Hello world');
                       },
                     ),
                     const SizedBox(height: 20),

@@ -1,68 +1,92 @@
 package com.example.auth_flow_flutter_rxdart
 
-import android.content.Context
-import android.content.pm.PackageInfo
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import javax.crypto.KeyGenerator
-import android.util.Base64
-import javax.crypto.SecretKey
-import android.os.Bundle
-import java.security.Key
-import javax.crypto.Cipher
-import javax.crypto.spec.SecretKeySpec
+import kotlinx.coroutines.*
 
 class MainActivity : FlutterActivity() {
+    private lateinit var encryptionChannel: MethodChannel
+    private lateinit var aesHelper: AesHelper
+
     private companion object {
-        const val CRYPTO_CHANNEL = "encryption_channel"
+        const val CRYPTO_CHANNEL = "crypto_channel"
         const val CRYPTO_ERROR_CODE = "crypto_error"
+        const val INVALID_ARGUMENT = "invalid_argument"
+        const val KEY_GENERATION_ERROR = "key_generation_error"
         const val ENCRYPT_METHOD = "encrypt"
         const val DECRYPT_METHOD = "decrypt"
         const val GEN_SECRET_KEY_METHOD = "generate_secret_key"
     }
 
+    // Used to create a custom CoroutineScope for managing coroutines.
+    // Uses a SupervisorJob() to manage coroutines, so if one coroutine fails, it does not
+    // affect the other coroutines launched within the same scope
+    private val activityScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CRYPTO_CHANNEL).apply {
-            setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
-                when (call.method) {
-                    GEN_SECRET_KEY_METHOD -> result.success(generateSecretKey())
-                    ENCRYPT_METHOD -> {
-                        val data = call.argument<String>("data")
-                        val key = call.argument<String>("key")
-                        if (data != null && key != null) {
-                            result.success(encrypt(data, key))
-                        } else {
-                            result.error("ERROR", "Invalid arguments", null)
+        aesHelper = AesHelper()
+        encryptionChannel =
+            MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CRYPTO_CHANNEL)
+        encryptionChannel.setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
+            when (call.method) {
+                GEN_SECRET_KEY_METHOD -> {
+                    activityScope.launch {
+                        try {
+                            val key = aesHelper.generateSecretKey()
+                            result.success(key)
+                        } catch (e: Exception) {
+                            result.error(KEY_GENERATION_ERROR, "Error during key generation", null)
                         }
                     }
-                    DECRYPT_METHOD -> decrypt(call, result)
-                    else -> result.notImplemented()
                 }
+
+                ENCRYPT_METHOD -> {
+                    val key = call.argument<String>("key")
+                    val value = call.argument<String>("value")
+                    if (key != null && value != null) {
+                        activityScope.launch {
+                            try {
+                                val encryptedData = aesHelper.encrypt(key, value)
+                                result.success(encryptedData)
+                            } catch (e: Exception) {
+                                result.error(CRYPTO_ERROR_CODE, "Error during encryption", null)
+                            }
+                        }
+                    } else {
+                        result.error(INVALID_ARGUMENT, "Data to encrypt is null", null)
+                    }
+                }
+
+                DECRYPT_METHOD -> {
+                    val key = call.argument<String>("key")
+                    val value = call.argument<String>("value")
+                    if (key != null && value != null) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            try {
+                                val encryptedData = aesHelper.decrypt(key, value)
+                                result.success(encryptedData)
+                            } catch (e: Exception) {
+                                result.error(CRYPTO_ERROR_CODE, "Error during encryption", null)
+                            }
+                        }
+                    } else {
+                        result.error(INVALID_ARGUMENT, "Data to encrypt is null", null)
+                    }
+                }
+                else -> result.notImplemented()
             }
         }
     }
 
-    private fun generateSecretKey(): String? {
-        return try {
-            val keyGen: KeyGenerator = KeyGenerator.getInstance("AES")
-            keyGen.init(256)
-            val secretKey: SecretKey = keyGen.generateKey()
-            val encodedKey = Base64.encodeToString(secretKey.encoded, Base64.DEFAULT)
-            encodedKey
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
-    }
-
-    private fun encrypt(data: String, key: String) {
-
-    }
-
-    private fun decrypt(call: MethodCall, result: MethodChannel.Result) {
-        // Implement encryption logic here
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        super.cleanUpFlutterEngine(flutterEngine)
+        Log.d("Flutter", "cleanUpFlutterEngine :$flutterEngine $this")
+        encryptionChannel.setMethodCallHandler(null)
+        // Cancel the CoroutineScope to avoid memory leaks
+        activityScope.cancel()
     }
 }

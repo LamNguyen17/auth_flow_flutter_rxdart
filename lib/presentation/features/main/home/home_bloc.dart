@@ -12,14 +12,25 @@ class HomeBloc {
   /// Output
 
   void initial() {
-    genSecretKey();
+    encrypt('HELLO','123456');
+    decrypt('HELLO');
   }
 
-  void genSecretKey() async {
+  void encrypt(String key, String value) async {
     try {
       final encryptionChannel = EncryptionChannel();
-      final result = await encryptionChannel.generateSecretKey();
-      print('Result_from_Native: $result');
+      final result = await encryptionChannel.encrypt('HELLO','123456');
+      print('Result_from_Native_encrypt: $result');
+    } on PlatformException catch (e) {
+      print('Error: ${e.message}');
+    }
+  }
+
+  void decrypt(String key) async {
+    try {
+      final encryptionChannel = EncryptionChannel();
+      final result = await encryptionChannel.decrypt('HELLO', '1');
+      print('Result_from_Native_decrypt: $result');
     } on PlatformException catch (e) {
       print('Error: ${e.message}');
     }

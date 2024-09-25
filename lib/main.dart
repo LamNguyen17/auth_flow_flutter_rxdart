@@ -24,7 +24,7 @@ void main() async {
     flavor: Flavor.prod,
     values: FlavorValues(baseUrl: AppConfig.baseUrl),
   );
-  await NotificationService().init();
+  // await NotificationService().init();
   // Bloc.observer = const AppBlocObserver();
   runApp(const MyApp());
 }

@@ -28,7 +28,8 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.auth_flow_flutter_rxdart"
     compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+//    ndkVersion flutter.ndkVersion
+    ndkVersion "26.1.10909125"
     dexOptions {
         javaMaxHeapSize "4G"
     }
@@ -72,4 +73,6 @@ flutter {
 
 dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:latest.release'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1'
 }

@@ -1,38 +1,24 @@
 import 'package:flutter/services.dart';
 
 abstract class Encryption {
-  Future<String?> generateSecretKey();
+  Future<String?> encrypt(String key, String value);
 
-  Future<String?> encrypt(String data, String key);
-
-  Future<String?> decrypt(String data, String key);
+  Future<String?> decrypt(String key, String value);
 }
 
 class EncryptionChannel extends Encryption {
-  static const encryptionChannel = MethodChannel('encryption_channel');
-  static const cryptoError = 'crypto_error';
-  static const encryptMethod = 'encrypt';
-  static const decryptMethod = 'decrypt';
-  static const generateSecretKeyMethod = 'generate_secret_key';
+  static const encryptionChannel = MethodChannel('crypto_channel');
+  static const ENCRYPT_METHOD = 'encrypt';
+  static const DECRYPT_METHOD = 'decrypt';
+  static const GEN_SECRET_KEY_METHOD = 'generate_secret_key'; // FIXME Remove me
 
   @override
-  Future<String?> generateSecretKey() async {
-    try {
-      final key = await encryptionChannel.invokeMethod(generateSecretKeyMethod);
-      return key;
-    } on PlatformException catch (e) {
-      print("Failed to generate secret key: ${e.message}");
-      return null;
-    }
-  }
-
-  @override
-  Future<String?> encrypt(String data, String key) async {
+  Future<String?> encrypt(String key, String value) async {
     try {
       final encryptedData =
-          await encryptionChannel.invokeMethod(encryptMethod, {
-        'data': data,
+          await encryptionChannel.invokeMethod(ENCRYPT_METHOD, {
         'key': key,
+        'value': value,
       });
       return encryptedData;
     } on PlatformException catch (e) {
@@ -42,11 +28,12 @@ class EncryptionChannel extends Encryption {
   }
 
   @override
-  Future<String?> decrypt(String data, String key) async {
+  Future<String?> decrypt(String key, String value) async {
     try {
-      final decryptedData = await encryptionChannel.invokeMethod(decryptMethod, {
-        'data': data,
+      final decryptedData =
+          await encryptionChannel.invokeMethod(DECRYPT_METHOD, {
         'key': key,
+        'value': value,
       });
       return decryptedData;
     } on PlatformException catch (e) {

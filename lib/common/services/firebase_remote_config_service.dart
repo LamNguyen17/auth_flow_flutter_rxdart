@@ -14,6 +14,7 @@ class FirebaseRemoteConfigService {
       await _remoteConfig.setDefaults(<String, dynamic>{
         'secret_key': '12345678900987654321123456789012',
         'api_key': '7d020902a2ff77454a1b04aaaa368d301',
+        'iv_key': '1234567890123456',
       });
 
       // Optionally, configure the fetch intervals for development or production

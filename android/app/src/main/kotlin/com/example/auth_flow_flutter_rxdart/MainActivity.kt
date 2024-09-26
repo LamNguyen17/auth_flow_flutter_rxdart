@@ -32,11 +32,12 @@ class MainActivity : FlutterActivity() {
             when (call.method) {
                 ENCRYPT_METHOD -> {
                     val value = call.argument<String>("value")
-                    val key = call.argument<String>("key")
-                    if (key != null &&  value != null) {
+                    val secretKey = call.argument<String>("secret_key")
+                    val ivKey = call.argument<String>("iv_key")
+                    if (secretKey != null && ivKey != null &&  value != null) {
                         activityScope.launch {
                             val encryptedData = withContext(Dispatchers.IO) {
-                                aesHelper.encrypt(value, key)
+                                aesHelper.encrypt(value, secretKey, ivKey)
                             }
                             result.success(encryptedData)
                         }
@@ -47,11 +48,12 @@ class MainActivity : FlutterActivity() {
 
                 DECRYPT_METHOD -> {
                     val value = call.argument<String>("value")
-                    val key = call.argument<String>("key")
-                    if (key != null && value != null) {
+                    val secretKey = call.argument<String>("secret_key")
+                    val ivKey = call.argument<String>("iv_key")
+                    if (secretKey != null && ivKey != null && value != null) {
                         CoroutineScope(Dispatchers.Main).launch {
                             val decryptedData = withContext(Dispatchers.IO) {
-                                aesHelper.decrypt(value, key)
+                                aesHelper.decrypt(value, secretKey, ivKey)
                             }
                             result.success(decryptedData)
                         }

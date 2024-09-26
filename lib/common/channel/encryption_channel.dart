@@ -18,7 +18,8 @@ class EncryptionChannel extends Encryption {
       final encryptedData =
           await encryptionChannel.invokeMethod(ENCRYPT_METHOD, {
         'value': value,
-        'key': FirebaseRemoteConfigService.getRemoteValue('secret_key'),
+        'secret_key': FirebaseRemoteConfigService.getRemoteValue('secret_key'),
+        'iv_key': FirebaseRemoteConfigService.getRemoteValue('iv_key'),
       });
       return encryptedData;
     } on PlatformException catch (e) {
@@ -33,7 +34,8 @@ class EncryptionChannel extends Encryption {
       final decryptedData =
           await encryptionChannel.invokeMethod(DECRYPT_METHOD, {
         'value': value,
-        'key': FirebaseRemoteConfigService.getRemoteValue('secret_key'),
+        'secret_key': FirebaseRemoteConfigService.getRemoteValue('secret_key'),
+        'iv_key': FirebaseRemoteConfigService.getRemoteValue('iv_key'),
       });
       return decryptedData;
     } on PlatformException catch (e) {

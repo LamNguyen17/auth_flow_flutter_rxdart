@@ -1,3 +1,4 @@
+import 'package:auth_flow_flutter_rxdart/common/services/firebase_remote_config_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -24,6 +25,9 @@ void main() async {
     flavor: Flavor.prod,
     values: FlavorValues(baseUrl: AppConfig.baseUrl),
   );
+
+  final remoteConfig = FirebaseRemoteConfigService();
+  remoteConfig.setupRemoteConfig();
   // await NotificationService().init();
   // Bloc.observer = const AppBlocObserver();
   runApp(const MyApp());

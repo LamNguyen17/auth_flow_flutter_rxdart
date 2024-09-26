@@ -13,12 +13,9 @@ class MainActivity : FlutterActivity() {
 
     private companion object {
         const val CRYPTO_CHANNEL = "crypto_channel"
-        const val CRYPTO_ERROR_CODE = "crypto_error"
         const val INVALID_ARGUMENT = "invalid_argument"
-        const val KEY_GENERATION_ERROR = "key_generation_error"
         const val ENCRYPT_METHOD = "encrypt"
         const val DECRYPT_METHOD = "decrypt"
-        const val GEN_SECRET_KEY_METHOD = "generate_secret_key"
     }
 
     // Used to create a custom CoroutineScope for managing coroutines.
@@ -33,28 +30,14 @@ class MainActivity : FlutterActivity() {
             MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CRYPTO_CHANNEL)
         encryptionChannel.setMethodCallHandler { call: MethodCall, result: MethodChannel.Result ->
             when (call.method) {
-                GEN_SECRET_KEY_METHOD -> {
-                    activityScope.launch {
-                        try {
-                            val key = aesHelper.generateSecretKey()
-                            result.success(key)
-                        } catch (e: Exception) {
-                            result.error(KEY_GENERATION_ERROR, "Error during key generation", null)
-                        }
-                    }
-                }
-
                 ENCRYPT_METHOD -> {
-                    val key = call.argument<String>("key")
                     val value = call.argument<String>("value")
-                    if (key != null && value != null) {
+                    if (value != null) {
                         activityScope.launch {
-                            try {
-                                val encryptedData = aesHelper.encrypt(key, value)
-                                result.success(encryptedData)
-                            } catch (e: Exception) {
-                                result.error(CRYPTO_ERROR_CODE, "Error during encryption", null)
+                            val encryptedData = withContext(Dispatchers.IO) {
+                                aesHelper.encrypt(value)
                             }
+                            result.success(encryptedData)
                         }
                     } else {
                         result.error(INVALID_ARGUMENT, "Data to encrypt is null", null)
@@ -62,16 +45,13 @@ class MainActivity : FlutterActivity() {
                 }
 
                 DECRYPT_METHOD -> {
-                    val key = call.argument<String>("key")
                     val value = call.argument<String>("value")
-                    if (key != null && value != null) {
+                    if (value != null) {
                         CoroutineScope(Dispatchers.Main).launch {
-                            try {
-                                val encryptedData = aesHelper.decrypt(key, value)
-                                result.success(encryptedData)
-                            } catch (e: Exception) {
-                                result.error(CRYPTO_ERROR_CODE, "Error during encryption", null)
+                            val decryptedData = withContext(Dispatchers.IO) {
+                                aesHelper.decrypt(value)
                             }
+                            result.success(decryptedData)
                         }
                     } else {
                         result.error(INVALID_ARGUMENT, "Data to encrypt is null", null)

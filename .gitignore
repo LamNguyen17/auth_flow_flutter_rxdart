@@ -46,3 +46,6 @@ app.*.map.json
 /ios/builds/ipa
 /macos
 /linux
+
+# FVM Version Cache
+.fvm/

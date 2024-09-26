@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:auth_flow_flutter_rxdart/common/services/firebase_remote_config_service.dart';
 
 abstract class Encryption {
   Future<String?> encrypt(String value);
@@ -17,6 +18,7 @@ class EncryptionChannel extends Encryption {
       final encryptedData =
           await encryptionChannel.invokeMethod(ENCRYPT_METHOD, {
         'value': value,
+        'key': FirebaseRemoteConfigService.getRemoteValue('secret_key'),
       });
       return encryptedData;
     } on PlatformException catch (e) {
@@ -31,6 +33,7 @@ class EncryptionChannel extends Encryption {
       final decryptedData =
           await encryptionChannel.invokeMethod(DECRYPT_METHOD, {
         'value': value,
+        'key': FirebaseRemoteConfigService.getRemoteValue('secret_key'),
       });
       return decryptedData;
     } on PlatformException catch (e) {

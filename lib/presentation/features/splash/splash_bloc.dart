@@ -2,10 +2,16 @@ import 'dart:async';
 import 'package:dartz/dartz.dart';
 import 'package:rxdart/rxdart.dart';
 
+import 'package:auth_flow_flutter_rxdart/common/channel/encryption_channel.dart';
+import 'package:auth_flow_flutter_rxdart/common/services/firebase_remote_config_service.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/app_nav_manager.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/auth_navigator.dart';
 
 class SplashBloc {
+  final EncryptionChannel _encryptionChannel = EncryptionChannel();
+  final FirebaseRemoteConfigService _remoteConfigService =
+      FirebaseRemoteConfigService();
+
   /// Input
   final Sink<void> onSignIn;
   final Sink<void> onRegister;
@@ -53,5 +59,9 @@ class SplashBloc {
     required this.login$,
     required this.register$,
     required this.dispose,
-  });
+  }) {
+    _remoteConfigService.setupRemoteConfig();
+    _encryptionChannel
+        .encrypt(FirebaseRemoteConfigService.getRemoteValue('api_key'));
+  }
 }

@@ -1,14 +1,16 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
+@immutable
 class Customer extends Equatable {
-  String? displayName;
-  String? email;
-  bool? isEmailVerified;
-  bool? isAnonymous;
-  String? phoneNumber;
-  String? photoURL;
+  final String? displayName;
+  final String? email;
+  final bool? isEmailVerified;
+  final bool? isAnonymous;
+  final String? phoneNumber;
+  final String? photoURL;
 
-  Customer({
+  const Customer({
     this.displayName,
     this.email,
     this.isEmailVerified,

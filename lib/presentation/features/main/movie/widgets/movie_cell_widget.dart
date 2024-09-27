@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
@@ -108,7 +107,7 @@ class MovieCellWidget extends StatelessWidget {
               color: Colors.red,
             ),
             onPress: () {
-              print('movieCardItem_docID: ${movieCardItem.docId}');
+              debugPrint('movieCardItem_docID: ${movieCardItem.docId}');
               bloc?.removeFavourite
                   .add(movieCardItem.docId.toString());
             },

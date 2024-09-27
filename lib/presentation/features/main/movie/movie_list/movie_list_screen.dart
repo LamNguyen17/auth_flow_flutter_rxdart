@@ -11,10 +11,10 @@ class MovieListScreen extends StatefulWidget {
   const MovieListScreen({super.key});
 
   @override
-  _MovieListScreenState createState() => _MovieListScreenState();
+  MovieListScreenState createState() => MovieListScreenState();
 }
 
-class _MovieListScreenState extends State<MovieListScreen> {
+class MovieListScreenState extends State<MovieListScreen> {
   late MovieBloc _movieBloc;
 
   @override

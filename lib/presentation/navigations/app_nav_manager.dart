@@ -1,4 +1,3 @@
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/color_extensions.dart';
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourites_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/notification/notification_list/notification_list_screen.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
@@ -155,7 +155,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context);
     bool isNeedSafeArea = MediaQuery.of(context).viewPadding.bottom > 0;
     return Scaffold(
       resizeToAvoidBottomInset: false,

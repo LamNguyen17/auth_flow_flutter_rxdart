@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 const List<dynamic> mocks = [
   ParamsMock(
@@ -11,7 +12,7 @@ const List<dynamic> mocks = [
 class ApiMock {
   bool isMockEnabled(String path) {
     var filteredMocks = mocks.where((x) => x.path == path).toList();
-    print('getNotifications_3: $filteredMocks');
+    debugPrint('getNotifications_3: $filteredMocks');
     return filteredMocks.isNotEmpty && filteredMocks[0]?.enable;
   }
 

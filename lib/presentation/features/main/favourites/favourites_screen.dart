@@ -13,10 +13,10 @@ class FavouritesScreen extends StatefulWidget {
   const FavouritesScreen({super.key});
 
   @override
-  _FavouritesScreenState createState() => _FavouritesScreenState();
+  FavouritesScreenState createState() => FavouritesScreenState();
 }
 
-class _FavouritesScreenState extends State<FavouritesScreen> {
+class FavouritesScreenState extends State<FavouritesScreen> {
   late FavouriteBloc _favouriteBloc;
 
   @override
@@ -124,7 +124,7 @@ class MovieFavouriteCellWidget extends StatelessWidget {
                     color: Colors.red,
                   ),
                   onTap: () {
-                    print('movieCardItem_docID: ${movieCardItem.docId}');
+                    debugPrint('movieCardItem_docID: ${movieCardItem.docId}');
                     favouriteItemBloc.removeFavourite
                         .add(movieCardItem.docId.toString());
                   },

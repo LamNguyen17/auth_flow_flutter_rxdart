@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
@@ -26,7 +27,7 @@ class ProfileBloc extends BlocBase {
               .flatMap((either) => either.fold((error) {
                     return Stream.value(ProfileError(error.toString()));
                   }, (data) {
-                    print('ProfileBloc_loggggg: $data');
+                    debugPrint('ProfileBloc_loggggg: $data');
                     return Stream.value(ProfileSuccess(data: data));
                   }))
               .debug()

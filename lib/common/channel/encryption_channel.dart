@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:auth_flow_flutter_rxdart/common/services/firebase_remote_config_service.dart';
 
@@ -23,7 +24,7 @@ class EncryptionChannel extends Encryption {
       });
       return encryptedData;
     } on PlatformException catch (e) {
-      print("Failed to encrypt: ${e.message}");
+      debugPrint("Failed to encrypt: ${e.message}");
       return null;
     }
   }
@@ -39,7 +40,7 @@ class EncryptionChannel extends Encryption {
       });
       return decryptedData;
     } on PlatformException catch (e) {
-      print("Failed to decrypt: ${e.message}");
+      debugPrint("Failed to decrypt: ${e.message}");
       return null;
     }
   }

@@ -4,10 +4,10 @@ class SelectSeatWidget extends StatefulWidget {
   const SelectSeatWidget({super.key});
 
   @override
-  _SelectSeatWidgetState createState() => _SelectSeatWidgetState();
+  SelectSeatWidgetState createState() => SelectSeatWidgetState();
 }
 
-class _SelectSeatWidgetState extends State<SelectSeatWidget> {
+class SelectSeatWidgetState extends State<SelectSeatWidget> {
   final int rows = 8;
   final int columns = 8;
 

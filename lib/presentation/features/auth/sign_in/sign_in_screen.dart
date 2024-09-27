@@ -170,7 +170,7 @@ class SignInScreen extends StatelessWidget {
       child: StreamBuilder<bool>(
           stream: authBloc.isSubmitLogin$,
           builder: (context, snapshotSubmit) {
-            print('snapshotSubmit: ${snapshotSubmit.data}');
+            debugPrint('snapshotSubmit: ${snapshotSubmit.data}');
             return ElevatedButton(
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(

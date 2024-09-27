@@ -1,8 +1,7 @@
-import 'package:auth_flow_flutter_rxdart/domain/entities/movie/movie_list.dart';
-import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/add_favourite_use_case.dart';
 import 'package:dartz/dartz.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/failure.dart';
+import 'package:auth_flow_flutter_rxdart/domain/usecases/favourite/add_favourite_use_case.dart';
 import 'package:auth_flow_flutter_rxdart/common/services/network_service.dart';
 import 'package:auth_flow_flutter_rxdart/data/datasources/favourite_remote_data_source.dart';
 import 'package:auth_flow_flutter_rxdart/domain/repositories/favourite_repository.dart';

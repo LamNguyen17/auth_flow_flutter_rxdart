@@ -48,7 +48,6 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
     final response = await _apiGateway.dio.get(
         "/movie/${request.type}?page=${request.page}&api_key=$apiKey");
     if (response.statusCode == 200) {
-      print('getPopular_1: ${response.data}');
       yield MovieListResponse.fromJson(response.data);
     } else {
       throw const ServerFailure('');

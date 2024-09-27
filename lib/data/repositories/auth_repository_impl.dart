@@ -9,6 +9,7 @@ import 'package:auth_flow_flutter_rxdart/data/datasources/auth_remote_data_sourc
 import 'package:auth_flow_flutter_rxdart/domain/usecases/auth/sign_in_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/entities/auth/customer.dart';
 import 'package:auth_flow_flutter_rxdart/domain/repositories/auth_repository.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final NetworkService _networkService;
@@ -26,7 +27,7 @@ class AuthRepositoryImpl implements AuthRepository {
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {
-        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -43,7 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {
-        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -55,7 +56,7 @@ class AuthRepositoryImpl implements AuthRepository {
     var isConnected = await _networkService.isConnected;
     if (isConnected) {
       var response = await _remoteDataSource.signInWithApple();
-      print('signInWithApple_response: $response');
+      debugPrint('signInWithApple_response: $response');
       return Right(response);
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -72,7 +73,7 @@ class AuthRepositoryImpl implements AuthRepository {
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {
-        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -89,7 +90,7 @@ class AuthRepositoryImpl implements AuthRepository {
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {
-        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -106,7 +107,7 @@ class AuthRepositoryImpl implements AuthRepository {
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {
-        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -123,7 +124,7 @@ class AuthRepositoryImpl implements AuthRepository {
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {
-        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));
@@ -135,12 +136,12 @@ class AuthRepositoryImpl implements AuthRepository {
     var isConnected = await _networkService.isConnected;
     if (isConnected) {
       try {
-        var response = await _remoteDataSource.deleteAccount();
+        // var response = await _remoteDataSource.deleteAccount();
         return const Right(null);
       } on FirebaseAuthException catch (e) {
         return Left(ServerFailure(authErrorMapping[e.code].toString()));
       } on Exception catch (e) {
-        return Left(ServerFailure(e.toString() ?? 'Lỗi hệ thống'));
+        return Left(ServerFailure(e.toString()));
       }
     } else {
       return const Left(ConnectionFailure('Lỗi kết nối mạng'));

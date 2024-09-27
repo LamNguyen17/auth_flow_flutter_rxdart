@@ -19,13 +19,6 @@ class ExpandedAppBarWidget extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
-        double scrollPosition = constraints.biggest.height;
-        Color backgroundColor = Colors.transparent;
-        if (scrollPosition > 100) {
-          backgroundColor = Colors.transparent;
-        } else if (scrollPosition > 50) {
-          backgroundColor = Colors.black;
-        }
         return FlexibleSpaceBar(
           titlePadding:
               const EdgeInsetsDirectional.only(start: 16.0, bottom: 16.0),

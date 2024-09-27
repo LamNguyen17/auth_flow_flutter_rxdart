@@ -1,8 +1,8 @@
-import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:auth_flow_flutter_rxdart/di/injection_bloc.dart';
+import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/debug_stream.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_detail_usecase.dart';
 import 'package:auth_flow_flutter_rxdart/domain/usecases/movie/get_movie_keyword_usecase.dart';
@@ -213,7 +213,7 @@ class MovieBloc extends BlocBase {
       getMovieSimilarMessage$: getMovieSimilarMessage$,
       getMovieRecommendationMessage$: getMovieRecommendationMessage$,
       disposeBag: () {
-        print('MovieBloc_dispose');
+        debugPrint('MovieBloc_dispose');
         isCollapsed.close();
         isLoading.close();
         getPopular.close();

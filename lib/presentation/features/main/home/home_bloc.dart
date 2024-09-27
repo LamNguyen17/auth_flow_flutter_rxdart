@@ -1,40 +1,10 @@
-import 'package:auth_flow_flutter_rxdart/common/channel/encryption_channel.dart';
 import 'package:dartz/dartz.dart';
-
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_bloc.dart';
-import 'package:flutter/services.dart';
 
 class HomeBloc {
   /// Input
   final Function0<void> dispose;
 
   /// Output
-
-  void initial() {
-    encrypt('HELLO');
-  }
-
-  void encrypt(String value) async {
-    try {
-      final encryptionChannel = EncryptionChannel();
-      final result = await encryptionChannel.encrypt(value);
-      print('Result_from_Native_encrypt: $result');
-      decrypt('$result');
-    } on PlatformException catch (e) {
-      print('Error: ${e.message}');
-    }
-  }
-
-  void decrypt(String value) async {
-    try {
-      final encryptionChannel = EncryptionChannel();
-      final result = await encryptionChannel.decrypt(value);
-      print('Result_from_Native_decrypt: $result');
-    } on PlatformException catch (e) {
-      print('Error: ${e.message}');
-    }
-  }
 
   void close() {
     dispose();

@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/home/home_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,7 +30,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late MovieBloc _movieBloc;
   late ProfileBloc _profileBloc;
-  final _homeBloc = injector.get<HomeBloc>();
 
   @override
   void initState() {
@@ -42,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _profileBloc.getProfile.add(null);
     _movieBloc.getPopular.add(null);
     _movieBloc.getGenreMovie.add(null);
-    _homeBloc.initial();
   }
 
   @override

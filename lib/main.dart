@@ -1,13 +1,12 @@
-import 'package:auth_flow_flutter_rxdart/common/services/firebase_remote_config_service.dart';
 import 'package:flutter/material.dart';
-
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:auth_flow_flutter_rxdart/firebase_options.dart';
 import 'package:flutter_dropdown_alert/dropdown_alert.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
+import 'package:auth_flow_flutter_rxdart/common/services/firebase_remote_config_service.dart';
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
-import 'package:auth_flow_flutter_rxdart/common/services/notification_service.dart';
 import 'package:auth_flow_flutter_rxdart/data/common/helper/flavor_config.dart';
 import 'package:auth_flow_flutter_rxdart/data/config/app_config.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/auth/auth_bloc.dart';

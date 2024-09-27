@@ -10,7 +10,6 @@ class AesHelper {
     private companion object {
         const val ALGORITHM = "AES"
         const val TRANSFORMATION = "AES/CBC/PKCS5PADDING"
-        private const val IV_LENGTH = 16   // 16 bytes for AES block size
     }
 
     private fun generateSecretKey(secretKey: String): SecretKeySpec {
@@ -27,18 +26,16 @@ class AesHelper {
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec)
         val encryptedBytes = cipher.doFinal(value.toByteArray())
-//        val ivAndEncryptedData = ByteArray(IV_LENGTH) + encryptedBytes
         return Base64.encodeToString(encryptedBytes, Base64.DEFAULT)
     }
 
     fun decrypt(value: String, privateKey: String, ivKey: String): String {
-        val decodedBytes = Base64.decode(value, Base64.DEFAULT)
         val ivSpec = generateIvKey(ivKey)
-        val encryptedBytes = decodedBytes.copyOfRange(IV_LENGTH, decodedBytes.size)
         val secretKey = generateSecretKey(privateKey)
+        val decodedBytes = Base64.decode(value, Base64.DEFAULT)
         val cipher = Cipher.getInstance(TRANSFORMATION)
         cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec)
-        val decryptedBytes = cipher.doFinal(encryptedBytes)
+        val decryptedBytes = cipher.doFinal(decodedBytes)
         return String(decryptedBytes, Charsets.UTF_8)
     }
 

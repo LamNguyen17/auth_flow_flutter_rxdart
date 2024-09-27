@@ -1,10 +1,11 @@
 ## 🚀 Features
-- ❄️ Functionalities: `Signin with Email`, `Signin with Social(facbook, email)`, `Register`, `Get Profile`, `Signout`, `Delete Account`.
+- ❄️ Functionalities: `Signin with Email`, `Signin with Social(facebook, email)`, `Register`, `Get Profile`, `Signout`, `Delete Account`.
+- ❄️ Method Channel Encrypt & Decrypt AES-256: Kotlin Coroutines, RxSwift, CryptoSwift.
 - ❄️ TODO Notifications.
 ```
 ├── Authentication
 |   ├── Signin with Email
-|   ├── Signin with Social(facbook, email)
+|   ├── Signin with Social(facebook, email)
 |   ├── Register
 |   ├── Get Profile
 |   ├── Signout

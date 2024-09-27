@@ -29,8 +29,9 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   /// type = movie or tv
   @override
   Future<List<GenreMovieListResponse>> getGenreMovieList(String type) async {
+    final apiKey = await AppConfig.apiKey();
     final response = await _apiGateway.dio
-        .get("/genre/$type/list?api_key=${AppConfig.apiKey}");
+        .get("/genre/$type/list?api_key=$apiKey");
     if (response.statusCode == 200) {
       final result = response.data?['genres'] as List<dynamic>;
       return result.map((e) => GenreMovieListResponse.fromJson(e)).toList();
@@ -43,8 +44,9 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   /// type = popular, top_rated, now_playing, upcoming
   @override
   Stream<MovieListResponse> getMovieList(RequestMovieList request) async* {
+    final apiKey = await AppConfig.apiKey();
     final response = await _apiGateway.dio.get(
-        "/movie/${request.type}?page=${request.page}&api_key=${AppConfig.apiKey}");
+        "/movie/${request.type}?page=${request.page}&api_key=$apiKey");
     if (response.statusCode == 200) {
       print('getPopular_1: ${response.data}');
       yield MovieListResponse.fromJson(response.data);
@@ -57,8 +59,9 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
   /// id = movie id
   @override
   Future<MovieItemResponse> getMovieDetail(int id) async {
+    final apiKey = await AppConfig.apiKey();
     final response =
-        await _apiGateway.dio.get("/movie/$id?api_key=${AppConfig.apiKey}");
+        await _apiGateway.dio.get("/movie/$id?api_key=$apiKey");
     if (response.statusCode == 200) {
       return MovieItemResponse.fromJson(response.data);
     } else {
@@ -68,8 +71,9 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
 
   @override
   Future<MovieKeywordResponse> getMovieKeywords(int id) async {
+    final apiKey = await AppConfig.apiKey();
     final response =
-    await _apiGateway.dio.get("/movie/$id/keywords?api_key=${AppConfig.apiKey}");
+    await _apiGateway.dio.get("/movie/$id/keywords?api_key=$apiKey");
     if (response.statusCode == 200) {
       return MovieKeywordResponse.fromJson(response.data);
     } else {
@@ -79,8 +83,9 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
 
   @override
   Future<MovieListResponse> getMovieRecommendation(int id) async {
+    final apiKey = await AppConfig.apiKey();
     final response =
-    await _apiGateway.dio.get("/movie/$id/recommendations?api_key=${AppConfig.apiKey}");
+    await _apiGateway.dio.get("/movie/$id/recommendations?api_key=$apiKey");
     if (response.statusCode == 200) {
       return MovieListResponse.fromJson(response.data);
     } else {
@@ -90,8 +95,9 @@ class MovieRemoteDataSourceImpl implements MovieRemoteDataSource {
 
   @override
   Future<MovieListResponse> getMovieSimilar(int id) async {
+    final apiKey = await AppConfig.apiKey();
     final response =
-    await _apiGateway.dio.get("/movie/$id/similar?api_key=${AppConfig.apiKey}");
+    await _apiGateway.dio.get("/movie/$id/similar?api_key=$apiKey");
     if (response.statusCode == 200) {
       return MovieListResponse.fromJson(response.data);
     } else {

@@ -51,7 +51,7 @@ class MainActivity : FlutterActivity() {
                     val secretKey = call.argument<String>("secret_key")
                     val ivKey = call.argument<String>("iv_key")
                     if (secretKey != null && ivKey != null && value != null) {
-                        CoroutineScope(Dispatchers.Main).launch {
+                        activityScope.launch {
                             val decryptedData = withContext(Dispatchers.IO) {
                                 aesHelper.decrypt(value, secretKey, ivKey)
                             }

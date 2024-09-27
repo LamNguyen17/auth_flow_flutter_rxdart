@@ -47,7 +47,10 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
   json_serializable: 6.8.0
+  mockito: 5.4.4
   build_runner: 2.4.9
   flutter_lints: 4.0.0
 

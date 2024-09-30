@@ -1,4 +1,5 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart';
 
 class FirebaseRemoteConfigService {
   late FirebaseRemoteConfig _remoteConfig;
@@ -28,7 +29,7 @@ class FirebaseRemoteConfigService {
       // Fetch and activate the latest remote config values
       await _remoteConfig.fetchAndActivate();
     } catch (e) {
-      print('Failed to fetch remote config: $e');
+      debugPrint('Failed to fetch remote config: $e');
     }
   }
 

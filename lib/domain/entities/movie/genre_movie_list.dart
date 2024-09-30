@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
+@immutable
 class GenreMovieList extends Equatable {
-  int? id;
-  String? name;
+  final int? id;
+  final String? name;
 
-  GenreMovieList({
+  const GenreMovieList({
     this.id,
     this.name,
   });

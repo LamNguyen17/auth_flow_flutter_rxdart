@@ -1,12 +1,14 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
+@immutable
 class MovieList extends Equatable {
-  int? page;
-  List<MovieItem>? results;
-  int? totalPages;
-  int? totalResults;
+  final int? page;
+  final List<MovieItem>? results;
+  final int? totalPages;
+  final int? totalResults;
 
-  MovieList({
+  const MovieList({
     this.page,
     this.results,
     this.totalPages,
@@ -17,28 +19,29 @@ class MovieList extends Equatable {
   List<Object?> get props => [page, results, totalPages, totalResults];
 }
 
+@immutable
 class MovieItem extends Equatable {
-  bool? adult;
-  String? backdropPath;
-  List<int>? genreIds;
-  int? budget;
-  List<Genre>? genres;
-  int id;
-  String? originalLanguage;
-  String? originalTitle;
-  String? overview;
-  double? popularity;
-  String? posterPath;
-  String? releaseDate;
-  String? title;
-  bool? video;
-  double? voteAverage;
-  int? voteCount;
-  String? status;
-  int? revenue;
-  String? docId;
+  final bool? adult;
+  final String? backdropPath;
+  final List<int>? genreIds;
+  final int? budget;
+  final List<Genre>? genres;
+  final int id;
+  final String? originalLanguage;
+  final String? originalTitle;
+  final String? overview;
+  final double? popularity;
+  final String? posterPath;
+  final String? releaseDate;
+  final String? title;
+  final bool? video;
+  final double? voteAverage;
+  final int? voteCount;
+  final String? status;
+  final int? revenue;
+  final String? docId;
 
-  MovieItem({
+  const MovieItem({
     this.status,
     this.revenue,
     this.adult,
@@ -84,11 +87,12 @@ class MovieItem extends Equatable {
       ];
 }
 
+@immutable
 class Genre extends Equatable {
-  int? id;
-  String? name;
+  final int? id;
+  final String? name;
 
-  Genre({
+  const Genre({
     this.id,
     this.name,
   });

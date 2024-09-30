@@ -1,48 +1,38 @@
 class MemoryGateway {
-  static var _instance = MemoryGateway();
-  dynamic _data;
+  static final MemoryGateway _instance = MemoryGateway._internal();
+  final Map<String, String> _data = {};
 
-  MemoryGateway() {
-    if (MemoryGateway._instance != null) {
-      throw const FormatException(
-          'Error: Instantiation failed: Use SingletonClass.getInstance() instead of new.');
-    }
-    MemoryGateway._instance = this;
-    _data = {};
+  // Private constructor
+  MemoryGateway._internal();
+
+  // Public method to get the singleton instance
+  static MemoryGateway getInstance() {
+    return _instance;
   }
 
-  static getInstance() {
-    return MemoryGateway._instance;
-  }
-
-  static get(String key) {
+  // Static methods to access data
+  static String? get(String key) {
     return MemoryGateway.getInstance().getItem(key);
   }
 
-  static set(String key, String value) {
+  static void set(String key, String value) {
     MemoryGateway.getInstance().setItem(key, value);
   }
 
-  static clear() {
+  static void clear() {
     MemoryGateway.getInstance().clearAll();
   }
 
-  getItem(String key) {
-    if (_data) {
-      var value = _data[key];
-      return value ? value : null;
-    }
-    return null;
+  // Instance methods for data manipulation
+  String? getItem(String key) {
+    return _data[key];  // Automatically returns null if key is not found
   }
 
-  setItem(String key, String value) {
-    if (_data) {
-      _data[key] = value;
-    }
-    return true;
+  void setItem(String key, String value) {
+    _data[key] = value;
   }
 
-  clearAll() {
-    return _data = {};
+  void clearAll() {
+    _data.clear();  // Clears the map
   }
 }

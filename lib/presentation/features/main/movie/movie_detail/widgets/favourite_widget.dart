@@ -39,7 +39,7 @@ class FavouriteWidget extends StatelessWidget {
                       color: snapshot.data == true ? Colors.red : Colors.grey,
                     ),
                     onPress: () {
-                      print('FavouriteWidget: ${movie.id}');
+                      debugPrint('FavouriteWidget: ${movie.id}');
                       bloc.addFavourite.add(ReqAddFavouriteCommand(movie.id,
                           movie.title, movie.posterPath, movie.voteAverage));
                     },

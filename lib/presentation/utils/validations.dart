@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class Validation {
   static String? validateName(String? name) {
     if(name == "" || name == null){
@@ -9,6 +7,7 @@ class Validation {
     if (!isValid){
       return 'Name Invalid';
     }
+    return null;
   }
 
   static String? validatePhone(String? phone) {
@@ -56,7 +55,6 @@ class Validation {
     if (email.length <= 10) {
       return 'Email không nhỏ hơn 10 kí tự';
     }
-    print("validateEmail: $email");
     return null;
   }
 }

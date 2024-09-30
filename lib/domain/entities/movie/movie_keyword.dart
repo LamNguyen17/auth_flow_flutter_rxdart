@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
+@immutable
 class MovieKeyword extends Equatable {
-  int? id;
-  List<Keyword>? keywords;
+  final int? id;
+  final List<Keyword>? keywords;
 
-  MovieKeyword({
+  const MovieKeyword({
     this.id,
     this.keywords,
   });
@@ -13,11 +15,12 @@ class MovieKeyword extends Equatable {
   List<Object?> get props => [id, keywords];
 }
 
+@immutable
 class Keyword extends Equatable {
-  int? id;
-  String? name;
+  final int? id;
+  final String? name;
 
-  Keyword({
+  const Keyword({
     this.id,
     this.name,
   });

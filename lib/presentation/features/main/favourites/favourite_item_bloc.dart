@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:auth_flow_flutter_rxdart/di/injection.dart';
@@ -56,7 +57,7 @@ class FavouriteItemBloc extends BlocBase {
               .flatMap((either) {
             isLoading.add(false);
             return either.fold((error) => Stream.value(true), (data) {
-              print('removeFavourite: $id');
+              debugPrint('removeFavourite: $id');
               favouriteBloc.getFavouriteList.add(null);
               return Stream.value(false);
             });

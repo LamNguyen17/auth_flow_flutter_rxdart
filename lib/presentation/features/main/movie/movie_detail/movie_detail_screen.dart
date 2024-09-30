@@ -1,12 +1,10 @@
 import 'dart:io';
-import 'package:auth_flow_flutter_rxdart/di/injection.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/favourites/favourite_item_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:auth_flow_flutter_rxdart/common/extensions/bloc_provider.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/favourite_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/navigations/navigator/movie_navigator.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/genres_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/overview_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/leading_app_bar_widget.dart';
 import 'package:auth_flow_flutter_rxdart/presentation/features/main/movie/movie_detail/widgets/app_bar/expanded_app_bar_widget.dart';
@@ -26,10 +24,10 @@ class MovieDetailScreen extends StatefulWidget {
   const MovieDetailScreen({super.key, required this.id});
 
   @override
-  _MovieDetailScreenState createState() => _MovieDetailScreenState();
+  MovieDetailScreenState createState() => MovieDetailScreenState();
 }
 
-class _MovieDetailScreenState extends State<MovieDetailScreen> {
+class MovieDetailScreenState extends State<MovieDetailScreen> {
   late MovieBloc _movieBloc;
   late FavouriteItemBloc _favouriteItemBloc;
 
@@ -47,7 +45,7 @@ class _MovieDetailScreenState extends State<MovieDetailScreen> {
   @override
   void dispose() {
     super.dispose();
-    print('MovieDetailScreen_dispose');
+    debugPrint('MovieDetailScreen_dispose');
     _movieBloc.dispose();
     _favouriteItemBloc.dispose();
   }

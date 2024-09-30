@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_bloc.dart';
-import 'package:auth_flow_flutter_rxdart/presentation/features/main/profile/profile_state.dart';
 import 'package:flutter/material.dart';
 
 import 'package:dartz/dartz.dart';

@@ -19,7 +19,7 @@ class ApiGateway {
     dio.interceptors.add(InterceptorsWrapper(onRequest:
         (RequestOptions requestOptions, RequestInterceptorHandler handler) async {
       handler.next(requestOptions);
-    }, onError: (DioError err, ErrorInterceptorHandler handler) async {
+    }, onError: (DioException err, ErrorInterceptorHandler handler) async {
       if (err.response?.statusCode == 401) {
         handler.reject(err);
       } else {

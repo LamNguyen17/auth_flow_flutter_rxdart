@@ -5,10 +5,10 @@ class NotificationListScreen extends StatefulWidget {
   const NotificationListScreen({super.key});
 
   @override
-  _NotificationListScreenState createState() => _NotificationListScreenState();
+  NotificationListScreenState createState() => NotificationListScreenState();
 }
 
-class _NotificationListScreenState extends State<NotificationListScreen> {
+class NotificationListScreenState extends State<NotificationListScreen> {
   @override
   Widget build(BuildContext context) {
     return CustomAppBar(

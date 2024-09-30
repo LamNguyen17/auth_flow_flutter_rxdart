@@ -14,10 +14,10 @@ class MovieReservationScreen extends StatefulWidget {
   const MovieReservationScreen({super.key});
 
   @override
-  _MovieReservationScreenState createState() => _MovieReservationScreenState();
+  MovieReservationScreenState createState() => MovieReservationScreenState();
 }
 
-class _MovieReservationScreenState extends State<MovieReservationScreen> {
+class MovieReservationScreenState extends State<MovieReservationScreen> {
   final _movieBloc = injector.get<MovieBloc>();
 
   @override

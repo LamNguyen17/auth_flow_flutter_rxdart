@@ -46,7 +46,7 @@ class CustomAppBar extends StatelessWidget {
           leadingWidth: renderLeadingWidth(context),
           title: type == AppbarType.profile
               ? const SizedBox.shrink()
-              : Text(title ?? '',
+              : Text(title,
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w600)),
           actions: actions,
@@ -62,7 +62,7 @@ class CustomAppBar extends StatelessWidget {
           trailing: actions?[0],
           middle: type == AppbarType.profile
               ? const SizedBox.shrink()
-              : Text(title ?? '',
+              : Text(title,
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w600)),
         ),
